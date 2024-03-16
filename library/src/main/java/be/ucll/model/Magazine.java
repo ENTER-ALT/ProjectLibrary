@@ -2,24 +2,23 @@ package be.ucll.model;
 
 import be.ucll.utilits.TimeTracker;
 
-public class Book {
+public class Magazine {
     
     private String title;
-    private String author;
-    private String ISBN;
+    private String editor;
+    private String ISSN;
     private Integer year;
 
     public static final String INVALID_TITLE_EXCEPTION = "Title is required";
-    public static final String INVALID_AUTHOR_EXCEPTION = "Author is required";
-    public static final String INVALID_ISBN_EXCEPTION = "ISBN is required";
+    public static final String INVALID_EDITOR_EXCEPTION = "Editor is required";
+    public static final String INVALID_ISSN_EXCEPTION = "ISSN is required";
     public static final String NONPOSITIVE_YEAR_EXCEPTION = "Publication year must be a positive number";
     public static final String FUTURE_YEAR_EXCEPTION = "Publication year cannot be in the future";
-    public static final String SHORT_ISBN_EXCEPTION = "ISBN must contain 13 digits";
     
-    public Book(String title, String author, String ISBN, Integer year) {
+    public Magazine(String title, String editor, String ISSN, Integer year) {
         setTitle(title);
-        setAuthor(author);
-        setISBN(ISBN);
+        setEditor(editor);
+        setISSN(ISSN);
         setYear(year);
     }
 
@@ -27,12 +26,12 @@ public class Book {
         return title;
     }
 
-    public String getAuthor() {
-        return author;
+    public String getEditor() {
+        return editor;
     }
 
-    public String getISBN() {
-        return ISBN;
+    public String getISSN() {
+        return ISSN;
     }
 
     public Integer getYear() {
@@ -47,23 +46,19 @@ public class Book {
         }
     }
 
-    public void setAuthor(String author) {
-        if (author != null && !author.isBlank()) {
-            this.author = author;
+    public void setEditor(String editor) {
+        if (editor != null && !editor.isBlank()) {
+            this.editor = editor;
         } else {
-            throw new DomainException(INVALID_AUTHOR_EXCEPTION);
+            throw new DomainException(INVALID_EDITOR_EXCEPTION);
         }
     }
 
-    public void setISBN(String ISBN) {
-        if (ISBN == null || ISBN.isBlank()) {
-            throw new DomainException(INVALID_ISBN_EXCEPTION);
+    public void setISSN(String ISSN) {
+        if (ISSN == null || ISSN.isBlank()) {
+            throw new DomainException(INVALID_ISSN_EXCEPTION);
         } 
-        if (!ISBN.matches("(.*\\d.*){13}")) {
-            throw new DomainException(SHORT_ISBN_EXCEPTION);
-        } else {
-            this.ISBN = ISBN;
-        }
+        this.ISSN = ISSN;
     }
 
     public void setYear(Integer year) {
