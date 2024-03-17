@@ -18,7 +18,7 @@ public class MagazineTest {
 
     @Test
     public void givenValidValues_whenCreatingMagazine_thenMagazineIsCreatedWithThoseValues() {
-        Magazine magazine = new Magazine(DEFAULT_TITLE, DEFAULT_EDITOR, DEFAULT_ISSN, DEFAULT_YEAR, DEFAULT_COPIES);
+        Magazine magazine = createDefaultMagazine();
 
         assertEquals(DEFAULT_TITLE, magazine.getTitle());
         assertEquals(DEFAULT_EDITOR, magazine.getEditor());
@@ -125,7 +125,7 @@ public class MagazineTest {
     @Test
     public void givenFutureYear_whenCreatingMagazine_thenMagazineYearDomainExceptionIsThrown() {
         Integer futureYear = DEFAULT_YEAR + 1;
-        TimeTracker.SetCustomYear(DEFAULT_YEAR);
+        TimeTracker.setCustomYear(DEFAULT_YEAR);
         
         Exception exception = assertThrows(DomainException.class, () -> {
             new Magazine(DEFAULT_TITLE, DEFAULT_EDITOR, DEFAULT_ISSN, futureYear, DEFAULT_COPIES);
@@ -135,5 +135,9 @@ public class MagazineTest {
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    public static Magazine createDefaultMagazine() {
+        return new Magazine(DEFAULT_TITLE, DEFAULT_EDITOR, DEFAULT_ISSN, DEFAULT_YEAR, DEFAULT_COPIES);
     }
 }

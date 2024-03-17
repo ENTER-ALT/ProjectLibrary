@@ -10,7 +10,7 @@ public class UserTest {
 
     @Test
     public void givenValidValues_whenCreatingUser_thenUserIsCreatedWithThoseValues() {
-        User user = new User("John Doe", 56, "john.doe@ucll.be", "john1234");
+        User user = createDefaultUser();
 
         assertEquals("John Doe", user.getName());
         assertEquals(56, user.getAge());
@@ -112,5 +112,9 @@ public class UserTest {
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    public static User createDefaultUser() {
+        return new User("John Doe", 56, "john.doe@ucll.be", "john1234");
     }
 }
