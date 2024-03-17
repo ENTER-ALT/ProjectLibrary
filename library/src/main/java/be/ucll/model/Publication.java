@@ -12,10 +12,12 @@ public abstract class Publication {
     public static final String NONPOSITIVE_YEAR_EXCEPTION = "Publication year must be a positive number";
     public static final String FUTURE_YEAR_EXCEPTION = "Publication year cannot be in the future";
     public static final String NEGATIVE_AVAILABLE_COPIES_EXCEPTION = "Available copies cannot be negative";
+    public static final String NO_AVAILABLE_COPIES_EXCEPTION = "Unable to lend publication. No copies available for %s";
 
     public Publication(String title, Integer year, Integer availableCopies) {
         setTitle(title);
         setYear(year);
+        setAvailableCopies(availableCopies);
     }
 
     public Integer getAvailableCopies() {
@@ -47,7 +49,7 @@ public abstract class Publication {
 
     public void setYear(Integer year) {
         if (year != null && year > 0) {
-            int currentYear = TimeTracker.GetCurrentYear();
+            int currentYear = TimeTracker.getCurrentYear();
             if (year <= currentYear) {
                 this.year = year;
             } else {
@@ -56,5 +58,18 @@ public abstract class Publication {
         } else {
             throw new DomainException(NONPOSITIVE_YEAR_EXCEPTION);
         }
+    }
+
+    public void lendPublication() {
+        if (availableCopies < 1) {
+            String message = String.format(NO_AVAILABLE_COPIES_EXCEPTION, title);
+            throw new DomainException(message);
+        }
+
+        availableCopies--;
+    }
+
+    public void returnPublication() {
+        availableCopies++;
     }
 }
