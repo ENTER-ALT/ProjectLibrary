@@ -1,23 +1,42 @@
 package be.ucll.utilits;
 
-/// Used for Publications to get current Year and for Tests to set custom Year for testing purposes.
+import java.time.LocalDate;
+
+/// Used for Publications to get current DateTime values and for Tests to set custom DateTime values
 
 public class TimeTracker {
-    private static Integer Year;
+    private static Integer year;
+    private static LocalDate today;
 
-    public static void SetCustomYear(Integer customYear) {
-        Year = customYear;
+    public static void setCustomYear(Integer customYear) {
+        year = customYear;
     }
 
-    public static void ResetYear() {
-        Year = null;
+    public static void setCustomToday(LocalDate customToday) {
+        today = customToday;
     }
 
-    public static Integer GetCurrentYear() {
-        if (Year != null) {
-            return Year;
+    public static void resetYear() {
+        year = null;
+    }
+
+    public static void resetToday() {
+        today = null;
+    }
+
+    public static Integer getCurrentYear() {
+        if (year != null) {
+            return year;
         }
 
         return java.time.Year.now().getValue();
+    }
+
+    public static LocalDate getToday() {
+        if (today != null) {
+            return today;
+        }
+
+        return LocalDate.now();
     }
 }
