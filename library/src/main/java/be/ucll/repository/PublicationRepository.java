@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import be.ucll.model.Book;
 import be.ucll.model.Magazine;
 import be.ucll.model.Publication;
-import be.ucll.service.ServiceException;
 
 @Repository
 public class PublicationRepository {
@@ -49,6 +48,13 @@ public class PublicationRepository {
         if (magazines != null) {
             this.magazines = new ArrayList<Magazine>(magazines);
         }
+    }
+
+    public List<Publication> publicationsWithMoreAvailableCopiesThan(Integer copies) {
+        List<Publication> result = combineBooksAndMagazines();
+
+        return filterPublications(result, 
+        publication -> publication.getAvailableCopies() >= copies);
     }
 
     public List<Publication> publicationsByTitleAndType(String title, String type) {

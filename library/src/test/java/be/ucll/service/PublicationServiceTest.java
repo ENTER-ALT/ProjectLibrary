@@ -2,6 +2,7 @@ package be.ucll.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
@@ -163,6 +164,69 @@ public class PublicationServiceTest {
             assertTrue(books.contains(publication));
             assertTrue(publication.getTitle().contains(title));
         });
+    }
+
+    @Test
+    public void givenZeroCopiesParams_whenRequestingPublicationsByCopies_thanAllPublicationsReturned() {
+        List<Book> books = createDefaultBookList();
+        List<Magazine> magazines = createDefaultMagazineList();
+        List<Publication> expectedPublications = new ArrayList<>();
+        expectedPublications.addAll(magazines);
+        expectedPublications.addAll(books);
+        PublicationRepository repository = createDefaultRepository(books, magazines);
+        PublicationService service = createDefaultService(repository);
+
+        Integer availableCopies = 0;
+
+        List<Publication> actualPublications = service.findPublicationsWithMoreAvailableCopiesThan(availableCopies);
+
+        assertEquals(expectedPublications.size(), actualPublications.size());
+        expectedPublications.forEach(publication -> {
+            assertTrue(actualPublications.contains(publication));
+        });
+    }
+
+    @Test
+    public void given40CopiesParams_whenRequestingPublicationsByCopies_thanFilteredPublicationsReturned() {
+        List<Book> books = createDefaultBookList();
+        List<Magazine> magazines = createDefaultMagazineList();
+        List<Publication> publications = new ArrayList<>();
+        publications.addAll(magazines);
+        publications.addAll(books);
+        PublicationRepository repository = createDefaultRepository(books, magazines);
+        PublicationService service = createDefaultService(repository);
+
+        Integer availableCopies = 40;
+
+        List<Publication> actualPublications = service.findPublicationsWithMoreAvailableCopiesThan(availableCopies);
+
+        assertNotEquals(publications.size(), actualPublications.size());
+        actualPublications.forEach(publication -> {
+            assertTrue(publications.contains(publication));
+            assertTrue(publication.getAvailableCopies() >= availableCopies);
+        });
+    }
+
+    @Test
+    public void givenNegativeCopiesParams_whenRequestingPublicationsByCopies_thanFilteredPublicationsReturned() {
+        List<Book> books = createDefaultBookList();
+        List<Magazine> magazines = createDefaultMagazineList();
+        List<Publication> publications = new ArrayList<>();
+        publications.addAll(magazines);
+        publications.addAll(books);
+        PublicationRepository repository = createDefaultRepository(books, magazines);
+        PublicationService service = createDefaultService(repository);
+
+        Integer availableCopies = -1;
+
+        ServiceException exception = assertThrows(ServiceException.class, () -> {
+            service.findPublicationsWithMoreAvailableCopiesThan(availableCopies);
+        });
+
+        String expectedMessage = PublicationService.NEGATIVE_AVAILABLE_COPIES_EXCEPTION;
+        String actialMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actialMessage);
     }
 
     public PublicationRepository createDefaultRepository(List<Book> books, List<Magazine> magazines) {
