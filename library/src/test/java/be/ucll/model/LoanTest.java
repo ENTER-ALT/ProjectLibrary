@@ -159,7 +159,7 @@ public class LoanTest {
         Magazine DefaultMagazine = MagazineTest.createDefaultMagazine(); 
         ArrayList<Publication> Publications = new ArrayList<>();
         Publications.add(DefaultMagazine);
-        Loan loan = new Loan(DefaultUser, Publications, DEFAULT_TODAY);
+        new Loan(DefaultUser, Publications, DEFAULT_TODAY);
 
         assertEquals(DefaultMagazine.getAvailableCopies(), 0);
     }
@@ -180,8 +180,7 @@ public class LoanTest {
     }
 
     public static Loan createDefaultLoan() {
-        User DefaultUser = UserTest.createDefaultUser(); 
-        Magazine DefaultMagazine = MagazineTest.createDefaultMagazine(); 
+        User DefaultUser = UserTest.createDefaultUser();  
         ArrayList<Publication> Publications = new ArrayList<>();
         return new Loan(DefaultUser, Publications, DEFAULT_TODAY);
     }

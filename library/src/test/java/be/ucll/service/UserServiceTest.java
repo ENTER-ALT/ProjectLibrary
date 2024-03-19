@@ -102,9 +102,9 @@ public class UserServiceTest {
         });
 
         String expectedMessage = UserService.MIN_AGE_GREATER_THAN_MAX_EXCEPTION;
-        String actialMessage = exception.getMessage();
+        String actualMessage = exception.getMessage();
 
-        assertEquals(expectedMessage, actialMessage);
+        assertEquals(expectedMessage, actualMessage);
     }
 
     @Test 
@@ -119,7 +119,7 @@ public class UserServiceTest {
             service.getUsersWithinAgeRange(minAge, maxAge);
         });
 
-        String expectedMessage = UserService.INVALID_AGE_RANGE;
+        String expectedMessage = UserService.INVALID_AGE_RANGE_EXCEPTION;
         String actialMessage = exception.getMessage();
 
         assertEquals(expectedMessage, actialMessage);
@@ -137,10 +137,85 @@ public class UserServiceTest {
             service.getUsersWithinAgeRange(minAge, maxAge);
         });
 
-        String expectedMessage = UserService.INVALID_AGE_RANGE;
+        String expectedMessage = UserService.INVALID_AGE_RANGE_EXCEPTION;
         String actialMessage = exception.getMessage();
 
         assertEquals(expectedMessage, actialMessage);
+    }
+
+    @Test 
+    public void givenNameString_whenGettingUsersByName_thanFilteredUsersReturned() {
+        List<User> users = createDefaultUserList();
+        UserRepository repository = createDefaultRepository(users);
+        UserService service = createDefaultService(repository);
+        String name = "Ja";
+
+        List<User> actualUsers = service.getUsersByName(name);
+
+        actualUsers.forEach(user -> {
+            assertTrue(user.getName().contains(name));
+        });
+        assertEquals(actualUsers.size(), 2);
+    }
+
+    @Test 
+    public void givenNoUsersWithNameInDatabase_whenGettingUsersByName_thanServiceExceptionThrown() {
+        List<User> users = createDefaultUserList();
+        UserRepository repository = createDefaultRepository(users);
+        UserService service = createDefaultService(repository);
+        String name = "sasa";
+
+        ServiceException exception = assertThrows(ServiceException.class, () -> {
+            service.getUsersByName(name);
+        });
+
+        String expectedMessage = UserService.NO_USERS_FOUND_EXCEPTION;
+        String actialMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actialMessage);
+    }
+
+    @Test 
+    public void givenNullUsers_whenGettingUsersByName_thanServiceExceptionThrown() {
+        List<User> users = null;
+        UserRepository repository = createDefaultRepository(users);
+        UserService service = createDefaultService(repository);
+        String name = "sasa";
+
+        ServiceException exception = assertThrows(ServiceException.class, () -> {
+            service.getUsersByName(name);
+        });
+
+        String expectedMessage = UserService.NO_USERS_FOUND_EXCEPTION;
+        String actialMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actialMessage);
+    }
+
+    @Test 
+    public void givenEmptyName_whenGettingUsersByName_thanAllUsersReturned() {
+        List<User> expectedUsers = createDefaultUserList();
+        UserRepository repository = createDefaultRepository(expectedUsers);
+        UserService service = createDefaultService(repository);
+        String name = "";
+
+        List<User> actualUsers = service.getUsersByName(name);
+
+        assertEquals(expectedUsers.size(), actualUsers.size());
+        assertArrayEquals(expectedUsers.toArray(), actualUsers.toArray());
+    }
+
+    @Test 
+    public void givenNullName_whenGettingUsersByName_thanAllUsersReturned() {
+        List<User> expectedUsers = createDefaultUserList();
+        UserRepository repository = createDefaultRepository(expectedUsers);
+        UserService service = createDefaultService(repository);
+        String name = null;
+
+        List<User> actualUsers = service.getUsersByName(name);
+
+        assertEquals(expectedUsers.size(), actualUsers.size());
+        assertArrayEquals(expectedUsers.toArray(), actualUsers.toArray());
     }
 
     public UserRepository createDefaultRepository(List<User> users) {

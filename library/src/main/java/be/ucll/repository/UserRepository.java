@@ -2,6 +2,7 @@ package be.ucll.repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.springframework.stereotype.Repository;
 
@@ -40,23 +41,27 @@ public class UserRepository {
         return usersWithinAgeRange(minAge, maxAge);
     }
 
+    public List<User> usersByName(String name) {
+        return filterUsers(user -> 
+            user.getName().contains(name));
+    }
+
     public List<User> usersOlderThan(int age) {
-        return users != null 
-        ? users
-        .stream()
-        .filter(user -> user.getAge() >= age)
-        .toList() 
-        : null;
+        return filterUsers(user -> 
+        user.getAge() >= 18);
     }
 
     public List<User> usersWithinAgeRange(int minAge, int maxAge) {
+        return filterUsers(user -> 
+        user.getAge() >= minAge &&
+        user.getAge() <= maxAge);
+    }
+    
+    public List<User> filterUsers(Predicate<? super User> filterFunc) {
         return users != null 
         ? users
         .stream()
-        .filter(user -> 
-            user.getAge() >= minAge &&
-            user.getAge() <= maxAge
-            )
+        .filter(filterFunc)
         .toList() 
         : null;
     }

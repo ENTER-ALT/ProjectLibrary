@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 import be.ucll.model.User;
 import be.ucll.service.UserService;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -24,8 +25,9 @@ public class UserRestController {
     }
 
     @GetMapping()
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    public List<User> getAllUsers(
+        @RequestParam(value = "name", required = false) String name) {
+        return userService.getUsersByName(name);
     }
 
     @GetMapping("/adults")
@@ -34,7 +36,10 @@ public class UserRestController {
     }
 
     @GetMapping("/age/{min}/{max}")
-    public List<User> getUsersWithinAgeRange(@PathVariable Integer min, @PathVariable Integer max) {
+    public List<User> getUsersWithinAgeRange(
+        @PathVariable(value = "min") Integer min, 
+        @PathVariable(value = "max") Integer max) 
+    {
         return userService.getUsersWithinAgeRange(min, max);
     }
 }
