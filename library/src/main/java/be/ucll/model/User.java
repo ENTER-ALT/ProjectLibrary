@@ -3,16 +3,16 @@ package be.ucll.model;
 public class User {
     
     private String name;
-    private int age;
+    private Integer age;
     private String email;
     private String password;
 
     public static final String INVALID_NAME_EXCEPTION = "Name is required";
     public static final String INVALID_EMAIL_EXCEPTION = "E-mail must be a valid email format";
-    public static final String INVALID_AGE_EXCEPTION = "Age must be a positive integer between 0 and 101";
+    public static final String INVALID_AGE_EXCEPTION = "Age must be a positive Integereger between 0 and 101";
     public static final String INVALID_PASSWORD_EXCEPTION = "Password must be at least 8 characters long";
     
-    public User(String name, int age, String email, String password) {
+    public User(String name, Integer age, String email, String password) {
         setName(name);
         setAge(age);
         setEmail(email);
@@ -28,10 +28,10 @@ public class User {
         }
         this.name = name;
     }
-    public int getAge() {
+    public Integer getAge() {
         return age;
     }
-    public void setAge(int age) {
+    public void setAge(Integer age) {
         if (age < 0 || age > 101) {
             throw new DomainException(INVALID_AGE_EXCEPTION);
         }

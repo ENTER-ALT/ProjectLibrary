@@ -49,7 +49,7 @@ public abstract class Publication {
 
     public void setYear(Integer year) {
         if (year != null && year > 0) {
-            int currentYear = TimeTracker.getCurrentYear();
+            Integer currentYear = TimeTracker.getCurrentYear();
             if (year <= currentYear) {
                 this.year = year;
             } else {

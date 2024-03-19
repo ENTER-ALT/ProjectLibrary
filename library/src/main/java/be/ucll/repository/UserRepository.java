@@ -37,7 +37,7 @@ public class UserRepository {
         return usersOlderThan(18);
     }
 
-    public List<User> allUsersWithinAgeRange(int minAge, int maxAge) {
+    public List<User> allUsersWithinAgeRange(Integer minAge, Integer maxAge) {
         return usersWithinAgeRange(minAge, maxAge);
     }
 
@@ -46,12 +46,12 @@ public class UserRepository {
             user.getName().contains(name));
     }
 
-    public List<User> usersOlderThan(int age) {
+    public List<User> usersOlderThan(Integer age) {
         return filterUsers(user -> 
         user.getAge() >= 18);
     }
 
-    public List<User> usersWithinAgeRange(int minAge, int maxAge) {
+    public List<User> usersWithinAgeRange(Integer minAge, Integer maxAge) {
         return filterUsers(user -> 
         user.getAge() >= minAge &&
         user.getAge() <= maxAge);
