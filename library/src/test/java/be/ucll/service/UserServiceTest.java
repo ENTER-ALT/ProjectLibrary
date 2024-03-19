@@ -2,6 +2,7 @@ package be.ucll.service;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -58,6 +59,88 @@ public class UserServiceTest {
         actualUsers.forEach(user -> {
             assertTrue(user.getAge() > 17);
         });
+    }
+
+    @Test 
+    public void givenUsers_whenGettingUsersWithinAgeRange_thanFilteredUsersReturned() {
+        List<User> users = createDefaultUserList();
+        UserRepository repository = createDefaultRepository(users);
+        UserService service = createDefaultService(repository);
+        Integer minAge = 0;
+        Integer maxAge = 15;
+
+        List<User> actualUsers = service.getUsersWithinAgeRange(minAge, maxAge);
+
+        actualUsers.forEach(user -> {
+            assertTrue(user.getAge() >= minAge && user.getAge() <= maxAge);
+        });
+    }
+
+    @Test 
+    public void givenNullUsers_whenGettingUsersWithinAgeRange_thanNullUsersReturned() {
+        List<User> expectedUsers = null;
+        UserRepository repository = createDefaultRepository(expectedUsers);
+        UserService service = createDefaultService(repository);
+        Integer minAge = 10;
+        Integer maxAge = 30;
+
+        List<User> actualUsers = service.getUsersWithinAgeRange(minAge, maxAge);
+
+        assertEquals(expectedUsers, actualUsers);
+    }
+
+    @Test 
+    public void givenMinAgeGreaterThanMaxAge_whenGettingUsersWithinAgeRange_thanServiceExceptionThrown() {
+        List<User> users = createDefaultUserList();
+        UserRepository repository = createDefaultRepository(users);
+        UserService service = createDefaultService(repository);
+        Integer minAge = 11;
+        Integer maxAge = 10;
+
+        ServiceException exception = assertThrows(ServiceException.class, () -> {
+            service.getUsersWithinAgeRange(minAge, maxAge);
+        });
+
+        String expectedMessage = UserService.MIN_AGE_GREATER_THAN_MAX_EXCEPTION;
+        String actialMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actialMessage);
+    }
+
+    @Test 
+    public void givenInvalidMinRange_whenGettingUsersWithinAgeRange_thanServiceExceptionThrown() {
+        List<User> users = createDefaultUserList();
+        UserRepository repository = createDefaultRepository(users);
+        UserService service = createDefaultService(repository);
+        Integer minAge = UserService.MIN_AGE_RESTRICTION -1;
+        Integer maxAge = UserService.MAX_AGE_RESTRICTION;
+
+        ServiceException exception = assertThrows(ServiceException.class, () -> {
+            service.getUsersWithinAgeRange(minAge, maxAge);
+        });
+
+        String expectedMessage = UserService.INVALID_AGE_RANGE;
+        String actialMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actialMessage);
+    }
+
+    @Test 
+    public void givenInvalidMaxRange_whenGettingUsersWithinAgeRange_thanServiceExceptionThrown() {
+        List<User> users = createDefaultUserList();
+        UserRepository repository = createDefaultRepository(users);
+        UserService service = createDefaultService(repository);
+        Integer minAge = UserService.MIN_AGE_RESTRICTION;
+        Integer maxAge = UserService.MAX_AGE_RESTRICTION +1;
+
+        ServiceException exception = assertThrows(ServiceException.class, () -> {
+            service.getUsersWithinAgeRange(minAge, maxAge);
+        });
+
+        String expectedMessage = UserService.INVALID_AGE_RANGE;
+        String actialMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actialMessage);
     }
 
     public UserRepository createDefaultRepository(List<User> users) {

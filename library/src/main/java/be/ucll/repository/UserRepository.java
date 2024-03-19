@@ -33,14 +33,30 @@ public class UserRepository {
     }
 
     public List<User> allAdults() {
-        return usersOlderThan(17);
+        return usersOlderThan(18);
+    }
+
+    public List<User> allUsersWithinAgeRange(int minAge, int maxAge) {
+        return usersWithinAgeRange(minAge, maxAge);
     }
 
     public List<User> usersOlderThan(int age) {
         return users != null 
         ? users
         .stream()
-        .filter(user -> user.getAge() > age)
+        .filter(user -> user.getAge() >= age)
+        .toList() 
+        : null;
+    }
+
+    public List<User> usersWithinAgeRange(int minAge, int maxAge) {
+        return users != null 
+        ? users
+        .stream()
+        .filter(user -> 
+            user.getAge() >= minAge &&
+            user.getAge() <= maxAge
+            )
         .toList() 
         : null;
     }

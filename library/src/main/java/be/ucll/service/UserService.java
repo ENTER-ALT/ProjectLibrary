@@ -10,6 +10,11 @@ import be.ucll.repository.UserRepository;
 @Service
 public class UserService {
     
+    public static final String MIN_AGE_GREATER_THAN_MAX_EXCEPTION = "Minimum age cannot be greater than nmaximum age"; 
+    public static final String INVALID_AGE_RANGE = "Invalid age range. Age must be between 0 and 150";
+    public static final Integer MIN_AGE_RESTRICTION = 0; //Min age cannot be lower than this number
+    public static final Integer MAX_AGE_RESTRICTION = 150; //Max age cannot be higher than this number
+
     private UserRepository userRepository;
 
     public UserService(UserRepository userRepository) {
@@ -22,5 +27,15 @@ public class UserService {
 
     public List<User> getAllAdultUsers() {
         return userRepository.allAdults();
+    }
+
+    public List<User> getUsersWithinAgeRange(Integer min, Integer max) {
+        if (min > max) {
+            throw new ServiceException(MIN_AGE_GREATER_THAN_MAX_EXCEPTION);
+        }
+        if (min < MIN_AGE_RESTRICTION || max > MAX_AGE_RESTRICTION) {
+            throw new ServiceException(INVALID_AGE_RANGE);
+        }
+        return userRepository.allUsersWithinAgeRange(min, max);
     }
 }
