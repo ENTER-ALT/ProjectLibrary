@@ -19,4 +19,8 @@ public class UserService {
     public List<User> getAllUsers() {
         return userRepository.allUsers();
     }
+
+    public List<User> getAllAdultUsers() {
+        return userRepository.allAdults();
+    }
 }

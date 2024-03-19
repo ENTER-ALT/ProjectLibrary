@@ -31,4 +31,17 @@ public class UserRepository {
     public List<User> allUsers() {
         return users;
     }
+
+    public List<User> allAdults() {
+        return usersOlderThan(17);
+    }
+
+    public List<User> usersOlderThan(int age) {
+        return users != null 
+        ? users
+        .stream()
+        .filter(user -> user.getAge() > age)
+        .toList() 
+        : null;
+    }
 }

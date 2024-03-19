@@ -2,6 +2,7 @@ package be.ucll.service;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
@@ -33,6 +34,30 @@ public class UserServiceTest {
         List<User> actualUsers = service.getAllUsers();
 
         assertEquals(expectedUsers, actualUsers);
+    }
+
+    @Test 
+    public void givenNullUsers_whenGettingAllAdultUsers_thanNullUsersReturned() {
+        List<User> expectedUsers = null;
+        UserRepository repository = createDefaultRepository(expectedUsers);
+        UserService service = createDefaultService(repository);
+
+        List<User> actualUsers = service.getAllAdultUsers();
+
+        assertEquals(expectedUsers, actualUsers);
+    }
+
+    @Test 
+    public void givenUsers_whenGettingAllAdultUsers_thanFilteredAdultUsersReturned() {
+        List<User> users = createDefaultUserList();
+        UserRepository repository = createDefaultRepository(users);
+        UserService service = createDefaultService(repository);
+
+        List<User> actualUsers = service.getAllAdultUsers();
+
+        actualUsers.forEach(user -> {
+            assertTrue(user.getAge() > 17);
+        });
     }
 
     public UserRepository createDefaultRepository(List<User> users) {
