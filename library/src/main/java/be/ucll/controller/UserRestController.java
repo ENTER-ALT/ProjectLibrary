@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import be.ucll.model.Loan;
 import be.ucll.model.User;
+import be.ucll.service.LoanService;
 import be.ucll.service.UserService;
 
 
@@ -18,9 +20,11 @@ import be.ucll.service.UserService;
 public class UserRestController {
     
     private UserService userService;
+    private LoanService loanService;
 
-    public UserRestController(UserService userService) {
+    public UserRestController(UserService userService, LoanService loanService) {
         this.userService = userService;
+        this.loanService = loanService;
     }
 
     @GetMapping()
@@ -40,5 +44,13 @@ public class UserRestController {
         @PathVariable(value = "max") Integer max) 
     {
         return userService.getUsersWithinAgeRange(min, max);
+    }
+
+    @GetMapping("/{email}/loans")
+    public List<Loan> getLoansByEmail(
+        @PathVariable(value = "email") String email,
+        @RequestParam(value = "onlyActive", required = false) Boolean onlyActive) 
+    {
+        return loanService.getLoansByUser(email, onlyActive);
     }
 }
