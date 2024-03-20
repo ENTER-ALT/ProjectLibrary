@@ -1,10 +1,12 @@
 package be.ucll.service;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -218,19 +220,50 @@ public class UserServiceTest {
         assertArrayEquals(expectedUsers.toArray(), actualUsers.toArray());
     }
 
-    public UserRepository createDefaultRepository(List<User> users) {
+    @Test 
+    public void givenWrongEmail_whenCheckingUserExists_thanServiceExceptionThrown() {
+        UserService userService = createDefaultService();
+        List<String> emails = new ArrayList<String>(List.of("", "sada@asd"));
+        emails.add(null);
+
+        emails.forEach(email -> {
+            ServiceException exception = assertThrows(ServiceException.class, () -> {
+                userService.userExists(email);
+            });
+    
+            String expectedMessage = String.format(UserService.USER_DOESNT_EXIST_EXCEPTION, email);
+            String actualMessage = exception.getMessage();
+    
+            assertEquals(expectedMessage, actualMessage);
+        });
+    }
+
+    @Test 
+    public void givenCorrectEmail_whenCheckingUserExists_thanNothingHappens() {
+        List<User> users = createDefaultUserList();
+        UserRepository repository = createDefaultRepository(users);
+        UserService service = createDefaultService(repository);
+
+        users.forEach(user -> {
+            assertDoesNotThrow(() -> {
+                service.userExists(user.getEmail());
+            });
+        });
+    }
+
+    public static UserRepository createDefaultRepository(List<User> users) {
         return new UserRepository(users);
     }
 
-    public UserService createDefaultService(UserRepository repository) {
+    public static UserService createDefaultService(UserRepository repository) {
         return new UserService(repository);
     }
 
-    public UserService createDefaultService() {
+    public static UserService createDefaultService() {
         return new UserService(createDefaultRepository(createDefaultUserList()));
     }
 
-    public List<User> createDefaultUserList() {
+    public static List<User> createDefaultUserList() {
         return List.of(
             new User("John Doe", 25, "john.doe@ucll.be", "john1234"),
             new User("Jane Toe", 30, "jane.toe@ucll.be", "jane1234"),

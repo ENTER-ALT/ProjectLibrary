@@ -229,21 +229,21 @@ public class PublicationServiceTest {
         assertEquals(expectedMessage, actialMessage);
     }
 
-    public PublicationRepository createDefaultRepository(List<Book> books, List<Magazine> magazines) {
+    public static PublicationRepository createDefaultRepository(List<Book> books, List<Magazine> magazines) {
         return new PublicationRepository(books, magazines);
     }
 
-    public PublicationService createDefaultService(PublicationRepository repository) {
+    public static PublicationService createDefaultService(PublicationRepository repository) {
         return new PublicationService(repository);
     }
 
-    public PublicationService createDefaultService() {
+    public static PublicationService createDefaultService() {
         List<Book> books = createDefaultBookList();
         List<Magazine> magazines = createDefaultMagazineList();
         return new PublicationService(createDefaultRepository(books, magazines));
     }
 
-    public List<Magazine> createDefaultMagazineList() {
+    public static List<Magazine> createDefaultMagazineList() {
         // Create an ArrayList to store Magazine instances
         ArrayList<Magazine> magazines = new ArrayList<>();
 
@@ -257,7 +257,7 @@ public class PublicationServiceTest {
         return magazines;
     }
 
-    public List<Book> createDefaultBookList() {
+    public static List<Book> createDefaultBookList() {
         // Create an ArrayList to store Book instances
         ArrayList<Book> books = new ArrayList<>();
 
