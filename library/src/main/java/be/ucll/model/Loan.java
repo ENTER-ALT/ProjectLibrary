@@ -1,14 +1,14 @@
 package be.ucll.model;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.List;
 
 import be.ucll.utilits.TimeTracker;
 
 public class Loan {
 
     private User user;
-    private ArrayList<Publication> publications;
+    private List<Publication> publications;
     private LocalDate startDate;
     private LocalDate endDate;
 
@@ -20,7 +20,7 @@ public class Loan {
     public static final String FUTURE_ENDDATE_EXCEPTION = "End date cannot be in future";
     public static final String ENDDATE_BEFORE_STARTDATE_EXCEPTION = "Start date cannot be after end date";
 
-    public Loan(User user, ArrayList<Publication> publications, LocalDate startDate) {
+    public Loan(User user, List<Publication> publications, LocalDate startDate) {
         setUser(user);
         setPublications(publications);
         setStartDate(startDate);
@@ -30,7 +30,7 @@ public class Loan {
         return user;
     }
 
-    public ArrayList<Publication> getPublications() {
+    public List<Publication> getPublications() {
         return publications;
     }
 
@@ -49,7 +49,7 @@ public class Loan {
         this.user = user;
     }
 
-    public void setPublications(ArrayList<Publication> publications) {
+    public void setPublications(List<Publication> publications) {
         if (publications == null){
             throw new DomainException(INVALID_PUBLICATIONS_EXCEPTION);
         }
