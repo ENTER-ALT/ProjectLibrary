@@ -29,6 +29,10 @@ public class UserRepository {
         this.users = new ArrayList<User>(users);
     }
 
+    public void addUser(User user) {
+        users.add(user);
+    }
+
     public List<User> allUsers() {
         return users;
     }
@@ -44,6 +48,11 @@ public class UserRepository {
     public List<User> usersByName(String name) {
         return filterUsers(user -> 
             user.getName().contains(name));
+    }
+
+    public List<User> usersByEmail(String email) {
+        return filterUsers(user -> 
+            user.getEmail().equals(email));
     }
 
     public List<User> usersOlderThan(Integer age) {

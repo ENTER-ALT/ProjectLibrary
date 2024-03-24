@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,6 +33,12 @@ public class UserRestController {
     public List<User> getAllUsers(
         @RequestParam(value = "name", required = false) String name) {
         return userService.getUsersByName(name);
+    }
+
+    @PostMapping()
+    public User addUser(
+        @RequestBody User newUser) {
+        return userService.addUser(newUser);
     }
 
     @GetMapping("/adults")

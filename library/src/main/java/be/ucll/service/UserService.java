@@ -12,8 +12,10 @@ public class UserService {
     
     public static final String MIN_AGE_GREATER_THAN_MAX_EXCEPTION = "Minimum age cannot be greater than nmaximum age"; 
     public static final String INVALID_AGE_RANGE_EXCEPTION = "Invalid age range. Age must be between 0 and 150";
+    public static final String INVALID_USER_EXCEPTION = "Invalid user";
     public static final String NO_USERS_FOUND_EXCEPTION = "No users are found with the specified name";
     public static final String USER_DOESNT_EXIST_EXCEPTION = "User with email %s does not exist";
+    public static final String USER_ALREADY_EXISTS_EXCEPTION = "User already exists";
     public static final Integer MIN_AGE_RESTRICTION = 0; //Min age cannot be lower than this number
     public static final Integer MAX_AGE_RESTRICTION = 150; //Max age cannot be higher than this number
 
@@ -52,13 +54,33 @@ public class UserService {
         return result;
     }
 
+    public User addUser(User newUser) {
+        isValidUser(newUser);
+        userDoesNotExists(newUser.getEmail());
+
+        userRepository.addUser(newUser);
+        return userRepository.usersByEmail(newUser.getEmail()).get(0);
+    }
+
+    public void isValidUser(User user) {
+        if (user == null) {
+            throw new ServiceException(INVALID_USER_EXCEPTION);
+        }
+    }
+
     public void userExists(String email) {
-        List<User> users = userRepository.allUsers();
-        Boolean userExists = users
-        .stream()
-        .anyMatch(user -> user.getEmail().equals(email));
+        List<User> users = userRepository.usersByEmail(email);
+        Boolean userExists = users.size() > 0;
         if (!userExists) {
             throw new ServiceException(String.format(USER_DOESNT_EXIST_EXCEPTION, email));
+        }
+    }
+
+    public void userDoesNotExists(String email) {
+        List<User> users = userRepository.usersByEmail(email);
+        Boolean userExists = users.size() > 0;
+        if (userExists) {
+            throw new ServiceException(USER_ALREADY_EXISTS_EXCEPTION);
         }
     }
 }

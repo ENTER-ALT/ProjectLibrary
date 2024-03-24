@@ -251,6 +251,60 @@ public class UserServiceTest {
         });
     }
 
+    @Test 
+    public void givenValidUser_whenAddingUser_thanUserAddedAndReturned() {
+        User user = createDefaultUserList().get(0);
+        UserRepository repository = createDefaultRepository(new ArrayList<>());
+        UserService service = createDefaultService(repository);
+
+        User actual = service.addUser(user);
+        List<User> usersByEmail = repository.usersByEmail(user.getEmail());
+
+        assertEquals(user.getEmail(), actual.getEmail());
+        assertEquals(1, usersByEmail.size());
+        assertEquals(user.getEmail(), usersByEmail.get(0).getEmail());
+    }
+
+    @Test 
+    public void givenNullUser_whenAddingUser_thanExceptionThrown() {
+        User user = null;
+        UserRepository repository = createDefaultRepository(new ArrayList<>());
+        UserService service = createDefaultService(repository);
+
+        ServiceException exception = assertThrows(ServiceException.class, () -> {
+            service.addUser(user);
+        });
+
+        String expectedMessage = UserService.INVALID_USER_EXCEPTION;
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+
+        List<User> actualUsers = repository.allUsers();
+
+        assertEquals(0, actualUsers.size());
+    }
+
+    @Test 
+    public void givenExistingUser_whenAddingUser_thanServiceExceptionThrown() {
+        List<User> users = createDefaultUserList();
+        UserRepository repository = createDefaultRepository(users);
+        UserService service = createDefaultService(repository);
+
+        ServiceException exception = assertThrows(ServiceException.class, () -> {
+            service.addUser(users.get(0));
+        });
+
+        String expectedMessage = UserService.USER_ALREADY_EXISTS_EXCEPTION;
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+
+        List<User> actualUsers = repository.allUsers();
+
+        assertEquals(users.size(), actualUsers.size());
+    }
+
     public static UserRepository createDefaultRepository(List<User> users) {
         return new UserRepository(users);
     }
