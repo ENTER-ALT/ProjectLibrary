@@ -55,6 +55,11 @@ public class UserRepository {
             user.getEmail().equals(email));
     }
 
+    public User userByEmail(String email) {
+        return findUser(user -> 
+            user.getEmail().equals(email));
+    }
+
     public List<User> usersOlderThan(Integer age) {
         return filterUsers(user -> 
         user.getAge() >= 18);
@@ -72,6 +77,16 @@ public class UserRepository {
         .stream()
         .filter(filterFunc)
         .toList() 
+        : null;
+    }
+
+    public User findUser(Predicate<? super User> filterFunc) {
+        return users != null 
+        ? users
+        .stream()
+        .filter(filterFunc)
+        .findFirst()
+        .orElse(null) 
         : null;
     }
 }

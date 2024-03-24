@@ -59,7 +59,7 @@ public class UserService {
         userDoesNotExists(newUser.getEmail());
 
         userRepository.addUser(newUser);
-        return userRepository.usersByEmail(newUser.getEmail()).get(0);
+        return userRepository.userByEmail(newUser.getEmail());
     }
 
     public void isValidUser(User user) {
@@ -69,16 +69,16 @@ public class UserService {
     }
 
     public void userExists(String email) {
-        List<User> users = userRepository.usersByEmail(email);
-        Boolean userExists = users.size() > 0;
+        User user = userRepository.userByEmail(email);
+        Boolean userExists = user != null;
         if (!userExists) {
             throw new ServiceException(String.format(USER_DOESNT_EXIST_EXCEPTION, email));
         }
     }
 
     public void userDoesNotExists(String email) {
-        List<User> users = userRepository.usersByEmail(email);
-        Boolean userExists = users.size() > 0;
+        User user = userRepository.userByEmail(email);
+        Boolean userExists = user != null;
         if (userExists) {
             throw new ServiceException(USER_ALREADY_EXISTS_EXCEPTION);
         }
