@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,16 +30,11 @@ public class UserRestController {
         this.loanService = loanService;
     }
 
+    // Get
     @GetMapping()
     public List<User> getAllUsers(
         @RequestParam(value = "name", required = false) String name) {
         return userService.getUsersByName(name);
-    }
-
-    @PostMapping()
-    public User addUser(
-        @RequestBody User newUser) {
-        return userService.addUser(newUser);
     }
 
     @GetMapping("/adults")
@@ -60,5 +56,20 @@ public class UserRestController {
         @RequestParam(value = "onlyActive", required = false) Boolean onlyActive) 
     {
         return loanService.getLoansByUser(email, onlyActive);
+    }
+
+    /// Post
+    @PostMapping()
+    public User addUser(
+        @RequestBody User newUser) {
+        return userService.addUser(newUser);
+    }
+
+    // Put
+    @PutMapping("/{email}")
+    public User updateUser(
+        @PathVariable(value = "email") String email,
+        @RequestBody User newUser) {
+        return userService.updateUser(email, newUser);
     }
 }

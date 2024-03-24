@@ -87,7 +87,7 @@ public class LoanServiceTest {
                 loanService.getLoansByUser(email, value);
             });
     
-            String expectedMessage = String.format(UserService.USER_DOESNT_EXIST_EXCEPTION, email);
+            String expectedMessage = String.format(UserService.USER_WITH_EMAIL_DOESNT_EXIST_EXCEPTION, email);
             String actialMessage = exception.getMessage();
     
             assertEquals(expectedMessage, actialMessage);
@@ -105,7 +105,7 @@ public class LoanServiceTest {
                 loanService.getLoansByUser(email, value);
             });
     
-            String expectedMessage = String.format(UserService.USER_DOESNT_EXIST_EXCEPTION, email);
+            String expectedMessage = String.format(UserService.USER_WITH_EMAIL_DOESNT_EXIST_EXCEPTION, email);
             String actualMessage = exception.getMessage();
     
             assertEquals(expectedMessage, actualMessage);
@@ -123,7 +123,7 @@ public class LoanServiceTest {
                 loanService.getLoansByUser(email, value);
             });
     
-            String expectedMessage = String.format(UserService.USER_DOESNT_EXIST_EXCEPTION, email);
+            String expectedMessage = String.format(UserService.USER_WITH_EMAIL_DOESNT_EXIST_EXCEPTION, email);
             String actualMessage = exception.getMessage();
     
             assertEquals(expectedMessage, actualMessage);

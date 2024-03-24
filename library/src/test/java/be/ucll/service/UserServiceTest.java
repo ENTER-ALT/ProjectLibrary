@@ -231,7 +231,7 @@ public class UserServiceTest {
                 userService.userExists(email);
             });
     
-            String expectedMessage = String.format(UserService.USER_DOESNT_EXIST_EXCEPTION, email);
+            String expectedMessage = String.format(UserService.USER_WITH_EMAIL_DOESNT_EXIST_EXCEPTION, email);
             String actualMessage = exception.getMessage();
     
             assertEquals(expectedMessage, actualMessage);
@@ -303,6 +303,50 @@ public class UserServiceTest {
         List<User> actualUsers = repository.allUsers();
 
         assertEquals(users.size(), actualUsers.size());
+    }
+
+    @Test 
+    public void givenNotExistingUserEmail_whenUpdatingUser_thanServiceExceptionThrown() {
+        List<User> users = createDefaultUserList();
+        UserRepository repository = createDefaultRepository(users);
+        UserService service = createDefaultService(repository);
+
+        String email = "asdas.sas@mail.com";
+        User newUser = users.get(0);
+        newUser.setAge(newUser.getAge()-1);
+
+        ServiceException exception = assertThrows(ServiceException.class, () -> {
+            service.updateUser(email, newUser);
+        });
+
+        String expectedMessage = UserService.USER_DOESNT_EXIST_EXCEPTION;
+        String actualMessage = exception.getMessage();
+
+        
+        assertEquals(expectedMessage, actualMessage);
+        assertEquals(users.get(0), repository.allUsers().get(0));
+    }
+
+    @Test 
+    public void givenValidUserToUpdate_whenUpdatingUser_thanUserUpdatedAndReturned() {
+        List<User> users = createDefaultUserList();
+        UserRepository repository = createDefaultRepository(users);
+        UserService service = createDefaultService(repository);
+
+        User currentUser = users.get(1);
+        Integer expectedNumberOfUsers = users.size();
+        String email = currentUser.getEmail();
+        User newUser = new User(email, 96, email, email);
+
+        User actualUser = service.updateUser(email, newUser);
+
+        assertEquals(actualUser.getEmail(), newUser.getEmail());
+        assertEquals(actualUser.getEmail(), email);
+        assertEquals(actualUser.getAge(), newUser.getAge());
+        assertEquals(actualUser.getName(), newUser.getName());
+        assertEquals(actualUser.getPassword(), newUser.getPassword());
+        assertEquals(actualUser, repository.userByEmail(email));
+        assertEquals(expectedNumberOfUsers, repository.allUsers().size());
     }
 
     public static UserRepository createDefaultRepository(List<User> users) {

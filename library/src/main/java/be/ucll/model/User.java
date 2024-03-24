@@ -9,6 +9,7 @@ public class User {
 
     public static final String INVALID_NAME_EXCEPTION = "Name is required";
     public static final String INVALID_EMAIL_EXCEPTION = "E-mail must be a valid email format";
+    public static final String EMAIL_CANNOT_BE_CHANGED_EXCEPTION = "E-mail cannot be changed";
     public static final String INVALID_AGE_EXCEPTION = "Age must be a positive Integereger between 0 and 101";
     public static final String INVALID_PASSWORD_EXCEPTION = "Password must be at least 8 characters long";
     
@@ -41,6 +42,9 @@ public class User {
         return email;
     }
     public void setEmail(String email) {
+        if (this.email != null && !this.email.equals(email)) {
+            throw new DomainException(EMAIL_CANNOT_BE_CHANGED_EXCEPTION);
+        }
         if (email == null || !email.contains(".") || !email.contains("@")) {
             throw new DomainException(INVALID_EMAIL_EXCEPTION);
         }
@@ -54,5 +58,14 @@ public class User {
             throw new DomainException(INVALID_PASSWORD_EXCEPTION);
         }
         this.password = password;
+    }
+
+    public User copyUser(User other) {
+        this.setName(other.getName());
+        this.setAge(other.getAge());
+        this.setEmail(other.getEmail());
+        this.setPassword(other.getPassword());
+
+        return this;
     }
 }

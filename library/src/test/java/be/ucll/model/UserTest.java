@@ -1,6 +1,7 @@
 package be.ucll.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -112,6 +113,49 @@ public class UserTest {
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    public void givenNewEmail_whenChangingUserEmail_thenDomainExceptionIsThrown() {
+        User user = new User("John Doe", 56, "john.doe@ucll.be", "john1234");
+
+        Exception exception = assertThrows(DomainException.class, () -> {
+            user.setEmail("random.mail@mail.com");
+        });
+
+        String expectedMessage = User.EMAIL_CANNOT_BE_CHANGED_EXCEPTION;
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.equals(expectedMessage));
+    }
+
+    @Test
+    public void givenUserWithNewEmail_whenCopyingUser_thenDomainExceptionIsThrown() {
+        User user = new User("John Doe", 56, "john.doe@ucll.be", "john1234");
+        User newUser = new User("John Doe", 56, "johasdasdn.doe@ucll.be", "john1234");
+        Exception exception = assertThrows(DomainException.class, () -> {
+            user.copyUser(newUser);
+        });
+
+        String expectedMessage = User.EMAIL_CANNOT_BE_CHANGED_EXCEPTION;
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.equals(expectedMessage));
+    }
+
+    @Test
+    public void givenValidNewUser_whenCopyingUser_thenUserValuesUpdated() {
+        User user = new User("John Doe", 56, "john.doe@ucll.be", "john1234");
+        User newUser = new User("John Does", 96, "john.doe@ucll.be", "john1234as");
+        
+        User actualUser = user.copyUser(newUser);
+
+        assertEquals(user, actualUser);
+        assertNotEquals(user, newUser);
+        assertEquals(actualUser.getEmail(), newUser.getEmail());
+        assertEquals(actualUser.getAge(), newUser.getAge());
+        assertEquals(actualUser.getName(), newUser.getName());
+        assertEquals(actualUser.getPassword(), newUser.getPassword());
     }
 
     public static User createDefaultUser() {

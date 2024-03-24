@@ -33,6 +33,11 @@ public class UserRepository {
         users.add(user);
     }
 
+    public void updateUser(String email, User newUser) {
+        User currentUser = userByEmail(email);
+        currentUser.copyUser(newUser);
+    }
+
     public List<User> allUsers() {
         return users;
     }
