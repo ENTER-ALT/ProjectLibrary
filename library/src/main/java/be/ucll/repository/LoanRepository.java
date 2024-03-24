@@ -29,6 +29,7 @@ public class LoanRepository {
         loans.add(new Loan(users.get(1), publications.subList(4, 8), LocalDate.of(1111, 1, 2)));
         
         loans.get(1).setEndDate(LocalDate.of(1111, 1, 4));
+        loans.get(0).setEndDate(LocalDate.of(1111, 1, 4));
     }
 
     public LoanRepository(List<Loan> loans) {
@@ -36,6 +37,14 @@ public class LoanRepository {
             return;
         }
         this.loans = new ArrayList<Loan>(loans);
+    }
+
+    public void deleteLoansByEmail(String email) {
+        List<Loan> loansByEmail = findLoansByEmail(email, false);
+        loansByEmail
+        .forEach(loan -> {
+            loans.remove(loan);
+        });
     }
 
     public List<Loan> findLoansByEmail(String email, Boolean onlyActive) {

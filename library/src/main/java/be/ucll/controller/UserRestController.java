@@ -2,6 +2,7 @@ package be.ucll.controller;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -71,5 +72,18 @@ public class UserRestController {
         @PathVariable(value = "email") String email,
         @RequestBody User newUser) {
         return userService.updateUser(email, newUser);
+    }
+
+    // Delete
+    @DeleteMapping("/{email}/loans")
+    public String deleteUserLoans(
+        @PathVariable(value = "email") String email) {
+        return loanService.deleteLoansByUser(email);
+    }
+
+    @DeleteMapping("/{email}")
+    public String deleteUser(
+        @PathVariable(value = "email") String email) {
+        return userService.deleteUser(email);
     }
 }

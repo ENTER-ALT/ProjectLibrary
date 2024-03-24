@@ -10,9 +10,9 @@ import be.ucll.repository.LoanRepository;
 @Service
 public class LoanService {
     
-    public static final String MIN_AGE_GREATER_THAN_MAX_EXCEPTION = "Minimum age cannot be greater than nmaximum age"; 
-    public static final String INVALID_AGE_RANGE_EXCEPTION = "Invalid age range. Age must be between 0 and 150";
-    public static final String NO_USERS_FOUND_EXCEPTION = "No users are found with the specified name";
+    public static final String USER_HAS_ACTIVE_LOANS_EXCEPTION = "User has active loans";
+    public static final String USER_HAS_NO_LOANS_EXCEPTION = "User has no loans";
+    public static final String DELETION_SUCCESS_RESPONSE = "Loans of user successfully deleted";
 
     private LoanRepository loanRepository;
     private UserService userService;
@@ -30,5 +30,24 @@ public class LoanService {
             onlyActive = false;
         }
         return loanRepository.findLoansByEmail(email, onlyActive);
+    }
+
+    public String deleteLoansByUser(String email) {
+        userService.checkUserExists(email);
+
+        List<Loan> activeLoans = loanRepository.findLoansByEmail(email, true);
+        Boolean userHasActiveLoans = activeLoans.size() > 0;
+        if (userHasActiveLoans) {
+            throw new ServiceException(USER_HAS_ACTIVE_LOANS_EXCEPTION);
+        }
+
+        List<Loan> allLoans = loanRepository.findLoansByEmail(email, false);
+        Boolean userHasLoans = allLoans.size() > 0;
+        if (!userHasLoans) {
+            throw new ServiceException(USER_HAS_NO_LOANS_EXCEPTION);
+        }
+
+        loanRepository.deleteLoansByEmail(email);
+        return DELETION_SUCCESS_RESPONSE;
     }
 }

@@ -11,7 +11,9 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import be.ucll.model.Loan;
 import be.ucll.model.User;
+import be.ucll.repository.LoanRepository;
 import be.ucll.repository.UserRepository;
 
 public class UserServiceTest {
@@ -349,16 +351,79 @@ public class UserServiceTest {
         assertEquals(expectedNumberOfUsers, repository.allUsers().size());
     }
 
+    @Test 
+    public void givenNotExistingUserEmail_whenDeletingUser_thanServiceExceptionThrown() {
+        List<User> users = createDefaultUserList();
+        UserRepository repository = createDefaultRepository(users);
+        UserService service = createDefaultService(repository);
+
+        String email = "asdas.sas@mail.com";
+
+        ServiceException exception = assertThrows(ServiceException.class, () -> {
+            service.deleteUser(email);
+        });
+
+        String expectedMessage = UserService.USER_DOESNT_EXIST_EXCEPTION;
+        String actualMessage = exception.getMessage();
+        
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test 
+    public void givenUserEmailWithActiveLoans_whenDeletingUser_thanServiceExceptionThrown() {
+        List<User> users = createDefaultUserList();
+        List<Loan> defaultLoans = LoanServiceTest.createDefaultLoanList();
+        LoanRepository loanRepository = LoanServiceTest.createDefaultRepository(defaultLoans);
+        UserRepository repository = createDefaultRepository(users);
+        UserService service = createDefaultService(repository, loanRepository);
+
+        String emailWithAtiveLoans = LoanServiceTest.getUserWithActiveLoans(defaultLoans).getEmail();
+
+        ServiceException exception = assertThrows(ServiceException.class, () -> {
+            service.deleteUser(emailWithAtiveLoans);
+        });
+
+        String expectedMessage = LoanService.USER_HAS_ACTIVE_LOANS_EXCEPTION;
+        String actualMessage = exception.getMessage();
+        
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test 
+    public void givenUserEmailWithInactiveLoans_whenDeletingUser_thanLoansAndUserDeleted() {
+        List<User> users = createDefaultUserList();
+        List<Loan> defaultLoans = LoanServiceTest.createDefaultLoanList();
+        LoanRepository loanRepository = LoanServiceTest.createDefaultRepository(defaultLoans);
+        UserRepository repository = createDefaultRepository(users);
+        UserService service = createDefaultService(repository, loanRepository);
+
+        String emailWithInativeLoans = LoanServiceTest.getUserEmailWithInactiveLoans(defaultLoans);
+        Integer initialUsersLoansQuantity = loanRepository.findLoansByEmail(emailWithInativeLoans, false).size();
+
+        String actualResult = service.deleteUser(emailWithInativeLoans);
+        String expectedResult = UserService.DELETION_SUCCESS_RESPONSE;
+        Integer finalUsersLoansQuantity = loanRepository.findLoansByEmail(emailWithInativeLoans, false).size();
+
+        assertTrue(initialUsersLoansQuantity > 0);
+        assertEquals(expectedResult, actualResult);
+        assertEquals(0, finalUsersLoansQuantity);
+        assertTrue(repository.userByEmail(emailWithInativeLoans) == null);
+    }
+
     public static UserRepository createDefaultRepository(List<User> users) {
         return new UserRepository(users);
     }
 
     public static UserService createDefaultService(UserRepository repository) {
-        return new UserService(repository);
+        return new UserService(repository, LoanServiceTest.createDefaultRepository());
+    }
+
+    public static UserService createDefaultService(UserRepository repository, LoanRepository loanRepository) {
+        return new UserService(repository, loanRepository);
     }
 
     public static UserService createDefaultService() {
-        return new UserService(createDefaultRepository(createDefaultUserList()));
+        return new UserService(createDefaultRepository(createDefaultUserList()), LoanServiceTest.createDefaultRepository());
     }
 
     public static List<User> createDefaultUserList() {

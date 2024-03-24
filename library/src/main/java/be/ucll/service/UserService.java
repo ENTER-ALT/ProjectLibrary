@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import be.ucll.model.Loan;
 import be.ucll.model.User;
+import be.ucll.repository.LoanRepository;
 import be.ucll.repository.UserRepository;
 
 @Service
@@ -19,11 +21,16 @@ public class UserService {
     public static final String USER_ALREADY_EXISTS_EXCEPTION = "User already exists";
     public static final Integer MIN_AGE_RESTRICTION = 0; //Min age cannot be lower than this number
     public static final Integer MAX_AGE_RESTRICTION = 150; //Max age cannot be higher than this number
+    public static final String DELETION_SUCCESS_RESPONSE = "User successfully deleted";
 
     private UserRepository userRepository;
+    private LoanRepository loanRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(
+        UserRepository userRepository,
+        LoanRepository loanRepository) {
         this.userRepository = userRepository;
+        this.loanRepository = loanRepository;
     }
 
     public List<User> getAllUsers() {
@@ -69,6 +76,36 @@ public class UserService {
 
         userRepository.updateUser(email, newUser);
         return userRepository.userByEmail(email);
+    }
+
+    public String deleteUser(String email) {
+        checkUserExists(email);
+        handleUserLoans(email);
+        
+        userRepository.deleteUser(email);
+        return DELETION_SUCCESS_RESPONSE;
+    }
+
+    public void handleUserLoans(String email) {
+        checkUsersActiveLoans(email);
+        deleteUserLoansIfExist(email);
+    }
+
+    public void checkUsersActiveLoans(String email) {
+        List<Loan> activeLoans = loanRepository.findLoansByEmail(email, true);
+        Boolean userHasActiveLoans = activeLoans.size() > 0;
+        if (userHasActiveLoans) {
+            throw new ServiceException(LoanService.USER_HAS_ACTIVE_LOANS_EXCEPTION);
+        }
+    }
+
+    public void deleteUserLoansIfExist(String email) {
+        List<Loan> allLoans = loanRepository.findLoansByEmail(email, false);
+        Boolean userHasLoans = allLoans.size() > 0;
+        if (!userHasLoans) {
+            return;
+        }
+        loanRepository.deleteLoansByEmail(email);
     }
 
     public void isValidUser(User user) {

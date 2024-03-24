@@ -38,6 +38,11 @@ public class UserRepository {
         currentUser.copyUser(newUser);
     }
 
+    public void deleteUser(String email) {
+        User user = userByEmail(email);
+        users.remove(user);
+    }
+ 
     public List<User> allUsers() {
         return users;
     }
