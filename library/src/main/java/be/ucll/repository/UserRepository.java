@@ -13,13 +13,7 @@ public class UserRepository {
     public List<User> users;
 
     public UserRepository() {
-        users = new ArrayList<>(List.of(
-            new User("John Doe", 25, "john.doe@ucll.be", "john1234"),
-            new User("Jane Toe", 30, "jane.toe@ucll.be", "jane1234"),
-            new User("Jack Doe", 5, "jack.doe@ucll.be", "jack1234"),
-            new User("Sarah Doe", 4, "sarah.doe@ucll.be", "sarah1234"),
-            new User("Birgit Doe", 18, "birgit.doe@ucll.be", "birgit1234")
-            ));
+        resetRepository();
     }
 
     public UserRepository(List<User> users) {
@@ -98,5 +92,15 @@ public class UserRepository {
         .findFirst()
         .orElse(null) 
         : null;
+    }
+
+    public void resetRepository() {
+        users = new ArrayList<>(List.of(
+            new User("John Doe", 25, "john.doe@ucll.be", "john1234"),
+            new User("Jane Toe", 30, "jane.toe@ucll.be", "jane1234"),
+            new User("Jack Doe", 5, "jack.doe@ucll.be", "jack1234"),
+            new User("Sarah Doe", 4, "sarah.doe@ucll.be", "sarah1234"),
+            new User("Birgit Doe", 18, "birgit.doe@ucll.be", "birgit1234")
+            ));
     }
 }
