@@ -18,18 +18,7 @@ public class LoanRepository {
 
     @Autowired
     public LoanRepository(PublicationRepository publicationRepository, UserRepository userRepository) {
-        loans = new ArrayList<>();
-        List<User> users = userRepository.allUsers();
-        List<Publication> publications = publicationRepository.combineBooksAndMagazines();
-        loans.add(new Loan(users.get(0), publications.subList(0, 2), LocalDate.of(1111, 1, 1)));
-        loans.add(new Loan(users.get(1), publications.subList(2, 4), LocalDate.of(1111, 1, 2)));
-        loans.add(new Loan(users.get(2), publications.subList(4, 6), LocalDate.of(1111, 1, 3)));
-        loans.add(new Loan(users.get(3), publications.subList(2, 8), LocalDate.of(1111, 1, 4)));
-        loans.add(new Loan(users.get(4), publications.subList(8, 10), LocalDate.of(1111, 1, 5)));
-        loans.add(new Loan(users.get(1), publications.subList(4, 8), LocalDate.of(1111, 1, 2)));
-        
-        loans.get(1).setEndDate(LocalDate.of(1111, 1, 4));
-        loans.get(0).setEndDate(LocalDate.of(1111, 1, 4));
+        resetRepository(publicationRepository, userRepository);
     }
 
     public LoanRepository(List<Loan> loans) {
@@ -66,5 +55,20 @@ public class LoanRepository {
         .filter(filterFunc)
         .toList() 
         : null;
+    }
+
+    public void resetRepository(PublicationRepository publicationRepository, UserRepository userRepository) {
+        loans = new ArrayList<>();
+        List<User> users = userRepository.allUsers();
+        List<Publication> publications = publicationRepository.combineBooksAndMagazines();
+        loans.add(new Loan(users.get(0), publications.subList(0, 2), LocalDate.of(1111, 1, 1)));
+        loans.add(new Loan(users.get(1), publications.subList(2, 4), LocalDate.of(1111, 1, 2)));
+        loans.add(new Loan(users.get(2), publications.subList(4, 6), LocalDate.of(1111, 1, 3)));
+        loans.add(new Loan(users.get(3), publications.subList(2, 8), LocalDate.of(1111, 1, 4)));
+        loans.add(new Loan(users.get(4), publications.subList(8, 10), LocalDate.of(1111, 1, 5)));
+        loans.add(new Loan(users.get(1), publications.subList(4, 8), LocalDate.of(1111, 1, 2)));
+        
+        loans.get(1).setEndDate(LocalDate.of(1111, 1, 4));
+        loans.get(0).setEndDate(LocalDate.of(1111, 1, 4));
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 import be.ucll.model.User;
 import be.ucll.repository.LoanRepository;
+import be.ucll.repository.PublicationRepository;
 import be.ucll.repository.UserRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -23,11 +24,15 @@ public class UserIntegrationTest {
     @Autowired
     private UserRepository userRepository;
     @Autowired
+    private PublicationRepository publicationRepository;
+    @Autowired
     private LoanRepository loanRepository;
 
     @AfterEach
     public void resetRepository() {
         userRepository.resetRepository();
+        publicationRepository.resetRepository();
+        loanRepository.resetRepository(publicationRepository, userRepository);
     }
 
     @Test
