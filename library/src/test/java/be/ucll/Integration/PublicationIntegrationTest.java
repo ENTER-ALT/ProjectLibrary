@@ -12,7 +12,6 @@ import be.ucll.repository.PublicationRepository;
 import be.ucll.repository.UserRepository;
 import be.ucll.service.PublicationService;
 import be.ucll.service.ServiceException;
-import be.ucll.service.UserService;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
