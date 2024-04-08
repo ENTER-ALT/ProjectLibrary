@@ -8,12 +8,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import be.ucll.model.DomainException;
 import be.ucll.model.User;
 import be.ucll.repository.LoanRepository;
 import be.ucll.repository.PublicationRepository;
 import be.ucll.repository.UserRepository;
+import be.ucll.service.LoanService;
+import be.ucll.service.ServiceException;
+import be.ucll.service.UserService;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
@@ -273,17 +278,21 @@ public class UserIntegrationTest {
     }
 
     @Test
-    public void givenInvalidEmail_whenGetUserLoans_thenServerErrorReturned() {
+    public void givenInvalidEmail_whenGetUserLoans_thenClientErrorReturned() {
         webTestClient
         .get()
         .uri("/users/s/loans")
         .exchange()
         .expectStatus()
-        .is5xxServerError();
+        .is4xxClientError()
+        .expectBody()
+        .json("{\r\n" + //
+                        "  \""+ServiceException.class.getSimpleName()+"\": \""+String.format(UserService.USER_WITH_EMAIL_DOESNT_EXIST_EXCEPTION, "s") +"\"\r\n" + //
+                        "}");
     }
 
     @Test
-    public void givenEmptyBody_whenPostUsers_thenServerErrorReturned() {
+    public void givenEmptyBody_whenPostUsers_thenClientErrorReturned() {
         webTestClient
         .post()
         .uri("/users")
@@ -291,11 +300,15 @@ public class UserIntegrationTest {
         .bodyValue("")
         .exchange()
         .expectStatus()
-        .is4xxClientError();
+        .is4xxClientError()
+        .expectBody()
+        .json("{\r\n" + //
+        "  \""+HttpMessageNotReadableException.class.getSimpleName()+"\": \"Required request body is missing: public be.ucll.model.User be.ucll.controller.UserRestController.addUser(be.ucll.model.User)\"\r\n" + //
+        "}");
     }
 
     @Test
-    public void givenExistingUser_whenPostUsers_thenServerErrorIsThrown() {
+    public void givenExistingUser_whenPostUsers_thenClientErrorIsThrown() {
         webTestClient
         .post()
         .uri("/users")
@@ -308,11 +321,15 @@ public class UserIntegrationTest {
                         "  }")
         .exchange()
         .expectStatus()
-        .is5xxServerError();
+        .is4xxClientError()
+        .expectBody()
+        .json("{\r\n" + //
+        "  \""+ServiceException.class.getSimpleName()+"\": \""+UserService.USER_ALREADY_EXISTS_EXCEPTION +"\"\r\n" + //
+        "}");
     }
 
     @Test
-    public void givenManyUsers_whenPostUsers_thenServerErrorIsThrown() {
+    public void givenManyUsers_whenPostUsers_thenClientErrorIsThrown() {
         webTestClient
         .post()
         .uri("/users")
@@ -331,7 +348,11 @@ public class UserIntegrationTest {
                         "  }]")
         .exchange()
         .expectStatus()
-        .is4xxClientError();
+        .is4xxClientError()
+        .expectBody()
+        .json("{\r\n" + //
+        "  \""+HttpMessageNotReadableException.class.getSimpleName()+"\": \"JSON parse error: Cannot deserialize value of type `be.ucll.model.User` from Array value (token `JsonToken.START_ARRAY`)\"\r\n" + //
+        "}");
     }
 
     @Test
@@ -393,7 +414,7 @@ public class UserIntegrationTest {
     }
 
     @Test
-    public void givenNonExistingEmail_whenPutUsers_thenServerErrorIsThrown() {
+    public void givenNonExistingEmail_whenPutUsers_thenClientErrorIsThrown() {
         webTestClient
         .put()
         .uri("/users/joasdas@.sda")
@@ -406,11 +427,15 @@ public class UserIntegrationTest {
                         "  }")
         .exchange()
         .expectStatus()
-        .is5xxServerError();
+        .is4xxClientError()
+        .expectBody()
+        .json("{\r\n" + //
+        "  \""+ServiceException.class.getSimpleName()+"\": \""+UserService.USER_DOESNT_EXIST_EXCEPTION +"\"\r\n" + //
+        "}");
     }
 
     @Test
-    public void givenChangedEmail_whenPutUsers_thenServerErrorIsThrown() {
+    public void givenChangedEmail_whenPutUsers_thenClientErrorIsThrown() {
         webTestClient
         .put()
         .uri("/users/john.doe@ucll.be")
@@ -423,29 +448,41 @@ public class UserIntegrationTest {
                         "  }")
         .exchange()
         .expectStatus()
-        .is5xxServerError();
+        .is4xxClientError()
+        .expectBody()
+        .json("{\r\n" + //
+        "  \""+DomainException.class.getSimpleName()+"\": \""+User.EMAIL_CANNOT_BE_CHANGED_EXCEPTION +"\"\r\n" + //
+        "}");
     }
 
     @Test
-    public void givenNonExistingEmail_whenDeleteUsers_thenServerErrorIsThrown() {
+    public void givenNonExistingEmail_whenDeleteUsers_thenClientErrorIsThrown() {
         webTestClient
         .delete()
         .uri("/users/jasda@.asdasd")
         .header("Content-Type", "application/json")
         .exchange()
         .expectStatus()
-        .is5xxServerError();
+        .is4xxClientError()
+        .expectBody()
+        .json("{\r\n" + //
+        "  \""+ServiceException.class.getSimpleName()+"\": \""+UserService.USER_DOESNT_EXIST_EXCEPTION +"\"\r\n" + //
+        "}");
     }
 
     @Test
-    public void givenEmailWithActiveLoans_whenDeleteUsers_thenServerErrorIsThrown() {
+    public void givenEmailWithActiveLoans_whenDeleteUsers_thenClientErrorIsThrown() {
         webTestClient
         .delete()
         .uri("/users/jane.toe@ucll.be")
         .header("Content-Type", "application/json")
         .exchange()
         .expectStatus()
-        .is5xxServerError();
+        .is4xxClientError()
+        .expectBody()
+        .json("{\r\n" + //
+        "  \""+ServiceException.class.getSimpleName()+"\": \""+LoanService.USER_HAS_ACTIVE_LOANS_EXCEPTION +"\"\r\n" + //
+        "}");
     }
 
     @Test

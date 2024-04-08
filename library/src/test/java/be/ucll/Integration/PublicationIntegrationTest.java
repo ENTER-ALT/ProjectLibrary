@@ -10,6 +10,9 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import be.ucll.repository.LoanRepository;
 import be.ucll.repository.PublicationRepository;
 import be.ucll.repository.UserRepository;
+import be.ucll.service.PublicationService;
+import be.ucll.service.ServiceException;
+import be.ucll.service.UserService;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
@@ -407,7 +410,11 @@ public class PublicationIntegrationTest {
         .uri("/publications/stock/-1")
         .exchange()
         .expectStatus()
-        .is5xxServerError();
+        .is4xxClientError()
+        .expectBody()
+        .json("{\r\n" + //
+                        "  \""+ServiceException.class.getSimpleName()+"\": \""+PublicationService.NEGATIVE_AVAILABLE_COPIES_EXCEPTION+"\"\r\n" + //
+                        "}");
     }
 
     @Test
