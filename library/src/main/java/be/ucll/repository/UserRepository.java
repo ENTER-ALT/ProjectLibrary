@@ -27,11 +27,6 @@ public class UserRepository {
         users.add(user);
     }
 
-    public void updateUser(String email, User newUser) {
-        User currentUser = userByEmail(email);
-        currentUser.copyUser(newUser);
-    }
-
     public void deleteUser(String email) {
         User user = userByEmail(email);
         users.remove(user);
