@@ -4,11 +4,16 @@ import java.time.LocalDate;
 import java.util.List;
 
 import be.ucll.utilits.TimeTracker;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 public class Loan {
 
+        @NotNull(message = INVALID_USER_EXCEPTION)
     private User user;
     private List<Publication> publications;
+
+        // @NotNull(message = INVALID_STARTDATE_EXCEPTION)
     private LocalDate startDate;
     private LocalDate endDate;
 
@@ -42,15 +47,12 @@ public class Loan {
         return endDate;
     }
 
-    public void setUser(User user) {
-        if (user == null) {
-            throw new DomainException(INVALID_USER_EXCEPTION);
-        }
+    public void setUser(@Valid User user) {
         this.user = user;
     }
 
     public void setPublications(List<Publication> publications) {
-        if (publications == null){
+        if (publications == null) {
             throw new DomainException(INVALID_PUBLICATIONS_EXCEPTION);
         }
         publications.forEach(publication -> {

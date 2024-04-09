@@ -1,11 +1,17 @@
 package be.ucll.model;
 
 import be.ucll.utilits.TimeTracker;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 
 public abstract class Publication {
 
     private Integer availableCopies;
+
+        @NotBlank(message = INVALID_TITLE_EXCEPTION)
     private String title;
+
+        @Positive(message = NONPOSITIVE_YEAR_EXCEPTION)
     private Integer year;
 
     public static final String INVALID_TITLE_EXCEPTION = "Title is required";
@@ -40,23 +46,15 @@ public abstract class Publication {
     }
 
     public void setTitle(String title) {
-        if (title != null && !title.isBlank()) {
-            this.title = title;
-        } else {
-            throw new DomainException(INVALID_TITLE_EXCEPTION);
-        }
+        this.title = title;
     }
 
     public void setYear(Integer year) {
-        if (year != null && year > 0) {
-            Integer currentYear = TimeTracker.getCurrentYear();
-            if (year <= currentYear) {
-                this.year = year;
-            } else {
-                throw new DomainException(FUTURE_YEAR_EXCEPTION);
-            }
+        Integer currentYear = TimeTracker.getCurrentYear();
+        if (year <= currentYear) {
+            this.year = year;
         } else {
-            throw new DomainException(NONPOSITIVE_YEAR_EXCEPTION);
+            throw new DomainException(FUTURE_YEAR_EXCEPTION);
         }
     }
 
@@ -66,10 +64,10 @@ public abstract class Publication {
             throw new DomainException(message);
         }
 
-        availableCopies--;
+        setAvailableCopies(availableCopies-1);
     }
 
     public void returnPublication() {
-        availableCopies++;
+        setAvailableCopies(availableCopies+1);
     }
 }

@@ -1,8 +1,13 @@
 package be.ucll.model;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class Magazine extends Publication {
     
+        @NotBlank(message = INVALID_EDITOR_EXCEPTION)
     private String editor;
+
+        @NotBlank(message = INVALID_ISSN_EXCEPTION)
     private String ISSN;
 
     public static final String INVALID_EDITOR_EXCEPTION = "Editor is required";
@@ -23,17 +28,10 @@ public class Magazine extends Publication {
     }
 
     public void setEditor(String editor) {
-        if (editor != null && !editor.isBlank()) {
-            this.editor = editor;
-        } else {
-            throw new DomainException(INVALID_EDITOR_EXCEPTION);
-        }
+        this.editor = editor;
     }
 
     public void setISSN(String ISSN) {
-        if (ISSN == null || ISSN.isBlank()) {
-            throw new DomainException(INVALID_ISSN_EXCEPTION);
-        } 
         this.ISSN = ISSN;
     }
 }

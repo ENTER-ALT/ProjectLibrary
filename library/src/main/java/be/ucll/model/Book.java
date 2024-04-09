@@ -1,8 +1,16 @@
 package be.ucll.model;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+
 public class Book extends Publication {
     
+        @NotBlank(message = INVALID_AUTHOR_EXCEPTION)
     private String author;
+
+        @NotNull(message = INVALID_ISBN_EXCEPTION)
+        @Pattern(regexp = "(.*\\d.*){13}", message = SHORT_ISBN_EXCEPTION)
     private String ISBN;
 
     public static final String INVALID_AUTHOR_EXCEPTION = "Author is required";
@@ -24,21 +32,10 @@ public class Book extends Publication {
     }
 
     public void setAuthor(String author) {
-        if (author != null && !author.isBlank()) {
-            this.author = author;
-        } else {
-            throw new DomainException(INVALID_AUTHOR_EXCEPTION);
-        }
+        this.author = author;
     }
 
-    public void setISBN(String ISBN) {
-        if (ISBN == null || ISBN.isBlank()) {
-            throw new DomainException(INVALID_ISBN_EXCEPTION);
-        } 
-        if (!ISBN.matches("(.*\\d.*){13}")) {
-            throw new DomainException(SHORT_ISBN_EXCEPTION);
-        } else {
-            this.ISBN = ISBN;
-        }
+    public void setISBN(String ISBN) { 
+        this.ISBN = ISBN;
     }
 }
