@@ -6,16 +6,38 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Set;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import be.ucll.utilits.TimeTracker;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 
 public class LoanTest {
     
     public static final LocalDate DEFAULT_TODAY = LocalDate.of(1111, 1, 2);
     public static final LocalDate DEFAULT_YESTERDAY = LocalDate.of(1111, 1, 1);
     public static final LocalDate DEFAULT_TOMORROW = LocalDate.of(1111, 1, 3);
+
+    private static ValidatorFactory validatorFactory;
+    private static Validator validator;
+
+    @BeforeAll
+    public static void InitializeValidator() {
+        validatorFactory = Validation.buildDefaultValidatorFactory();
+        validator = validatorFactory.getValidator();
+    }
+
+    @AfterAll
+    public static void CleanUpValidator() {
+        validatorFactory.close();
+    }
 
     @Test
     public void givenValidValues_whenCreatingLoan_thenLoanIsCreatedWithThoseValues() {
@@ -26,20 +48,25 @@ public class LoanTest {
         assertEquals(DefaultUser, loan.getUser());
         assertEquals(Publications, loan.getPublications());
         assertEquals(DEFAULT_TODAY, loan.getStartDate());
+
+        Set<ConstraintViolation<Loan>> violations = validator.validate(loan);
+        assertEquals(0, violations.size());
     }
 
     @Test
     public void givenNullUser_whenCreatingLoan_thenLoanUserDomainExceptionIsThrown() {
         ArrayList<Publication> Publications = new ArrayList<>();
         
-        Exception exception = assertThrows(DomainException.class, () -> {
-            new Loan(null, Publications, DEFAULT_TODAY);
-        });
+        Loan loan = new Loan(null, Publications, DEFAULT_TODAY);
+    
+        Set<ConstraintViolation<Loan>> violations = validator.validate(loan);
+        assertEquals(1, violations.size());
 
+        Iterator<ConstraintViolation<Loan>> violationIterator = violations.iterator();
+        ConstraintViolation<Loan> violation = violationIterator.next();
         String expectedMessage = Loan.INVALID_USER_EXCEPTION;
-        String actualMessage = exception.getMessage();
-
-        assertTrue(actualMessage.contains(expectedMessage));
+        String actualMessage = violation.getMessage();
+        assertEquals(expectedMessage, actualMessage);
     }
 
     @Test

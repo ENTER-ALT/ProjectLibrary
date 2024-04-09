@@ -5,9 +5,33 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Iterator;
+import java.util.Set;
+
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+
 public class UserTest {
+ 
+    private static ValidatorFactory validatorFactory;
+    private static Validator validator;
+
+    @BeforeAll
+    public static void InitializeValidator() {
+        validatorFactory = Validation.buildDefaultValidatorFactory();
+        validator = validatorFactory.getValidator();
+    }
+
+    @AfterAll
+    public static void CleanUpValidator() {
+        validatorFactory.close();
+    }
 
     @Test
     public void givenValidValues_whenCreatingUser_thenUserIsCreatedWithThoseValues() {
@@ -17,102 +41,113 @@ public class UserTest {
         assertEquals(56, user.getAge());
         assertEquals("john.doe@ucll.be", user.getEmail());
         assertEquals("john1234", user.getPassword());
-    }
+    
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        assertEquals(0, violations.size());
+    }  
 
     @Test
     public void givenShortPassword_whenCreatingUser_thenWrongPasswordDomainExceptionIsThrown() {
-        Exception exception = assertThrows(DomainException.class, () -> {
-            new User("John Doe", 56, "john.doe@ucll.be", "john123");
-        });
+        User user = new User("John Doe", 56, "john.doe@ucll.be", "john123");
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        assertEquals(1, violations.size());
 
+        Iterator<ConstraintViolation<User>> violationIterator = violations.iterator();
+        ConstraintViolation<User> violation = violationIterator.next();
         String expectedMessage = User.INVALID_PASSWORD_EXCEPTION;
-        String actualMessage = exception.getMessage();
-
-        assertTrue(actualMessage.contains(expectedMessage));
+        String actualMessage = violation.getMessage();
+        assertEquals(expectedMessage, actualMessage);
     }
 
     @Test
     public void givenBlankName_whenCreatingUser_thenUserNameDomainExceptionIsThrown() {
-        Exception exception = assertThrows(DomainException.class, () -> {
-            new User("    ", 56, "john.doe@ucll.be", "john1234");
-        });
+        User user = new User("    ", 56, "john.doe@ucll.be", "john1234");
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        assertEquals(1, violations.size());
 
+        Iterator<ConstraintViolation<User>> violationIterator = violations.iterator();
+        ConstraintViolation<User> violation = violationIterator.next();
         String expectedMessage = User.INVALID_NAME_EXCEPTION;
-        String actualMessage = exception.getMessage();
-
-        assertTrue(actualMessage.contains(expectedMessage));
+        String actualMessage = violation.getMessage();
+        assertEquals(expectedMessage, actualMessage);
     }
 
     @Test
     public void givenNullName_whenCreatingUser_thenUserNameDomainExceptionIsThrown() {
-        Exception exception = assertThrows(DomainException.class, () -> {
-            new User(null, 56, "john.doe@ucll.be", "john1234");
-        });
+        User user = new User(null, 56, "john.doe@ucll.be", "john1234");
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        assertEquals(1, violations.size());
 
+        Iterator<ConstraintViolation<User>> violationIterator = violations.iterator();
+        ConstraintViolation<User> violation = violationIterator.next();
         String expectedMessage = User.INVALID_NAME_EXCEPTION;
-        String actualMessage = exception.getMessage();
-
-        assertTrue(actualMessage.contains(expectedMessage));
+        String actualMessage = violation.getMessage();
+        assertEquals(expectedMessage, actualMessage);
     }
 
     @Test
     public void givenNullEmail_whenCreatingUser_thenUserNameDomainExceptionIsThrown() {
-        Exception exception = assertThrows(DomainException.class, () -> {
-            new User("J", 56, null, "john1234");
-        });
+        User user = new User("J", 56, null, "john1234");
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        assertEquals(1, violations.size());
 
+        Iterator<ConstraintViolation<User>> violationIterator = violations.iterator();
+        ConstraintViolation<User> violation = violationIterator.next();
         String expectedMessage = User.INVALID_EMAIL_EXCEPTION;
-        String actualMessage = exception.getMessage();
-
-        assertTrue(actualMessage.contains(expectedMessage));
+        String actualMessage = violation.getMessage();
+        assertEquals(expectedMessage, actualMessage);
     }
 
     @Test
     public void givenNullPassword_whenCreatingUser_thenUserNameDomainExceptionIsThrown() {
-        Exception exception = assertThrows(DomainException.class, () -> {
-            new User("J", 56, "john.doe@ucll.be", null);
-        });
+        User user = new User("J", 56, "john.doe@ucll.be", null);
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        assertEquals(1, violations.size());
 
+        Iterator<ConstraintViolation<User>> violationIterator = violations.iterator();
+        ConstraintViolation<User> violation = violationIterator.next();
         String expectedMessage = User.INVALID_PASSWORD_EXCEPTION;
-        String actualMessage = exception.getMessage();
-
-        assertTrue(actualMessage.contains(expectedMessage));
+        String actualMessage = violation.getMessage();
+        assertEquals(expectedMessage, actualMessage);
     }
 
     @Test
     public void givenLessThanZeroAge_whenCreatingUser_thenWrongAgeDomainExceptionIsThrown() {
-        Exception exception = assertThrows(DomainException.class, () -> {
-            new User("John Doe", -1, "john.doe@ucll.be", "john1234");
-        });
+        User user = new User("John Doe", -1, "john.doe@ucll.be", "john1234");
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        assertEquals(1, violations.size());
 
+        Iterator<ConstraintViolation<User>> violationIterator = violations.iterator();
+        ConstraintViolation<User> violation = violationIterator.next();
         String expectedMessage = User.INVALID_AGE_EXCEPTION;
-        String actualMessage = exception.getMessage();
-
-        assertTrue(actualMessage.contains(expectedMessage));
+        String actualMessage = violation.getMessage();
+        assertEquals(expectedMessage, actualMessage);
     }
 
     @Test
     public void givenMoreThan101Age_whenCreatingUser_thenWrongAgeDomainExceptionIsThrown() {
-        Exception exception = assertThrows(DomainException.class, () -> {
-            new User("John Doe", 102, "john.doe@ucll.be", "john1234");
-        });
+        User user = new User("John Doe", 102, "john.doe@ucll.be", "john1234");
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        assertEquals(1, violations.size());
 
+        Iterator<ConstraintViolation<User>> violationIterator = violations.iterator();
+        ConstraintViolation<User> violation = violationIterator.next();
         String expectedMessage = User.INVALID_AGE_EXCEPTION;
-        String actualMessage = exception.getMessage();
-
-        assertTrue(actualMessage.contains(expectedMessage));
+        String actualMessage = violation.getMessage();
+        assertEquals(expectedMessage, actualMessage);
     }
 
     @Test
     public void givenInvalidEmail_whenCreatingUser_thenWrongEmailDomainExceptionIsThrown() {
-        Exception exception = assertThrows(DomainException.class, () -> {
-            new User("John Doe", 56, "asda@", "john1234");
-        });
+        User user = new User("John Doe", 56, "asda@", "john1234");
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        assertEquals(1, violations.size());
 
+        Iterator<ConstraintViolation<User>> violationIterator = violations.iterator();
+        ConstraintViolation<User> violation = violationIterator.next();
         String expectedMessage = User.INVALID_EMAIL_EXCEPTION;
-        String actualMessage = exception.getMessage();
-
-        assertTrue(actualMessage.contains(expectedMessage));
+        String actualMessage = violation.getMessage();
+        assertEquals(expectedMessage, actualMessage);
     }
 
     @Test
@@ -156,6 +191,9 @@ public class UserTest {
         assertEquals(actualUser.getAge(), newUser.getAge());
         assertEquals(actualUser.getName(), newUser.getName());
         assertEquals(actualUser.getPassword(), newUser.getPassword());
+
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        assertEquals(0, violations.size());
     }
 
     public static User createDefaultUser() {

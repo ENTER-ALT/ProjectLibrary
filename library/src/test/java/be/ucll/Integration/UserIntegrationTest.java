@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import be.ucll.model.DomainException;
 import be.ucll.model.User;
@@ -453,6 +454,28 @@ public class UserIntegrationTest {
         .json("{\r\n" + //
         "  \""+DomainException.class.getSimpleName()+"\": \""+User.EMAIL_CANNOT_BE_CHANGED_EXCEPTION +"\"\r\n" + //
         "}");
+    }
+
+    @Test
+    public void givenWrongAgeAndPassword_whenPutUsers_thenClientErrorIsThrown() {
+        webTestClient
+        .put()
+        .uri("/users/john.doe@ucll.be")
+        .header("Content-Type", "application/json")
+        .bodyValue("  {\n" + //
+                        "    \"name\": \"John Does\",\n" + //
+                        "    \"age\": 105,\n" + //
+                        "    \"email\": \"john.doe@ucll.be\",\n" + //
+                        "    \"password\": \"john1\"\n" + //
+                        "  }")
+        .exchange()
+        .expectStatus()
+        .is4xxClientError()
+        .expectBody()
+        .json("{\n" + //
+                        "  \"password\": \"Password must be at least 8 characters long\",\n" + //
+                        "  \"age\": \"Age must be a positive Integer between 0 and 101\"\n" + //
+                        "}");
     }
 
     @Test
