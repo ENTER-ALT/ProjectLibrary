@@ -2,8 +2,8 @@ package be.ucll.model;
 
 import be.ucll.utilits.TimeTracker;
 
-public class Magazine {
-    
+public class Magazine extends Publication {
+
     private String title;
     private String editor;
     private String ISSN;
@@ -14,12 +14,12 @@ public class Magazine {
     public static final String INVALID_ISSN_EXCEPTION = "ISSN is required";
     public static final String NONPOSITIVE_YEAR_EXCEPTION = "Publication year must be a positive number";
     public static final String FUTURE_YEAR_EXCEPTION = "Publication year cannot be in the future";
-    
-    public Magazine(String title, String editor, String ISSN, Integer year) {
-        setTitle(title);
+
+    public Magazine(String title, String editor, String issn, int publicationYear, int initialAvailableCopies) {
+        super(title, publicationYear);
         setEditor(editor);
-        setISSN(ISSN);
-        setYear(year);
+        setISSN(issn);
+        setYear(publicationYear);
     }
 
     public String getTitle() {
@@ -57,7 +57,7 @@ public class Magazine {
     public void setISSN(String ISSN) {
         if (ISSN == null || ISSN.isBlank()) {
             throw new DomainException(INVALID_ISSN_EXCEPTION);
-        } 
+        }
         this.ISSN = ISSN;
     }
 
