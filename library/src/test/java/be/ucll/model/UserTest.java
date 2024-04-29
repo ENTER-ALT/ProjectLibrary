@@ -41,6 +41,7 @@ public class UserTest {
         assertEquals(56, user.getAge());
         assertEquals("john.doe@ucll.be", user.getEmail());
         assertEquals("john1234", user.getPassword());
+        assertEquals(null, user.getProfile());
     
         Set<ConstraintViolation<User>> violations = validator.validate(user);
         assertEquals(0, violations.size());
@@ -194,6 +195,36 @@ public class UserTest {
 
         Set<ConstraintViolation<User>> violations = validator.validate(user);
         assertEquals(0, violations.size());
+    }
+
+    @Test
+    public void givenValidValues_whenCreatingUserWithProfile_thenUserIsCreatedWithThoseValues() {
+        Profile profile = ProfileTest.createDefaultProfile();
+        User user = new User("John Doe", 56, "john.doe@ucll.be", "john1234", profile);
+
+        assertEquals("John Doe", user.getName());
+        assertEquals(56, user.getAge());
+        assertEquals("john.doe@ucll.be", user.getEmail());
+        assertEquals("john1234", user.getPassword());
+        assertEquals(profile, user.getProfile());
+    
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        assertEquals(0, violations.size());
+    }  
+
+    @Test
+    public void givenNotAnAdultUser_whenCreatingUserWithProfile_thenUserDomainExceptionIsThrown() {
+        Profile profile = ProfileTest.createDefaultProfile();
+        Integer lessThan18Age = 14;
+        
+        Exception exception = assertThrows(DomainException.class, () -> {
+            new User("John Doe", lessThan18Age, "john.doe@ucll.be", "john1234", profile);
+        });
+
+        String expectedMessage = User.USER_NOT_ADULT_FOR_PROFILE_EXCEPTION;
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.equals(expectedMessage));
     }
 
     public static User createDefaultUser() {
