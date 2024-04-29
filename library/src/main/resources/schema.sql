@@ -11,6 +11,6 @@ CREATE TABLE users (
     id LONG AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     age INT,
-    email VARCHAR(255) PRIMARY KEY,
+    email VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL
 );
