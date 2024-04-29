@@ -261,7 +261,7 @@ public class UserServiceTest {
         UserService service = createDefaultService(repository);
 
         User actual = service.addUser(user);
-        User userByEmail = repository.userByEmail(user.getEmail());
+        User userByEmail = repository.findByEmail(user.getEmail());
 
         assertEquals(user.getEmail(), actual.getEmail());
         assertEquals(user.getEmail(), userByEmail.getEmail());
@@ -282,7 +282,7 @@ public class UserServiceTest {
 
         assertEquals(expectedMessage, actualMessage);
 
-        List<User> actualUsers = repository.allUsers();
+        List<User> actualUsers = repository.findAll();
 
         assertEquals(0, actualUsers.size());
     }
@@ -302,7 +302,7 @@ public class UserServiceTest {
 
         assertEquals(expectedMessage, actualMessage);
 
-        List<User> actualUsers = repository.allUsers();
+        List<User> actualUsers = repository.findAll();
 
         assertEquals(users.size(), actualUsers.size());
     }
@@ -326,7 +326,7 @@ public class UserServiceTest {
 
         
         assertEquals(expectedMessage, actualMessage);
-        assertEquals(users.get(0), repository.allUsers().get(0));
+        assertEquals(users.get(0), repository.findAll().get(0));
     }
 
     @Test 
@@ -347,8 +347,8 @@ public class UserServiceTest {
         assertEquals(actualUser.getAge(), newUser.getAge());
         assertEquals(actualUser.getName(), newUser.getName());
         assertEquals(actualUser.getPassword(), newUser.getPassword());
-        assertEquals(actualUser, repository.userByEmail(email));
-        assertEquals(expectedNumberOfUsers, repository.allUsers().size());
+        assertEquals(actualUser, repository.findByEmail(email));
+        assertEquals(expectedNumberOfUsers, repository.findAll().size());
     }
 
     @Test 
@@ -407,7 +407,7 @@ public class UserServiceTest {
         assertTrue(initialUsersLoansQuantity > 0);
         assertEquals(expectedResult, actualResult);
         assertEquals(0, finalUsersLoansQuantity);
-        assertTrue(repository.userByEmail(emailWithInativeLoans) == null);
+        assertTrue(repository.findByEmail(emailWithInativeLoans) == null);
     }
 
     public static UserRepository createDefaultRepository(List<User> users) {

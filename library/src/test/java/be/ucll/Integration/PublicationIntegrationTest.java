@@ -12,7 +12,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import be.ucll.repository.DbInitializer;
 import be.ucll.repository.LoanRepository;
 import be.ucll.repository.PublicationRepository;
-import be.ucll.repository.UserRepositoryImpl;
+import be.ucll.repository.UserRepository;
 import be.ucll.service.PublicationService;
 import be.ucll.service.ServiceException;
 
@@ -23,7 +23,7 @@ public class PublicationIntegrationTest {
     @Autowired
     private WebTestClient webTestClient;
     @Autowired
-    private UserRepositoryImpl userRepository;
+    private UserRepository userRepository;
     @Autowired
     private DbInitializer dbInitializer;
     @Autowired

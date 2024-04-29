@@ -18,7 +18,7 @@ import be.ucll.model.User;
 import be.ucll.repository.DbInitializer;
 import be.ucll.repository.LoanRepository;
 import be.ucll.repository.PublicationRepository;
-import be.ucll.repository.UserRepositoryImpl;
+import be.ucll.repository.UserRepository;
 import be.ucll.service.LoanService;
 import be.ucll.service.ServiceException;
 import be.ucll.service.UserService;
@@ -31,7 +31,7 @@ public class UserIntegrationTest {
     @Autowired
     private WebTestClient webTestClient;
     @Autowired
-    private UserRepositoryImpl userRepository;
+    private UserRepository userRepository;
     @Autowired
     private DbInitializer dbInitializer;
     @Autowired
@@ -388,8 +388,8 @@ public class UserIntegrationTest {
                         "  \"password\": \"john1234ss\"\n" + //
                         "}");
         
-        assertTrue(userRepository.userByEmail("johnss.doe@ucll.be") != null);
-        assertEquals("johnss.doe@ucll.be", userRepository.userByEmail("johnss.doe@ucll.be").getEmail());
+        assertTrue(userRepository.findByEmail("johnss.doe@ucll.be") != null);
+        assertEquals("johnss.doe@ucll.be", userRepository.findByEmail("johnss.doe@ucll.be").getEmail());
     }
 
     @Test
@@ -415,7 +415,7 @@ public class UserIntegrationTest {
                         "  \"password\": \"john12342\"\n" + //
                         "}");
         
-        User actualUser = userRepository.userByEmail("john.doe@ucll.be");
+        User actualUser = userRepository.findByEmail("john.doe@ucll.be");
         assertTrue( actualUser != null);
         assertEquals("john.doe@ucll.be", actualUser.getEmail());
         assertEquals("John Does", actualUser.getName());
@@ -520,7 +520,7 @@ public class UserIntegrationTest {
     @Test
     public void givenEmailWithoutActiveLoans_whenDeleteUsers_thenUserDeleted() {
 
-        assertTrue(userRepository.userByEmail("john.doe@ucll.be") != null);
+        assertTrue(userRepository.findByEmail("john.doe@ucll.be") != null);
         assertTrue(loanRepository.findLoansByEmail("john.doe@ucll.be", false).size() > 0);
 
         webTestClient
@@ -531,7 +531,7 @@ public class UserIntegrationTest {
         .expectStatus()
         .is2xxSuccessful();
 
-        assertTrue(userRepository.userByEmail("john.doe@ucll.be") == null);
+        assertTrue(userRepository.findByEmail("john.doe@ucll.be") == null);
         assertTrue(loanRepository.findLoansByEmail("john.doe@ucll.be", false).size() == 0);
     }
 }
