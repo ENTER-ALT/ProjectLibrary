@@ -1,5 +1,10 @@
 package be.ucll.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -7,8 +12,14 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+@Entity
+@Table(name = "users")
 public class User {
     
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
         @NotBlank(message = INVALID_NAME_EXCEPTION)
     private String name;
 
@@ -30,6 +41,8 @@ public class User {
     public static final String INVALID_AGE_EXCEPTION = "Age must be a positive Integer between 0 and 101";
     public static final String INVALID_PASSWORD_EXCEPTION = "Password must be at least 8 characters long";
     
+    protected User() {}
+
     public User(String name, Integer age, String email, String password) {
         setName(name);
         setAge(age);
