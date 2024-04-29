@@ -15,6 +15,7 @@ import be.ucll.model.Loan;
 import be.ucll.model.User;
 import be.ucll.repository.LoanRepository;
 import be.ucll.repository.UserRepository;
+import be.ucll.unit.repository.UserRepositoryTestImpl;
 
 public class UserServiceTest {
 
@@ -260,11 +261,10 @@ public class UserServiceTest {
         UserService service = createDefaultService(repository);
 
         User actual = service.addUser(user);
-        List<User> usersByEmail = repository.usersByEmail(user.getEmail());
+        User userByEmail = repository.userByEmail(user.getEmail());
 
         assertEquals(user.getEmail(), actual.getEmail());
-        assertEquals(1, usersByEmail.size());
-        assertEquals(user.getEmail(), usersByEmail.get(0).getEmail());
+        assertEquals(user.getEmail(), userByEmail.getEmail());
     }
 
     @Test 
@@ -411,7 +411,7 @@ public class UserServiceTest {
     }
 
     public static UserRepository createDefaultRepository(List<User> users) {
-        return new UserRepository(users);
+        return new UserRepositoryTestImpl(users);
     }
 
     public static UserService createDefaultService(UserRepository repository) {

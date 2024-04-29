@@ -1,25 +1,31 @@
 package be.ucll.Integration;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import be.ucll.repository.DbInitializer;
 import be.ucll.repository.LoanRepository;
 import be.ucll.repository.PublicationRepository;
-import be.ucll.repository.UserRepository;
+import be.ucll.repository.UserRepositoryImpl;
 import be.ucll.service.PublicationService;
 import be.ucll.service.ServiceException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
+@Sql("classpath:schema.sql")
 public class PublicationIntegrationTest {
     @Autowired
     private WebTestClient webTestClient;
     @Autowired
-    private UserRepository userRepository;
+    private UserRepositoryImpl userRepository;
+    @Autowired
+    private DbInitializer dbInitializer;
     @Autowired
     private PublicationRepository publicationRepository;
     @Autowired
@@ -27,9 +33,13 @@ public class PublicationIntegrationTest {
 
     @AfterEach
     public void resetRepository() {
-        userRepository.resetRepository();
         publicationRepository.resetRepository();
         loanRepository.resetRepository(publicationRepository, userRepository);
+    }
+
+    @BeforeEach
+    public void setupDatabases() {
+        dbInitializer.initialize();
     }
 
     @Test
