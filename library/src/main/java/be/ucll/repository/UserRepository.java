@@ -2,27 +2,20 @@ package be.ucll.repository;
 
 import java.util.List;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
 import be.ucll.model.User;
 
-public interface UserRepository {
+@Repository
+public interface UserRepository extends JpaRepository<User, Long> {
 
-    void addUser(User user);
+    List<User> findByName(String name);
 
-    void updateUser(String email, User user);
+    User findByEmail(String email);
 
-    void deleteUser(String email);
+    List<User> findByAgeGreaterThanEqual(Integer age);
 
-    List<User> allUsers();
+    List<User> findByAgeBetween(Integer minAge, Integer maxAge);
 
-    List<User> allAdults();
-
-    List<User> allUsersWithinAgeRange(Integer minAge, Integer maxAge);
-
-    List<User> usersByName(String name);
-
-    User userByEmail(String email);
-
-    List<User> usersOlderThan(Integer age);
-
-    List<User> usersWithinAgeRange(Integer minAge, Integer maxAge);
 }
