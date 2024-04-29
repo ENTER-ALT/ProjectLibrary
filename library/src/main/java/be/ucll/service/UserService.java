@@ -74,8 +74,7 @@ public class UserService {
         isValidUser(newUser);
         checkUserExists(email);
 
-        User currentUser = userRepository.userByEmail(email);
-        currentUser.copyUser(newUser);
+        userRepository.updateUser(email, newUser);
         return userRepository.userByEmail(email);
     }
 
