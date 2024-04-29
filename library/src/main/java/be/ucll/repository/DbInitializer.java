@@ -27,7 +27,7 @@ public class DbInitializer {
             new User("Birgit Doe", 18, "birgit.doe@ucll.be", "birgit1234")
             ));
         users.forEach(user -> {
-            userRepository.addUser(user);
+            userRepository.save(user);
         });
     }
 }

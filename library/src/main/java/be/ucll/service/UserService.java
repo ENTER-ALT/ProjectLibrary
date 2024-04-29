@@ -34,11 +34,11 @@ public class UserService {
     }
 
     public List<User> getAllUsers() {
-        return userRepository.allUsers();
+        return userRepository.findAll();
     }
 
     public List<User> getAllAdultUsers() {
-        return userRepository.allAdults();
+        return userRepository.findByAgeGreaterThanEqual(18);
     }
 
     public List<User> getUsersWithinAgeRange(Integer min, Integer max) {
@@ -48,14 +48,14 @@ public class UserService {
         if (min < MIN_AGE_RESTRICTION || max > MAX_AGE_RESTRICTION) {
             throw new ServiceException(INVALID_AGE_RANGE_EXCEPTION);
         }
-        return userRepository.allUsersWithinAgeRange(min, max);
+        return userRepository.findByAgeBetween(min, max);
     }
 
     public List<User> getUsersByName(String name) {
         if (name == null) {
             return getAllUsers();
         }
-        List<User> result = userRepository.usersByName(name);
+        List<User> result = userRepository.findByName(name);
         if (result == null || result.size() == 0) {
             throw new ServiceException(NO_USERS_FOUND_EXCEPTION);
         }
@@ -66,23 +66,26 @@ public class UserService {
         isValidUser(newUser);
         userDoesNotExists(newUser.getEmail());
 
-        userRepository.addUser(newUser);
-        return userRepository.userByEmail(newUser.getEmail());
+        userRepository.save(newUser);
+        return userRepository.findByEmail(newUser.getEmail());
     }
 
     public User updateUser(String email, User newUser) {
         isValidUser(newUser);
         checkUserExists(email);
 
-        userRepository.updateUser(email, newUser);
-        return userRepository.userByEmail(email);
+        User user = userRepository.findByEmail(email);
+        user.copyUser(newUser);
+        userRepository.save(user);
+        return userRepository.findByEmail(email);
     }
 
     public String deleteUser(String email) {
         checkUserExists(email);
         handleUserLoans(email);
         
-        userRepository.deleteUser(email);
+        User user = userRepository.findByEmail(email);
+        userRepository.delete(user);
         return DELETION_SUCCESS_RESPONSE;
     }
 
@@ -116,7 +119,7 @@ public class UserService {
 
     // userExists and checkUserExists are for different exception messages
     public void userExists(String email) {
-        User user = userRepository.userByEmail(email);
+        User user = userRepository.findByEmail(email);
         Boolean userExists = user != null;
         if (!userExists) {
             throw new ServiceException(String.format(USER_WITH_EMAIL_DOESNT_EXIST_EXCEPTION, email));
@@ -124,7 +127,7 @@ public class UserService {
     }
 
     public void checkUserExists(String email) {
-        User user = userRepository.userByEmail(email);
+        User user = userRepository.findByEmail(email);
         Boolean userExists = user != null;
         if (!userExists) {
             throw new ServiceException(USER_DOESNT_EXIST_EXCEPTION);
@@ -132,7 +135,7 @@ public class UserService {
     }
 
     public void userDoesNotExists(String email) {
-        User user = userRepository.userByEmail(email);
+        User user = userRepository.findByEmail(email);
         Boolean userExists = user != null;
         if (userExists) {
             throw new ServiceException(USER_ALREADY_EXISTS_EXCEPTION);
