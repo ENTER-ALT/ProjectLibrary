@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import be.ucll.model.User;
 
+//Turned off
 public class UserRepositoryImpl implements UserRepository {
     public JdbcTemplate jdbcTemplate;
 
