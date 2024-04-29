@@ -13,4 +13,14 @@ CREATE TABLE users (
     age INT,
     email VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL
+    profile_id LONG,
+    FOREIGN KEY (profile_id) REFERENCES Profile(ProfileID)
+);
+
+DROP TABLE IF EXISTS profile;
+CREATE TABLE profile (
+    profile_id LONG AUTO_INCREMENT PRIMARY KEY,
+    bio VARCHAR(255) NOT NULL,
+    location VARCHAR(255) NOT NULL,
+    interests VARCHAR(255) NOT NULL
 );

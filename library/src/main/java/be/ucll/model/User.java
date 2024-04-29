@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
@@ -35,11 +37,16 @@ public class User {
         @Size(min = 8, message = INVALID_PASSWORD_EXCEPTION)
     private String password;
 
+    @OneToOne
+    @JoinColumn(name = "profile_id")
+    private Profile profile;
+
     public static final String INVALID_NAME_EXCEPTION = "Name is required";
     public static final String INVALID_EMAIL_EXCEPTION = "E-mail must be a valid email format";
     public static final String EMAIL_CANNOT_BE_CHANGED_EXCEPTION = "E-mail cannot be changed";
     public static final String INVALID_AGE_EXCEPTION = "Age must be a positive Integer between 0 and 101";
     public static final String INVALID_PASSWORD_EXCEPTION = "Password must be at least 8 characters long";
+    public static final String USER_NOT_ADULT_FOR_PROFILE_EXCEPTION = "User must be an adult to have a profile";
     
     protected User() {}
 
@@ -48,6 +55,14 @@ public class User {
         setAge(age);
         setEmail(email);
         setPassword(password);
+    }
+
+    public User(String name, Integer age, String email, String password, Profile profile) {
+        setName(name);
+        setAge(age);
+        setEmail(email);
+        setPassword(password);
+        setProfile(profile);
     }
 
     public String getName() {
@@ -85,11 +100,23 @@ public class User {
         this.password = password;
     }
 
+    public Profile getProfile() {
+        return profile;
+    }
+
+    public void setProfile(Profile other) {
+        if (this.age < 18) {
+            throw new DomainException(USER_NOT_ADULT_FOR_PROFILE_EXCEPTION);
+        }
+        this.profile = other;
+    }
+
     public User copyUser(User other) {
         this.setName(other.getName());
         this.setAge(other.getAge());
         this.setEmail(other.getEmail());
         this.setPassword(other.getPassword());
+        this.setProfile(other.getProfile());
 
         return this;
     }
