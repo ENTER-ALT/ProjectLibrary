@@ -1,7 +1,6 @@
 package be.ucll.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
