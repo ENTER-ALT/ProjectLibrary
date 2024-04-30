@@ -14,7 +14,9 @@ import org.junit.jupiter.api.Test;
 import be.ucll.model.Loan;
 import be.ucll.model.User;
 import be.ucll.repository.LoanRepository;
+import be.ucll.repository.ProfileRepository;
 import be.ucll.repository.UserRepository;
+import be.ucll.unit.repository.ProfileRepositoryTestImpl;
 import be.ucll.unit.repository.UserRepositoryTestImpl;
 
 public class UserServiceTest {
@@ -415,15 +417,23 @@ public class UserServiceTest {
     }
 
     public static UserService createDefaultService(UserRepository repository) {
-        return new UserService(repository, LoanServiceTest.createDefaultRepository());
+        return new UserService(repository, LoanServiceTest.createDefaultRepository(), createDeafultProfileRepository());
     }
 
     public static UserService createDefaultService(UserRepository repository, LoanRepository loanRepository) {
-        return new UserService(repository, loanRepository);
+        return new UserService(repository, loanRepository, createDeafultProfileRepository());
+    }
+
+    public static UserService createDefaultService(UserRepository repository, LoanRepository loanRepository, ProfileRepository profileRepository) {
+        return new UserService(repository, loanRepository, profileRepository);
     }
 
     public static UserService createDefaultService() {
-        return new UserService(createDefaultRepository(createDefaultUserList()), LoanServiceTest.createDefaultRepository());
+        return new UserService(createDefaultRepository(createDefaultUserList()), LoanServiceTest.createDefaultRepository(), createDeafultProfileRepository());
+    }
+
+    public static ProfileRepository createDeafultProfileRepository() {
+        return new ProfileRepositoryTestImpl();
     }
 
     public static List<User> createDefaultUserList() {

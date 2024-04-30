@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -12,91 +11,41 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.FluentQuery.FetchableFluentQuery;
 
-import be.ucll.model.User;
-import be.ucll.repository.UserRepository;
+import be.ucll.model.Profile;
+import be.ucll.repository.ProfileRepository;
 
-public class UserRepositoryTestImpl implements UserRepository {
-    public List<User> users;
+public class ProfileRepositoryTestImpl implements ProfileRepository {
+    public List<Profile> profiles;
 
-    public UserRepositoryTestImpl() {
+    public ProfileRepositoryTestImpl() {
         resetRepository();
     }
 
-    public UserRepositoryTestImpl(List<User> users) {
-        if (users == null) {
+    public ProfileRepositoryTestImpl(List<Profile> profiles) {
+        if (profiles == null) {
             return;
         }
-        this.users = new ArrayList<User>(users);
+        this.profiles = new ArrayList<Profile>(profiles);
     }
 
     @Override
-    public List<User> findAll() {
-        return users;
-    }
-
-    @Override
-    public <S extends User> S save(S entity) {
-        Boolean userExists = findByEmail(entity.getEmail()) != null;
-        if (userExists) {
-            return entity;
-        }
-        users.add(entity);
+    public <S extends Profile> S save(S entity) {
+        profiles.add(entity);
         return entity;
     }
 
     @Override
-    public void delete(User entity) {
-        users.remove(entity);
-    }
-
-    public List<User> findByName(String name) {
-        return filterUsers(user -> 
-            user.getName().contains(name));
-    }
-
-    public User findByEmail(String email) {
-        return findUser(user -> 
-            user.getEmail().equals(email));
-    }
-
-    public List<User> findByAgeGreaterThanEqual(Integer age) {
-        return filterUsers(user -> 
-        user.getAge() >= 18);
-    }
-
-    public List<User> findByAgeBetween(Integer minAge, Integer maxAge) {
-        return filterUsers(user -> 
-        user.getAge() >= minAge &&
-        user.getAge() <= maxAge);
-    }
-    
-    public List<User> filterUsers(Predicate<? super User> filterFunc) {
-        return users != null 
-        ? users
-        .stream()
-        .filter(filterFunc)
-        .toList() 
-        : null;
-    }
-
-    public User findUser(Predicate<? super User> filterFunc) {
-        return users != null 
-        ? users
-        .stream()
-        .filter(filterFunc)
-        .findFirst()
-        .orElse(null) 
-        : null;
+    public void delete(Profile entity) {
+        profiles.remove(entity);
     }
 
     public void resetRepository() {
-        users = new ArrayList<>(List.of(
-            new User("John Doe", 25, "john.doe@ucll.be", "john1234"),
-            new User("Jane Toe", 30, "jane.toe@ucll.be", "jane1234"),
-            new User("Jack Doe", 5, "jack.doe@ucll.be", "jack1234"),
-            new User("Sarah Doe", 4, "sarah.doe@ucll.be", "sarah1234"),
-            new User("Birgit Doe", 18, "birgit.doe@ucll.be", "birgit1234")
-            ));
+        profiles = new ArrayList<Profile>();
+        profiles.add(new Profile("Bio 1", "Location 1", "Interests 1"));
+        profiles.add(new Profile("Bio 2", "Location 2", "Interests 2"));
+        profiles.add(new Profile("Bio 3", "Location 3", "Interests 3"));
+        profiles.add(new Profile("Bio 4", "Location 4", "Interests 4"));
+        profiles.add(new Profile("Bio 5", "Location 5", "Interests 5"));
     }
 
     @Override
@@ -106,19 +55,19 @@ public class UserRepositoryTestImpl implements UserRepository {
     }
 
     @Override
-    public <S extends User> S saveAndFlush(S entity) {
+    public <S extends Profile> S saveAndFlush(S entity) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'saveAndFlush'");
     }
 
     @Override
-    public <S extends User> List<S> saveAllAndFlush(Iterable<S> entities) {
+    public <S extends Profile> List<S> saveAllAndFlush(Iterable<S> entities) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'saveAllAndFlush'");
     }
 
     @Override
-    public void deleteAllInBatch(Iterable<User> entities) {
+    public void deleteAllInBatch(Iterable<Profile> entities) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'deleteAllInBatch'");
     }
@@ -136,49 +85,55 @@ public class UserRepositoryTestImpl implements UserRepository {
     }
 
     @Override
-    public User getOne(Integer id) {
+    public Profile getOne(Integer id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getOne'");
     }
 
     @Override
-    public User getById(Integer id) {
+    public Profile getById(Integer id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getById'");
     }
 
     @Override
-    public User getReferenceById(Integer id) {
+    public Profile getReferenceById(Integer id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getReferenceById'");
     }
 
     @Override
-    public <S extends User> List<S> findAll(Example<S> example) {
+    public <S extends Profile> List<S> findAll(Example<S> example) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findAll'");
     }
 
     @Override
-    public <S extends User> List<S> findAll(Example<S> example, Sort sort) {
+    public <S extends Profile> List<S> findAll(Example<S> example, Sort sort) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findAll'");
     }
 
     @Override
-    public <S extends User> List<S> saveAll(Iterable<S> entities) {
+    public <S extends Profile> List<S> saveAll(Iterable<S> entities) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'saveAll'");
     }
 
     @Override
-    public List<User> findAllById(Iterable<Integer> ids) {
+    public List<Profile> findAll() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
+    }
+
+    @Override
+    public List<Profile> findAllById(Iterable<Integer> ids) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findAllById'");
     }
 
     @Override
-    public Optional<User> findById(Integer id) {
+    public Optional<Profile> findById(Integer id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findById'");
     }
@@ -208,7 +163,7 @@ public class UserRepositoryTestImpl implements UserRepository {
     }
 
     @Override
-    public void deleteAll(Iterable<? extends User> entities) {
+    public void deleteAll(Iterable<? extends Profile> entities) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'deleteAll'");
     }
@@ -220,43 +175,43 @@ public class UserRepositoryTestImpl implements UserRepository {
     }
 
     @Override
-    public List<User> findAll(Sort sort) {
+    public List<Profile> findAll(Sort sort) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findAll'");
     }
 
     @Override
-    public Page<User> findAll(Pageable pageable) {
+    public Page<Profile> findAll(Pageable pageable) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findAll'");
     }
 
     @Override
-    public <S extends User> Optional<S> findOne(Example<S> example) {
+    public <S extends Profile> Optional<S> findOne(Example<S> example) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findOne'");
     }
 
     @Override
-    public <S extends User> Page<S> findAll(Example<S> example, Pageable pageable) {
+    public <S extends Profile> Page<S> findAll(Example<S> example, Pageable pageable) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findAll'");
     }
 
     @Override
-    public <S extends User> long count(Example<S> example) {
+    public <S extends Profile> long count(Example<S> example) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'count'");
     }
 
     @Override
-    public <S extends User> boolean exists(Example<S> example) {
+    public <S extends Profile> boolean exists(Example<S> example) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'exists'");
     }
 
     @Override
-    public <S extends User, R> R findBy(Example<S> example, Function<FetchableFluentQuery<S>, R> queryFunction) {
+    public <S extends Profile, R> R findBy(Example<S> example, Function<FetchableFluentQuery<S>, R> queryFunction) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findBy'");
     }

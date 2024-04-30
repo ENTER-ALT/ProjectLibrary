@@ -1,26 +1,19 @@
--- DROP TABLE IF EXISTS USERS;
--- CREATE TABLE USERS (
---     EMAIL VARCHAR(255) PRIMARY KEY,
---     NAME VARCHAR(255) NOT NULL,
---     AGE INT,
---     PASSWORD VARCHAR(255) NOT NULL
--- );
-
 DROP TABLE IF EXISTS users;
-CREATE TABLE users (
-    id LONG AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    age INT,
-    email VARCHAR(255) NOT NULL,
-    password VARCHAR(255) NOT NULL
-    profile_id LONG,
-    FOREIGN KEY (profile_id) REFERENCES Profile(ProfileID)
-);
+DROP TABLE IF EXISTS profiles;
 
-DROP TABLE IF EXISTS profile;
-CREATE TABLE profile (
-    profile_id LONG AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE profiles (
+    profile_id INT AUTO_INCREMENT PRIMARY KEY,
     bio VARCHAR(255) NOT NULL,
     location VARCHAR(255) NOT NULL,
     interests VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    age INT NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    profile_id INT,
+    FOREIGN KEY (profile_id) REFERENCES profiles(profile_id)
 );

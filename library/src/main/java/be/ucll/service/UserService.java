@@ -5,8 +5,10 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import be.ucll.model.Loan;
+import be.ucll.model.Profile;
 import be.ucll.model.User;
 import be.ucll.repository.LoanRepository;
+import be.ucll.repository.ProfileRepository;
 import be.ucll.repository.UserRepository;
 
 @Service
@@ -25,12 +27,15 @@ public class UserService {
 
     private UserRepository userRepository;
     private LoanRepository loanRepository;
+    private ProfileRepository profileRepository;
 
     public UserService(
         UserRepository userRepository,
-        LoanRepository loanRepository) {
+        LoanRepository loanRepository,
+        ProfileRepository profileRepository) {
         this.userRepository = userRepository;
         this.loanRepository = loanRepository;
+        this.profileRepository = profileRepository;
     }
 
     public List<User> getAllUsers() {
@@ -66,6 +71,7 @@ public class UserService {
         isValidUser(newUser);
         userDoesNotExists(newUser.getEmail());
 
+        createUserProfileIfNotNull(newUser.getProfile());
         userRepository.save(newUser);
         return userRepository.findByEmail(newUser.getEmail());
     }
@@ -140,5 +146,12 @@ public class UserService {
         if (userExists) {
             throw new ServiceException(USER_ALREADY_EXISTS_EXCEPTION);
         }
+    }
+
+    public void createUserProfileIfNotNull(Profile profile) {
+        if (profile == null) {
+            return;
+        }
+        profileRepository.save(profile);
     }
 }
