@@ -46,7 +46,7 @@ public class User {
     public static final String EMAIL_CANNOT_BE_CHANGED_EXCEPTION = "E-mail cannot be changed";
     public static final String INVALID_AGE_EXCEPTION = "Age must be a positive Integer between 0 and 101";
     public static final String INVALID_PASSWORD_EXCEPTION = "Password must be at least 8 characters long";
-    public static final String USER_NOT_ADULT_FOR_PROFILE_EXCEPTION = "User must be an adult to have a profile";
+    public static final String USER_NOT_ADULT_FOR_PROFILE_EXCEPTION = "User must be at least 18 years old to have a profile.";
     
     protected User() {}
 
