@@ -534,4 +534,70 @@ public class UserIntegrationTest {
         assertTrue(userRepository.findByEmail("john.doe@ucll.be") == null);
         assertTrue(loanRepository.findLoansByEmail("john.doe@ucll.be", false).size() == 0);
     }
+
+    @Test
+    public void givenUsers_whenGettingTheOldestUser_thenTheOldestUserIsGiven() {
+        webTestClient
+        .get()
+        .uri("/users/oldest")
+        .header("Content-Type", "application/json")
+        .exchange()
+        .expectStatus()
+        .is2xxSuccessful()
+        .expectBody()
+        .json("{\n" + //
+                        "  \"name\": \"Jane Toe\",\n" + //
+                        "  \"age\": 30,\n" + //
+                        "  \"email\": \"jane.toe@ucll.be\",\n" + //
+                        "  \"password\": \"jane1234\",\n" + //
+                        "  \"profile\": {\n" + //
+                        "    \"profileId\": 2,\n" + //
+                        "    \"bio\": \"Bio 2\",\n" + //
+                        "    \"location\": \"Location 2\",\n" + //
+                        "    \"interests\": \"Interests 2\"\n" + //
+                        "  }\n" + //
+                        "}");
+    }
+
+    @Test
+    public void givenManyOldestUsers_whenGettingTheOldestUser_thenTheFirstOldestUserIsGiven() {
+        User user = new User ("User", 30, "asdasd@gamil.com", "asdasdasdasdasdasd");
+        userRepository.save(user);
+        webTestClient
+        .get()
+        .uri("/users/oldest")
+        .header("Content-Type", "application/json")
+        .exchange()
+        .expectStatus()
+        .is2xxSuccessful()
+        .expectBody()
+        .json("{\n" + //
+                        "  \"name\": \"Jane Toe\",\n" + //
+                        "  \"age\": 30,\n" + //
+                        "  \"email\": \"jane.toe@ucll.be\",\n" + //
+                        "  \"password\": \"jane1234\",\n" + //
+                        "  \"profile\": {\n" + //
+                        "    \"profileId\": 2,\n" + //
+                        "    \"bio\": \"Bio 2\",\n" + //
+                        "    \"location\": \"Location 2\",\n" + //
+                        "    \"interests\": \"Interests 2\"\n" + //
+                        "  }\n" + //
+                        "}");
+    }
+
+    @Test
+    public void givenNoUsers_whenGettingTheOldestUser_thenClientErrorIsThrown() {
+        userRepository.deleteAll();
+        webTestClient
+        .get()
+        .uri("/users/oldest")
+        .header("Content-Type", "application/json")
+        .exchange()
+        .expectStatus()
+        .is4xxClientError()
+        .expectBody()
+        .json("{\r\n" + //
+        "  \""+ServiceException.class.getSimpleName()+"\": \""+UserService.NO_OLDEST_USER_FOUND_EXCEPTION +"\"\r\n" + //
+        "}");
+    }
 }

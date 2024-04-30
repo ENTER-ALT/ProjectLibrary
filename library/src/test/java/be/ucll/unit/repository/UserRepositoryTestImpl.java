@@ -1,6 +1,7 @@
 package be.ucll.unit.repository;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -68,6 +69,11 @@ public class UserRepositoryTestImpl implements UserRepository {
         return filterUsers(user -> 
         user.getAge() >= minAge &&
         user.getAge() <= maxAge);
+    }
+
+    @Override
+    public User findOldestUser() {
+        return users.stream().max(Comparator.comparing(user -> user.getAge())).orElse(null);
     }
     
     public List<User> filterUsers(Predicate<? super User> filterFunc) {

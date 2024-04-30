@@ -1,6 +1,7 @@
 package be.ucll.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,7 @@ public class UserService {
     public static final String USER_WITH_EMAIL_DOESNT_EXIST_EXCEPTION = "User with email %s does not exist";
     public static final String USER_DOESNT_EXIST_EXCEPTION = "User does not exist";
     public static final String USER_ALREADY_EXISTS_EXCEPTION = "User already exists";
+    public static final String NO_OLDEST_USER_FOUND_EXCEPTION = "No oldest user found";
     public static final Integer MIN_AGE_RESTRICTION = 0; //Min age cannot be lower than this number
     public static final Integer MAX_AGE_RESTRICTION = 150; //Max age cannot be higher than this number
     public static final String DELETION_SUCCESS_RESPONSE = "User successfully deleted";
@@ -65,6 +67,14 @@ public class UserService {
             throw new ServiceException(NO_USERS_FOUND_EXCEPTION);
         }
         return result;
+    }
+
+    public User getOldestUser() {
+        User oldestUser = userRepository.findOldestUser();
+        if (oldestUser == null) {
+            throw new ServiceException(NO_OLDEST_USER_FOUND_EXCEPTION);
+        }
+        return oldestUser;
     }
 
     public User addUser(User newUser) {

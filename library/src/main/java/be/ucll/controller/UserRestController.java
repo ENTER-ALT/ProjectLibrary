@@ -67,6 +67,12 @@ public class UserRestController {
         return loanService.getLoansByUser(email, onlyActive);
     }
 
+    @GetMapping("/oldest")
+    public User getTheOldestUser() 
+    {
+        return userService.getOldestUser();
+    }
+
     /// Post
     @PostMapping()
     public User addUser(

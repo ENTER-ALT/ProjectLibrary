@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -410,6 +411,58 @@ public class UserServiceTest {
         assertEquals(expectedResult, actualResult);
         assertEquals(0, finalUsersLoansQuantity);
         assertTrue(repository.findByEmail(emailWithInativeLoans) == null);
+    }
+
+    @Test 
+    public void givenUsers_whenGettingTheOldestUser_thanTheOldestUserReturned() {
+        List<User> users = createDefaultUserList();
+        List<Loan> defaultLoans = LoanServiceTest.createDefaultLoanList();
+        LoanRepository loanRepository = LoanServiceTest.createDefaultRepository(defaultLoans);
+        UserRepository repository = createDefaultRepository(users);
+        UserService service = createDefaultService(repository, loanRepository);
+
+        User excpectedOldestUser = users.stream().max(Comparator.comparing(user -> user.getAge())).orElse(null);
+        User actualOldestUser = service.getOldestUser();
+
+        assertEquals(actualOldestUser, excpectedOldestUser);
+    }
+
+    @Test 
+    public void givenManyOldestUsers_whenGettingTheOldestUser_thanTheFirstOldestUserReturned() {
+        List<User> users = List.of(
+            new User("John Doe", 30, "john.doe@ucll.be", "john1234"),
+            new User("Jane Toe", 30, "jane.toe@ucll.be", "jane1234"),
+            new User("Jack Doe", 30, "jack.doe@ucll.be", "jack1234"),
+            new User("Sarah Doe", 4, "sarah.doe@ucll.be", "sarah1234"),
+            new User("Birgit Doe", 18, "birgit.doe@ucll.be", "birgit1234")
+            );
+        List<Loan> defaultLoans = LoanServiceTest.createDefaultLoanList();
+        LoanRepository loanRepository = LoanServiceTest.createDefaultRepository(defaultLoans);
+        UserRepository repository = createDefaultRepository(users);
+        UserService service = createDefaultService(repository, loanRepository);
+
+        User excpectedOldestUser = users.stream().max(Comparator.comparing(user -> user.getAge())).orElse(null);
+        User actualOldestUser = service.getOldestUser();
+
+        assertEquals(actualOldestUser, excpectedOldestUser);
+    }
+
+    @Test 
+    public void givenZeroUsers_whenGettingTheOldestUser_thanServiceExceptionThrown() {
+        List<User> users = new ArrayList<>();
+        List<Loan> defaultLoans = LoanServiceTest.createDefaultLoanList();
+        LoanRepository loanRepository = LoanServiceTest.createDefaultRepository(defaultLoans);
+        UserRepository repository = createDefaultRepository(users);
+        UserService service = createDefaultService(repository, loanRepository);
+
+        ServiceException exception = assertThrows(ServiceException.class, () -> {
+            service.getOldestUser();
+        });
+
+        String expectedMessage = UserService.NO_OLDEST_USER_FOUND_EXCEPTION;
+        String actualMessage = exception.getMessage();
+        
+        assertEquals(expectedMessage, actualMessage);
     }
 
     public static UserRepository createDefaultRepository(List<User> users) {
