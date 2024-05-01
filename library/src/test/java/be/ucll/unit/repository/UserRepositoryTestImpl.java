@@ -1,6 +1,7 @@
 package be.ucll.unit.repository;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -81,6 +82,20 @@ public class UserRepositoryTestImpl implements UserRepository {
     public List<User> findUsersByInterest(String interest) {
         return filterUsers(user -> 
         user.getProfile() != null && user.getProfile().getInterests().equalsIgnoreCase(interest));
+    }
+
+    @Override
+    public void deleteAll() {
+        users.clear();
+    }
+
+    @Override
+    public List<User> findByInterestAndGreaterAgeOrderByLocation(String interest, Integer givenAge) {
+        List<User> result = filterUsers(user -> 
+        user.getProfile() != null && user.getProfile().getInterests().equalsIgnoreCase(interest) &&
+        user.getAge() > givenAge);
+        result = result.stream().sorted(Comparator.comparing(user -> user.getProfile().getLocation())).toList();
+        return result;
     }
     
     public List<User> filterUsers(Predicate<? super User> filterFunc) {
@@ -227,12 +242,6 @@ public class UserRepositoryTestImpl implements UserRepository {
     }
 
     @Override
-    public void deleteAll() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteAll'");
-    }
-
-    @Override
     public List<User> findAll(Sort sort) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findAll'");
@@ -273,4 +282,6 @@ public class UserRepositoryTestImpl implements UserRepository {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findBy'");
     }
+
+
 }

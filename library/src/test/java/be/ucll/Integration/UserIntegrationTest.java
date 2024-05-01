@@ -602,6 +602,22 @@ public class UserIntegrationTest {
     }
 
     @Test
+    public void givenNoUsers_whenGettingUsersWithInterests_thenClientErrorIsThrown() {
+        userRepository.deleteAll();
+        webTestClient
+        .get()
+        .uri("/users/interest/Interest 2")
+        .header("Content-Type", "application/json")
+        .exchange()
+        .expectStatus()
+        .is4xxClientError()
+        .expectBody()
+        .json("{\r\n" + //
+        "  \""+ServiceException.class.getSimpleName()+"\": \""+String.format(UserService.NO_USERS_FOUND_WITH_INTEREST_IN_EXCEPTION,"Interest 2") +"\"\r\n" + //
+        "}");
+    }
+
+    @Test
     public void givenEmptyInterests_whenGettingUsersWithInterests_thenClientErrorIsThrown() {
         webTestClient
         .get()
@@ -700,6 +716,98 @@ public class UserIntegrationTest {
                         "      \"interests\": \"Interests 2\"\n" + //
                         "    }\n" + //
                         "  }\n" + //
+                        "]");
+    }
+
+    @Test
+    public void givenNoUsers_whenGettingUsersWithInterestsAndGreaterAge_thenClientErrorIsThrown() {
+        userRepository.deleteAll();
+        String interest = "Interests 2";
+        Integer age = 1;
+        webTestClient
+        .get()
+        .uri("/users/interest/"+interest+"/"+age)
+        .header("Content-Type", "application/json")
+        .exchange()
+        .expectStatus()
+        .is4xxClientError()
+        .expectBody()
+        .json("{\r\n" + //
+        "  \""+ServiceException.class.getSimpleName()+"\": \""+String.format(UserService.NO_USERS_FOUND_WITH_INTEREST_OLDER_THAN_EXCEPTION,interest, age) +"\"\r\n" + //
+        "}");
+    }
+
+    @Test
+    public void givenEmptyInterests_whenGettingUsersWithInterestsAndGreaterAge_thenClientErrorIsThrown() {
+        String interest = " ";
+        Integer age = 1;
+        webTestClient
+        .get()
+        .uri("/users/interest/"+interest+"/"+age)
+        .header("Content-Type", "application/json")
+        .exchange()
+        .expectStatus()
+        .is4xxClientError()
+        .expectBody()
+        .json("{\r\n" + //
+        "  \""+ServiceException.class.getSimpleName()+"\": \""+UserService.INTEREST_CANNOT_BE_EMPTY_EXCEPTION +"\"\r\n" + //
+        "}");
+    }
+
+    @Test
+    public void givenInvalidAge_whenGettingUsersWithInterestsAndGreaterAge_thenClientErrorIsThrown() {
+        String interest = "Interest 2";
+        Integer age = 151;
+        webTestClient
+        .get()
+        .uri("/users/interest/"+interest+"/"+age)
+        .header("Content-Type", "application/json")
+        .exchange()
+        .expectStatus()
+        .is4xxClientError()
+        .expectBody()
+        .json("{\r\n" + //
+        "  \""+ServiceException.class.getSimpleName()+"\": \""+UserService.INVALID_AGE_RANGE_EXCEPTION +"\"\r\n" + //
+        "}");
+    }
+
+    @Test
+    public void givenValidInfo_whenGettingUsersWithInterestsAndGreaterAge_thenClientErrorIsThrown() {
+        String interest = "Interests 2";
+        Integer age = 3;
+        webTestClient
+        .get()
+        .uri("/users/interest/"+interest+"/"+age)
+        .header("Content-Type", "application/json")
+        .exchange()
+        .expectStatus()
+        .is2xxSuccessful()
+        .expectBody()
+        .json("[\r\n" + //
+                        "  {\r\n" + //
+                        "    \"name\": \"Jane Toe\",\r\n" + //
+                        "    \"age\": 30,\r\n" + //
+                        "    \"email\": \"jane.toe@ucll.be\",\r\n" + //
+                        "    \"password\": \"jane1234\",\r\n" + //
+                        "    \"profile\": {\r\n" + //
+                        "      \"profileId\": 2,\r\n" + //
+                        "      \"bio\": \"Bio 2\",\r\n" + //
+                        "      \"location\": \"Location 2\",\r\n" + //
+                        "      \"interests\": \"Interests 2\"\r\n" + //
+                        "    }\r\n" + //
+                        "  },\r\n" + //
+                        "  {\r\n" + //
+                        "    \"name\": \"Birgit Doe\",\r\n" + //
+                        "    \"age\": 18,\r\n" + //
+                        "    \"email\": \"birgit.doe@ucll.be\",\r\n" + //
+                        "    \"password\": \"birgit1234\",\r\n" + //
+                        "    \"profile\": {\r\n" + //
+                        "      \"profileId\": 5,\r\n" + //
+                        "      \"bio\": \"Bio 5\",\r\n" + //
+                        "      \"location\": \"Location 5\",\r\n" + //
+                        "      \"interests\": \"Interests 2\"\r\n" + //
+                        "    }\r\n" + //
+                        "  }\r\n" + //
                         "]");
     }
 }

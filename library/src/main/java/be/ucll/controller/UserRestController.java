@@ -80,6 +80,14 @@ public class UserRestController {
         return userService.getUsersWithInterest(interest);
     }
 
+    @GetMapping("/interest/{interest}/{age}")
+    public List<User> getUsersWithInterest(
+        @PathVariable(value = "interest") String interest,
+        @PathVariable(value = "age") Integer age) 
+    {
+        return userService.getUsersWithInterestAndGreaterAgeOrderByLocation(interest, age);
+    }
+
     /// Post
     @PostMapping()
     public User addUser(

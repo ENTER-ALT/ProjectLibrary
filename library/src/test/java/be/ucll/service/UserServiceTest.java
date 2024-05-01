@@ -548,6 +548,157 @@ public class UserServiceTest {
         });
     }
 
+    @Test
+    public void givenNoUsers_whenGettingUsersWithInterests_thenClientErrorIsThrown() {
+        List<User> users = new ArrayList<>();
+        List<Loan> defaultLoans = LoanServiceTest.createDefaultLoanList();
+        LoanRepository loanRepository = LoanServiceTest.createDefaultRepository(defaultLoans);
+        UserRepository repository = createDefaultRepository(users);
+        UserService service = createDefaultService(repository, loanRepository);
+        String interest = "Interest";
+
+        ServiceException exception = assertThrows(ServiceException.class, () -> {
+            service.getUsersWithInterest(interest);
+        });
+
+        String expectedMessage = String.format(UserService.NO_USERS_FOUND_WITH_INTEREST_IN_EXCEPTION, interest);
+        String actualMessage = exception.getMessage();
+        
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    public void givenNoUsers_whenGettingUsersWithInterestsAndGreaterAge_thenClientErrorIsThrown() {
+        List<User> users = new ArrayList<>();
+        List<Loan> defaultLoans = LoanServiceTest.createDefaultLoanList();
+        LoanRepository loanRepository = LoanServiceTest.createDefaultRepository(defaultLoans);
+        UserRepository repository = createDefaultRepository(users);
+        UserService service = createDefaultService(repository, loanRepository);
+        String interest = "Interest";
+        Integer age = 1;
+
+        ServiceException exception = assertThrows(ServiceException.class, () -> {
+            service.getUsersWithInterestAndGreaterAgeOrderByLocation(interest, age);
+        });
+
+        String expectedMessage = String.format(UserService.NO_USERS_FOUND_WITH_INTEREST_OLDER_THAN_EXCEPTION, interest, age);
+        String actualMessage = exception.getMessage();
+        
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    public void givenEmptyInterests_whenGettingUsersWithInterestsAndGreaterAge_thenClientErrorIsThrown() {
+        String interest = " ";
+        Integer age = 1;
+
+        List<User> users = createDefaultUserListWithProfiles();
+        List<Loan> defaultLoans = LoanServiceTest.createDefaultLoanList();
+        LoanRepository loanRepository = LoanServiceTest.createDefaultRepository(defaultLoans);
+        UserRepository repository = createDefaultRepository(users);
+        UserService service = createDefaultService(repository, loanRepository);
+
+        ServiceException exception = assertThrows(ServiceException.class, () -> {
+            service.getUsersWithInterestAndGreaterAgeOrderByLocation(interest, age);
+        });
+
+        String expectedMessage = UserService.INTEREST_CANNOT_BE_EMPTY_EXCEPTION;
+        String actualMessage = exception.getMessage();
+        
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    public void givenInvalidAge_whenGettingUsersWithInterestsAndGreaterAge_thenClientErrorIsThrown() {
+        String interest = "Interest 2";
+        Integer age = 151;
+
+        List<User> users = createDefaultUserListWithProfiles();
+        List<Loan> defaultLoans = LoanServiceTest.createDefaultLoanList();
+        LoanRepository loanRepository = LoanServiceTest.createDefaultRepository(defaultLoans);
+        UserRepository repository = createDefaultRepository(users);
+        UserService service = createDefaultService(repository, loanRepository);
+
+        ServiceException exception = assertThrows(ServiceException.class, () -> {
+            service.getUsersWithInterestAndGreaterAgeOrderByLocation(interest, age);
+        });
+
+        String expectedMessage = UserService.INVALID_AGE_RANGE_EXCEPTION;
+        String actualMessage = exception.getMessage();
+        
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    public void givenValidInfo_whenGettingUsersWithInterestsAndGreaterAge_thenClientErrorIsThrown() {
+        List<User> users = createDefaultUserListWithProfiles();
+        List<Loan> defaultLoans = LoanServiceTest.createDefaultLoanList();
+        LoanRepository loanRepository = LoanServiceTest.createDefaultRepository(defaultLoans);
+        UserRepository repository = createDefaultRepository(users);
+        UserService service = createDefaultService(repository, loanRepository);
+
+        String interest = "Interests 2";
+        Integer age = 0;
+
+        List<User> actualUsers = service.getUsersWithInterestAndGreaterAgeOrderByLocation(interest, age);
+        List<String> locations = new ArrayList<>();
+        assertEquals(actualUsers.size(), 2);
+        actualUsers.forEach(user -> {
+            assertNotEquals(user.getProfile(), null);
+            assertTrue(user.getProfile().getInterests().equalsIgnoreCase(interest));
+            assertTrue(user.getAge() > age);
+            locations.add(user.getProfile().getLocation());
+        });
+
+        List<String> sortedLocations = new ArrayList<>(locations);
+        sortedLocations.sort(Comparator.comparing(location -> location));
+        assertEquals(locations, sortedLocations);
+    }
+
+    @Test 
+    public void givenInterestsThatUsersDoNotHave_whenGettingUsersWithInterestsAndGreaterAge_thenServiceExceptionIsThrown() {
+        List<User> users = createDefaultUserListWithProfiles();
+        List<Loan> defaultLoans = LoanServiceTest.createDefaultLoanList();
+        LoanRepository loanRepository = LoanServiceTest.createDefaultRepository(defaultLoans);
+        UserRepository repository = createDefaultRepository(users);
+        UserService service = createDefaultService(repository, loanRepository);
+
+        String interest = "Interest";
+        Integer age = 1;
+
+        ServiceException exception = assertThrows(ServiceException.class, () -> {
+            service.getUsersWithInterestAndGreaterAgeOrderByLocation(interest, age);
+        });
+
+        String expectedMessage = String.format(UserService.NO_USERS_FOUND_WITH_INTEREST_OLDER_THAN_EXCEPTION, interest, age);
+        String actualMessage = exception.getMessage();
+        
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test 
+    public void givenTheAgeGreaterThanUsersHave_whenGettingUsersWithInterestsAndGreaterAge_thenServiceExceptionIsThrown() {
+        List<User> users = createDefaultUserListWithProfiles();
+        List<Loan> defaultLoans = LoanServiceTest.createDefaultLoanList();
+        LoanRepository loanRepository = LoanServiceTest.createDefaultRepository(defaultLoans);
+        UserRepository repository = createDefaultRepository(users);
+        UserService service = createDefaultService(repository, loanRepository);
+
+        String interest = "Interests 2";
+        Integer age = 149;
+
+        ServiceException exception = assertThrows(ServiceException.class, () -> {
+            service.getUsersWithInterestAndGreaterAgeOrderByLocation(interest, age);
+        });
+
+        String expectedMessage = String.format(UserService.NO_USERS_FOUND_WITH_INTEREST_OLDER_THAN_EXCEPTION, interest, age);
+        String actualMessage = exception.getMessage();
+        
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+
+
     public static UserRepository createDefaultRepository(List<User> users) {
         return new UserRepositoryTestImpl(users);
     }

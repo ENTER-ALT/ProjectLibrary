@@ -24,4 +24,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     @Query("SELECT u FROM User u JOIN u.profile p WHERE LOWER(p.interests) = LOWER(:interest)")
     List<User> findUsersByInterest(String interest);
+
+    @Query("SELECT u FROM User u JOIN u.profile p WHERE LOWER(p.interests) = LOWER(:interest)" + //
+    "AND u.age > :givenAge ORDER BY p.location")
+    List<User> findByInterestAndGreaterAgeOrderByLocation(String interest, Integer givenAge);
 }

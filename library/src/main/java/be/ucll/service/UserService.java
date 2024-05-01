@@ -24,6 +24,7 @@ public class UserService {
     public static final String NO_OLDEST_USER_FOUND_EXCEPTION = "No oldest user found";
     public static final String INTEREST_CANNOT_BE_EMPTY_EXCEPTION = "Interest cannot be empty";
     public static final String NO_USERS_FOUND_WITH_INTEREST_IN_EXCEPTION = "No users found with interest in %s";
+    public static final String NO_USERS_FOUND_WITH_INTEREST_OLDER_THAN_EXCEPTION = "No users found with interest in %s and older than %d";
     public static final Integer MIN_AGE_RESTRICTION = 0; //Min age cannot be lower than this number
     public static final Integer MAX_AGE_RESTRICTION = 150; //Max age cannot be higher than this number
     public static final String DELETION_SUCCESS_RESPONSE = "User successfully deleted";
@@ -87,6 +88,21 @@ public class UserService {
             throw new ServiceException(String.format(NO_USERS_FOUND_WITH_INTEREST_IN_EXCEPTION, interest));
         }
         return usersWithInterest;
+    }
+
+    public List<User> getUsersWithInterestAndGreaterAgeOrderByLocation(String interest, Integer age) {
+        if (interest == null || interest.isBlank()) {
+            throw new ServiceException(INTEREST_CANNOT_BE_EMPTY_EXCEPTION);
+        }
+        if (age < MIN_AGE_RESTRICTION || age > MAX_AGE_RESTRICTION) {
+            throw new ServiceException(INVALID_AGE_RANGE_EXCEPTION);
+        }
+
+        List<User> usersWithInterestAndGreaterAge = userRepository.findByInterestAndGreaterAgeOrderByLocation(interest, age);
+        if (usersWithInterestAndGreaterAge.size() == 0) {
+            throw new ServiceException(String.format(NO_USERS_FOUND_WITH_INTEREST_OLDER_THAN_EXCEPTION, interest, age));
+        }
+        return usersWithInterestAndGreaterAge;
     }
 
     public User addUser(User newUser) {
