@@ -3,6 +3,7 @@ package be.ucll.service;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -13,6 +14,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import be.ucll.model.Loan;
+import be.ucll.model.Profile;
 import be.ucll.model.User;
 import be.ucll.repository.LoanRepository;
 import be.ucll.repository.ProfileRepository;
@@ -465,6 +467,87 @@ public class UserServiceTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
+    @Test 
+    public void givenEmptyOrNullInterests_whenGettingTheUsersWithInterest_thanServiceExceptionThrown() {
+        List<User> users = createDefaultUserListWithProfiles();
+        List<Loan> defaultLoans = LoanServiceTest.createDefaultLoanList();
+        LoanRepository loanRepository = LoanServiceTest.createDefaultRepository(defaultLoans);
+        UserRepository repository = createDefaultRepository(users);
+        UserService service = createDefaultService(repository, loanRepository);
+
+        ServiceException exception = assertThrows(ServiceException.class, () -> {
+            service.getUsersWithInterest(null);
+        });
+
+        String expectedMessage = UserService.INTEREST_CANNOT_BE_EMPTY_EXCEPTION;
+        String actualMessage = exception.getMessage();
+        assertEquals(expectedMessage, actualMessage);
+
+        exception = assertThrows(ServiceException.class, () -> {
+            service.getUsersWithInterest("");
+        });
+
+        actualMessage = exception.getMessage();
+        assertEquals(expectedMessage, actualMessage);
+
+        exception = assertThrows(ServiceException.class, () -> {
+            service.getUsersWithInterest(" ");
+        });
+
+        actualMessage = exception.getMessage();
+        
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test 
+    public void givenInterestsThatUsersDoNotHave_whenGettingUsersWithInterests_thenServiceExceptionIsThrown() {
+        List<User> users = createDefaultUserListWithProfiles();
+        List<Loan> defaultLoans = LoanServiceTest.createDefaultLoanList();
+        LoanRepository loanRepository = LoanServiceTest.createDefaultRepository(defaultLoans);
+        UserRepository repository = createDefaultRepository(users);
+        UserService service = createDefaultService(repository, loanRepository);
+
+        String interest = "Interest";
+
+        ServiceException exception = assertThrows(ServiceException.class, () -> {
+            service.getUsersWithInterest(interest);
+        });
+
+        String expectedMessage = String.format(UserService.NO_USERS_FOUND_WITH_INTEREST_IN_EXCEPTION, interest);
+        String actualMessage = exception.getMessage();
+        
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test 
+    public void givenInterests_whenGettingUsersWithInterests_thenUsersWithTheInterestReturned() {
+        List<User> users = createDefaultUserListWithProfiles();
+        List<Loan> defaultLoans = LoanServiceTest.createDefaultLoanList();
+        LoanRepository loanRepository = LoanServiceTest.createDefaultRepository(defaultLoans);
+        UserRepository repository = createDefaultRepository(users);
+        UserService service = createDefaultService(repository, loanRepository);
+
+        String desiredInterest = "Interests 2";
+
+        List<User> usersWithInterests = service.getUsersWithInterest(desiredInterest);
+
+        assertEquals(usersWithInterests.size(), 2);
+        usersWithInterests.forEach(user -> {
+            assertNotEquals(user.getProfile(), null);
+            assertEquals(user.getProfile().getInterests(), desiredInterest);
+        });
+
+        String desiredInterestCaps = "INTERESTS 2";
+
+        usersWithInterests = service.getUsersWithInterest(desiredInterestCaps);
+
+        assertEquals(usersWithInterests.size(), 2);
+        usersWithInterests.forEach(user -> {
+            assertNotEquals(user.getProfile(), null);
+            assertEquals(user.getProfile().getInterests().toUpperCase(), desiredInterestCaps);
+        });
+    }
+
     public static UserRepository createDefaultRepository(List<User> users) {
         return new UserRepositoryTestImpl(users);
     }
@@ -497,5 +580,24 @@ public class UserServiceTest {
             new User("Sarah Doe", 4, "sarah.doe@ucll.be", "sarah1234"),
             new User("Birgit Doe", 18, "birgit.doe@ucll.be", "birgit1234")
             );
+    }
+
+    public static List<User> createDefaultUserListWithProfiles() {
+        List<Profile> profiles = new ArrayList<Profile>();
+        profiles.add(new Profile("Bio 1", "Location 1", "Interests 1"));
+        profiles.add(new Profile("Bio 2", "Location 2", "Interests 2"));
+        profiles.add(new Profile("Bio 3", "Location 3", "Interests 3"));
+        profiles.add(new Profile("Bio 4", "Location 4", "Interests 4"));
+        profiles.add(new Profile("Bio 5", "Location 5", "Interests 2"));
+
+        List<User> users = new ArrayList<>(List.of(
+            new User("John Doe", 25, "john.doe@ucll.be", "john1234", profiles.get(0)),
+            new User("Jane Toe", 30, "jane.toe@ucll.be", "jane1234", profiles.get(1)),
+            new User("Jack Doe", 5, "jack.doe@ucll.be", "jack1234"),
+            new User("Sarah Doe", 4, "sarah.doe@ucll.be", "sarah1234"),
+            new User("Birgit Doe", 18, "birgit.doe@ucll.be", "birgit1234", profiles.get(4))
+            ));
+
+        return users;
     }
 }

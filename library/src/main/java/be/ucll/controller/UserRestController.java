@@ -73,6 +73,13 @@ public class UserRestController {
         return userService.getOldestUser();
     }
 
+    @GetMapping("/interest/{interest}")
+    public List<User> getUsersWithInterest(
+        @PathVariable(value = "interest") String interest) 
+    {
+        return userService.getUsersWithInterest(interest);
+    }
+
     /// Post
     @PostMapping()
     public User addUser(

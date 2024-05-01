@@ -75,6 +75,13 @@ public class UserRepositoryTestImpl implements UserRepository {
     public User findOldestUser() {
         return users.stream().max(Comparator.comparing(user -> user.getAge())).orElse(null);
     }
+
+    
+    @Override
+    public List<User> findUsersByInterest(String interest) {
+        return filterUsers(user -> 
+        user.getProfile() != null && user.getProfile().getInterests().equalsIgnoreCase(interest));
+    }
     
     public List<User> filterUsers(Predicate<? super User> filterFunc) {
         return users != null 

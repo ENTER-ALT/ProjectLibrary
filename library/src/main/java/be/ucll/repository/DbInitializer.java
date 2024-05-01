@@ -28,7 +28,7 @@ public class DbInitializer {
         profiles.add(new Profile("Bio 2", "Location 2", "Interests 2"));
         profiles.add(new Profile("Bio 3", "Location 3", "Interests 3"));
         profiles.add(new Profile("Bio 4", "Location 4", "Interests 4"));
-        profiles.add(new Profile("Bio 5", "Location 5", "Interests 5"));
+        profiles.add(new Profile("Bio 5", "Location 5", "Interests 2"));
         profiles.forEach(profile -> {
             profileRepository.save(profile);
         });

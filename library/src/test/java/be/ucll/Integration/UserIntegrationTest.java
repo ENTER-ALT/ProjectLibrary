@@ -600,4 +600,106 @@ public class UserIntegrationTest {
         "  \""+ServiceException.class.getSimpleName()+"\": \""+UserService.NO_OLDEST_USER_FOUND_EXCEPTION +"\"\r\n" + //
         "}");
     }
+
+    @Test
+    public void givenEmptyInterests_whenGettingUsersWithInterests_thenClientErrorIsThrown() {
+        webTestClient
+        .get()
+        .uri("/users/interest/ ")
+        .header("Content-Type", "application/json")
+        .exchange()
+        .expectStatus()
+        .is4xxClientError()
+        .expectBody()
+        .json("{\r\n" + //
+        "  \""+ServiceException.class.getSimpleName()+"\": \""+UserService.INTEREST_CANNOT_BE_EMPTY_EXCEPTION +"\"\r\n" + //
+        "}");
+    }
+
+    @Test
+    public void givenInterestsThatUsersDoNotHave_whenGettingUsersWithInterests_thenClientErrorIsThrown() {
+        webTestClient
+        .get()
+        .uri("/users/interest/Interest")
+        .header("Content-Type", "application/json")
+        .exchange()
+        .expectStatus()
+        .is4xxClientError()
+        .expectBody()
+        .json("{\r\n" + //
+        "  \""+ServiceException.class.getSimpleName()+"\": \""+String.format(UserService.NO_USERS_FOUND_WITH_INTEREST_IN_EXCEPTION,"Interest") +"\"\r\n" + //
+        "}");
+    }
+
+    @Test
+    public void givenInterests_whenGettingUsersWithInterests_thenUsersWithTheInterestReturned() {
+        webTestClient
+        .get()
+        .uri("/users/interest/interests 2")
+        .header("Content-Type", "application/json")
+        .exchange()
+        .expectStatus()
+        .is2xxSuccessful()
+        .expectBody()
+        .json("[\n" + //
+                        "  {\n" + //
+                        "    \"name\": \"Jane Toe\",\n" + //
+                        "    \"age\": 30,\n" + //
+                        "    \"email\": \"jane.toe@ucll.be\",\n" + //
+                        "    \"password\": \"jane1234\",\n" + //
+                        "    \"profile\": {\n" + //
+                        "      \"profileId\": 2,\n" + //
+                        "      \"bio\": \"Bio 2\",\n" + //
+                        "      \"location\": \"Location 2\",\n" + //
+                        "      \"interests\": \"Interests 2\"\n" + //
+                        "    }\n" + //
+                        "  },\n" + //
+                        "  {\n" + //
+                        "    \"name\": \"Birgit Doe\",\n" + //
+                        "    \"age\": 18,\n" + //
+                        "    \"email\": \"birgit.doe@ucll.be\",\n" + //
+                        "    \"password\": \"birgit1234\",\n" + //
+                        "    \"profile\": {\n" + //
+                        "      \"profileId\": 5,\n" + //
+                        "      \"bio\": \"Bio 5\",\n" + //
+                        "      \"location\": \"Location 5\",\n" + //
+                        "      \"interests\": \"Interests 2\"\n" + //
+                        "    }\n" + //
+                        "  }\n" + //
+                        "]");
+        webTestClient
+        .get()
+        .uri("/users/interest/INTERESTS 2")
+        .header("Content-Type", "application/json")
+        .exchange()
+        .expectStatus()
+        .is2xxSuccessful()
+        .expectBody()
+        .json("[\n" + //
+                        "  {\n" + //
+                        "    \"name\": \"Jane Toe\",\n" + //
+                        "    \"age\": 30,\n" + //
+                        "    \"email\": \"jane.toe@ucll.be\",\n" + //
+                        "    \"password\": \"jane1234\",\n" + //
+                        "    \"profile\": {\n" + //
+                        "      \"profileId\": 2,\n" + //
+                        "      \"bio\": \"Bio 2\",\n" + //
+                        "      \"location\": \"Location 2\",\n" + //
+                        "      \"interests\": \"Interests 2\"\n" + //
+                        "    }\n" + //
+                        "  },\n" + //
+                        "  {\n" + //
+                        "    \"name\": \"Birgit Doe\",\n" + //
+                        "    \"age\": 18,\n" + //
+                        "    \"email\": \"birgit.doe@ucll.be\",\n" + //
+                        "    \"password\": \"birgit1234\",\n" + //
+                        "    \"profile\": {\n" + //
+                        "      \"profileId\": 5,\n" + //
+                        "      \"bio\": \"Bio 5\",\n" + //
+                        "      \"location\": \"Location 5\",\n" + //
+                        "      \"interests\": \"Interests 2\"\n" + //
+                        "    }\n" + //
+                        "  }\n" + //
+                        "]");
+    }
 }

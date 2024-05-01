@@ -22,6 +22,8 @@ public class UserService {
     public static final String USER_DOESNT_EXIST_EXCEPTION = "User does not exist";
     public static final String USER_ALREADY_EXISTS_EXCEPTION = "User already exists";
     public static final String NO_OLDEST_USER_FOUND_EXCEPTION = "No oldest user found";
+    public static final String INTEREST_CANNOT_BE_EMPTY_EXCEPTION = "Interest cannot be empty";
+    public static final String NO_USERS_FOUND_WITH_INTEREST_IN_EXCEPTION = "No users found with interest in %s";
     public static final Integer MIN_AGE_RESTRICTION = 0; //Min age cannot be lower than this number
     public static final Integer MAX_AGE_RESTRICTION = 150; //Max age cannot be higher than this number
     public static final String DELETION_SUCCESS_RESPONSE = "User successfully deleted";
@@ -74,6 +76,17 @@ public class UserService {
             throw new ServiceException(NO_OLDEST_USER_FOUND_EXCEPTION);
         }
         return oldestUser;
+    }
+
+    public List<User> getUsersWithInterest(String interest) {
+        if (interest == null || interest.isBlank()) {
+            throw new ServiceException(INTEREST_CANNOT_BE_EMPTY_EXCEPTION);
+        }
+        List<User> usersWithInterest = userRepository.findUsersByInterest(interest);
+        if (usersWithInterest.size() == 0) {
+            throw new ServiceException(String.format(NO_USERS_FOUND_WITH_INTEREST_IN_EXCEPTION, interest));
+        }
+        return usersWithInterest;
     }
 
     public User addUser(User newUser) {

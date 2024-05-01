@@ -22,4 +22,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("SELECT u FROM User u ORDER BY u.age DESC LIMIT 1")
     User findOldestUser();
 
+    @Query("SELECT u FROM User u JOIN u.profile p WHERE LOWER(p.interests) = LOWER(:interest)")
+    List<User> findUsersByInterest(String interest);
 }

@@ -27,6 +27,11 @@ public class ProfileRepositoryTestImpl implements ProfileRepository {
         }
         this.profiles = new ArrayList<Profile>(profiles);
     }
+    
+    @Override
+    public List<Profile> findAll() {
+        return profiles;
+    }
 
     @Override
     public <S extends Profile> S save(S entity) {
@@ -118,12 +123,6 @@ public class ProfileRepositoryTestImpl implements ProfileRepository {
     public <S extends Profile> List<S> saveAll(Iterable<S> entities) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'saveAll'");
-    }
-
-    @Override
-    public List<Profile> findAll() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
     }
 
     @Override
