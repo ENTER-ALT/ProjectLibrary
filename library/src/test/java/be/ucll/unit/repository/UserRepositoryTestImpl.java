@@ -152,7 +152,7 @@ public class UserRepositoryTestImpl implements UserRepository {
     }
 
     @Override
-    public void deleteAllByIdInBatch(Iterable<Integer> ids) {
+    public void deleteAllByIdInBatch(Iterable<Long> ids) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'deleteAllByIdInBatch'");
     }
@@ -164,19 +164,19 @@ public class UserRepositoryTestImpl implements UserRepository {
     }
 
     @Override
-    public User getOne(Integer id) {
+    public User getOne(Long id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getOne'");
     }
 
     @Override
-    public User getById(Integer id) {
+    public User getById(Long id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getById'");
     }
 
     @Override
-    public User getReferenceById(Integer id) {
+    public User getReferenceById(Long id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getReferenceById'");
     }
@@ -200,19 +200,19 @@ public class UserRepositoryTestImpl implements UserRepository {
     }
 
     @Override
-    public List<User> findAllById(Iterable<Integer> ids) {
+    public List<User> findAllById(Iterable<Long> ids) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findAllById'");
     }
 
     @Override
-    public Optional<User> findById(Integer id) {
+    public Optional<User> findById(Long id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findById'");
     }
 
     @Override
-    public boolean existsById(Integer id) {
+    public boolean existsById(Long id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'existsById'");
     }
@@ -224,13 +224,13 @@ public class UserRepositoryTestImpl implements UserRepository {
     }
 
     @Override
-    public void deleteById(Integer id) {
+    public void deleteById(Long id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'deleteById'");
     }
 
     @Override
-    public void deleteAllById(Iterable<? extends Integer> ids) {
+    public void deleteAllById(Iterable<? extends Long> ids) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'deleteAllById'");
     }
@@ -282,6 +282,5 @@ public class UserRepositoryTestImpl implements UserRepository {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findBy'");
     }
-
 
 }

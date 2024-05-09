@@ -19,13 +19,13 @@ public class PublicationService {
     }
 
     public List<Publication> findPublicationsByTitleAndType(String title, String type) {
-        return publicationRepository.publicationsByTitleAndType(title, type);
+        return publicationRepository.findByTitleAndType(title, type);
     }
 
     public List<Publication> findPublicationsWithMoreAvailableCopiesThan(Integer copies) {
         if (copies < 0) {
             throw new ServiceException(NEGATIVE_AVAILABLE_COPIES_EXCEPTION);
         }
-        return publicationRepository.publicationsWithMoreAvailableCopiesThan(copies);
+        return publicationRepository.findByAvailableCopiesGreaterThanEqual(copies);
     }
 }

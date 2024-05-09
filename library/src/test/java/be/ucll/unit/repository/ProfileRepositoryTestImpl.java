@@ -78,7 +78,7 @@ public class ProfileRepositoryTestImpl implements ProfileRepository {
     }
 
     @Override
-    public void deleteAllByIdInBatch(Iterable<Integer> ids) {
+    public void deleteAllByIdInBatch(Iterable<Long> ids) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'deleteAllByIdInBatch'");
     }
@@ -90,19 +90,19 @@ public class ProfileRepositoryTestImpl implements ProfileRepository {
     }
 
     @Override
-    public Profile getOne(Integer id) {
+    public Profile getOne(Long id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getOne'");
     }
 
     @Override
-    public Profile getById(Integer id) {
+    public Profile getById(Long id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getById'");
     }
 
     @Override
-    public Profile getReferenceById(Integer id) {
+    public Profile getReferenceById(Long id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getReferenceById'");
     }
@@ -126,19 +126,19 @@ public class ProfileRepositoryTestImpl implements ProfileRepository {
     }
 
     @Override
-    public List<Profile> findAllById(Iterable<Integer> ids) {
+    public List<Profile> findAllById(Iterable<Long> ids) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findAllById'");
     }
 
     @Override
-    public Optional<Profile> findById(Integer id) {
+    public Optional<Profile> findById(Long id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findById'");
     }
 
     @Override
-    public boolean existsById(Integer id) {
+    public boolean existsById(Long id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'existsById'");
     }
@@ -150,13 +150,13 @@ public class ProfileRepositoryTestImpl implements ProfileRepository {
     }
 
     @Override
-    public void deleteById(Integer id) {
+    public void deleteById(Long id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'deleteById'");
     }
 
     @Override
-    public void deleteAllById(Iterable<? extends Integer> ids) {
+    public void deleteAllById(Iterable<? extends Long> ids) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'deleteAllById'");
     }
@@ -214,4 +214,6 @@ public class ProfileRepositoryTestImpl implements ProfileRepository {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findBy'");
     }
+
+    
 }

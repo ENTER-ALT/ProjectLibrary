@@ -14,6 +14,7 @@ import be.ucll.model.Book;
 import be.ucll.model.Magazine;
 import be.ucll.model.Publication;
 import be.ucll.repository.PublicationRepository;
+import be.ucll.unit.repository.PublicationRepositoryTestImpl;
 
 public class PublicationServiceTest {
 
@@ -230,7 +231,7 @@ public class PublicationServiceTest {
     }
 
     public static PublicationRepository createDefaultRepository(List<Book> books, List<Magazine> magazines) {
-        return new PublicationRepository(books, magazines);
+        return new PublicationRepositoryTestImpl(books, magazines);
     }
 
     public static PublicationService createDefaultService(PublicationRepository repository) {

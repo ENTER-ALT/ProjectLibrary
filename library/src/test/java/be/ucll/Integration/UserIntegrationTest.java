@@ -41,7 +41,6 @@ public class UserIntegrationTest {
 
     @AfterEach
     public void resetRepository() {
-        publicationRepository.resetRepository();
         loanRepository.resetRepository(publicationRepository, userRepository);
     }
 

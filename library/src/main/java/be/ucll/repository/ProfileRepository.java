@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 import be.ucll.model.Profile;
 
 @Repository
-public interface ProfileRepository extends JpaRepository<Profile, Integer> {
+public interface ProfileRepository extends JpaRepository<Profile, Long> {
 }

@@ -262,7 +262,7 @@ public class LoanServiceTest {
     public static List<Loan> createDefaultLoanList(UserRepository userRepository, PublicationRepository publicationRepository) {
         List<Loan> loans = new ArrayList<>();
         List<User> users = userRepository.findAll();
-        List<Publication> publications = publicationRepository.combineBooksAndMagazines();
+        List<Publication> publications = LoanRepository.createPublications();
         loans.add(new Loan(users.get(0), publications.subList(0, 2), LocalDate.of(1111, 1, 1)));
         loans.add(new Loan(users.get(1), publications.subList(2, 4), LocalDate.of(1111, 1, 2)));
         loans.add(new Loan(users.get(2), publications.subList(4, 6), LocalDate.of(1111, 1, 3)));

@@ -33,7 +33,6 @@ public class PublicationIntegrationTest {
 
     @AfterEach
     public void resetRepository() {
-        publicationRepository.resetRepository();
         loanRepository.resetRepository(publicationRepository, userRepository);
     }
 
