@@ -4,16 +4,42 @@ import java.time.LocalDate;
 import java.util.List;
 
 import be.ucll.utilits.TimeTracker;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
+@Entity
+@Table(name = "loans")
 public class Loan {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "loan_id")
+    private Long id;
+
+        
+    @ManyToOne
+    @JoinColumn(name = "user_id")
         @NotNull(message = INVALID_USER_EXCEPTION)
     private User user;
+
+    @ManyToMany
+    @JoinTable(
+        name = "loan_publications",
+        joinColumns = @JoinColumn(name = "loan_id"),
+        inverseJoinColumns = @JoinColumn(name = "publication_id")
+        )
     private List<Publication> publications;
 
-        // @NotNull(message = INVALID_STARTDATE_EXCEPTION)
     private LocalDate startDate;
     private LocalDate endDate;
 
