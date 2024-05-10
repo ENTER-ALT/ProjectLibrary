@@ -166,7 +166,7 @@ public class UserService {
     }
 
     public void checkUsersActiveLoans(String email) {
-        List<Loan> activeLoans = loanRepository.findLoansByEmail(email, true);
+        List<Loan> activeLoans = loanRepository.findByUserEmailAndEndDateIsNull(email);
         Boolean userHasActiveLoans = activeLoans.size() > 0;
         if (userHasActiveLoans) {
             throw new ServiceException(LoanService.USER_HAS_ACTIVE_LOANS_EXCEPTION);
@@ -174,12 +174,12 @@ public class UserService {
     }
 
     public void deleteUserLoansIfExist(String email) {
-        List<Loan> allLoans = loanRepository.findLoansByEmail(email, false);
+        List<Loan> allLoans = loanRepository.findByUserEmail(email);
         Boolean userHasLoans = allLoans.size() > 0;
         if (!userHasLoans) {
             return;
         }
-        loanRepository.deleteLoansByEmail(email);
+        loanRepository.deleteByUserEmail(email);
     }
 
     public void isValidUser(User user) {

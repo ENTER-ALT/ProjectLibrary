@@ -23,17 +23,20 @@ public class DbInitializer {
     private ProfileRepository profileRepository;
     private PublicationRepository publicationRepository;
     private MembershipRepository membershipRepository;
+    private LoanRepository loanRepository;
 
     public DbInitializer(
         UserRepository userRepository, 
         ProfileRepository profileRepository, 
         PublicationRepository publicationRepository,
-        MembershipRepository membershipRepository
+        MembershipRepository membershipRepository,
+        LoanRepository loanRepository
         ) {
         this.userRepository = userRepository;
         this.profileRepository = profileRepository;
         this.publicationRepository = publicationRepository;
         this.membershipRepository = membershipRepository;
+        this.loanRepository = loanRepository;
     }
 
     @PostConstruct
@@ -84,7 +87,8 @@ public class DbInitializer {
         magazines.add(new Magazine("Scientific American", "Science Editor", "98765", 2022, 40));
         magazines.add(new Magazine("Sports Illustrated", "Sports Editor", "13579", 2022, 20));
 
-        initTempLoans(users, books, magazines);
+        List<Loan> loans = getLoans(users, books, magazines);
+        
         profiles.forEach(profile -> {
             profileRepository.save(profile);
         });
@@ -94,11 +98,14 @@ public class DbInitializer {
         memberships.forEach(membership -> {
             membershipRepository.save(membership);
         });
-        books.forEach(user -> {
-            publicationRepository.save(user);
+        books.forEach(book -> {
+            publicationRepository.save(book);
         });
-        magazines.forEach(user -> {
-            publicationRepository.save(user);
+        magazines.forEach(magazine -> {
+            publicationRepository.save(magazine);
+        });
+        loans.forEach(loan -> {
+            loanRepository.save(loan);
         });
     }
 
@@ -125,7 +132,7 @@ public class DbInitializer {
         return memberships;
     }
 
-    public void initTempLoans(List<User> users, List<Book> books, List<Magazine> magazines) {
+    public List<Loan> getLoans(List<User> users, List<Book> books, List<Magazine> magazines) {
         List<Publication> publications = new ArrayList<>();
         if (books != null) {
             publications.addAll(books);
@@ -144,5 +151,7 @@ public class DbInitializer {
         
         loans.get(1).setEndDate(LocalDate.of(1111, 1, 4));
         loans.get(0).setEndDate(LocalDate.of(1111, 1, 4));
+
+        return loans;
     }
 }

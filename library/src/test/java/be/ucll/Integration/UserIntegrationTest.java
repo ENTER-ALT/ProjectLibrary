@@ -3,7 +3,6 @@ package be.ucll.Integration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,14 +17,13 @@ import be.ucll.model.User;
 import be.ucll.repository.DbInitializer;
 import be.ucll.repository.LoanRepository;
 import be.ucll.repository.MembershipRepository;
-import be.ucll.repository.PublicationRepository;
 import be.ucll.repository.UserRepository;
 import be.ucll.service.LoanService;
 import be.ucll.service.ServiceException;
 import be.ucll.service.UserService;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureWebTestClient(timeout = "36000")
+@AutoConfigureWebTestClient()
 @Sql("classpath:schema.sql")
 public class UserIntegrationTest {
     
@@ -36,16 +34,9 @@ public class UserIntegrationTest {
     @Autowired
     private DbInitializer dbInitializer;
     @Autowired
-    private PublicationRepository publicationRepository;
-    @Autowired
     private LoanRepository loanRepository;
     @Autowired
     private MembershipRepository membershipRepository;
-
-    @AfterEach
-    public void resetRepository() {
-        loanRepository.resetRepository(publicationRepository, userRepository);
-    }
 
     @BeforeEach
     public void setupDatabases() {
@@ -190,8 +181,8 @@ public class UserIntegrationTest {
                         "        \"isbn\": \"978-0141439518\"\n" + //
                         "      }\n" + //
                         "    ],\n" + //
-                        "    \"startDate\": \"1111-01-02\",\n" + //
-                        "    \"endDate\": \"1111-01-04\"\n" + //
+                        "    \"startDate\": \"1111-01-01\",\n" + //
+                        "    \"endDate\": \"1111-01-03\"\n" + //
                         "  },\n" + //
                         "  {\n" + //
                         "    \"user\": {\n" + //
@@ -230,7 +221,7 @@ public class UserIntegrationTest {
                         "        \"issn\": \"54321\"\n" + //
                         "      }\n" + //
                         "    ],\n" + //
-                        "    \"startDate\": \"1111-01-02\",\n" + //
+                        "    \"startDate\": \"1111-01-01\",\n" + //
                         "    \"endDate\": null\n" + //
                         "  }\n" + //
                         "]");
@@ -523,7 +514,7 @@ public class UserIntegrationTest {
     public void givenEmailWithoutActiveLoans_whenDeleteUsers_thenUserDeleted() {
 
         assertTrue(userRepository.findByEmail("john.doe@ucll.be") != null);
-        assertTrue(loanRepository.findLoansByEmail("john.doe@ucll.be", false).size() > 0);
+        assertTrue(loanRepository.findByUserEmail("john.doe@ucll.be").size() > 0);
 
         webTestClient
         .delete()
@@ -534,7 +525,7 @@ public class UserIntegrationTest {
         .is2xxSuccessful();
 
         assertTrue(userRepository.findByEmail("john.doe@ucll.be") == null);
-        assertTrue(loanRepository.findLoansByEmail("john.doe@ucll.be", false).size() == 0);
+        assertTrue(loanRepository.findByUserEmail("john.doe@ucll.be").size() == 0);
     }
 
     @Test
@@ -847,6 +838,7 @@ public class UserIntegrationTest {
     }    
 
     public void clearUserRepository() {
+        loanRepository.deleteAll();
         membershipRepository.deleteAll();
         userRepository.deleteAll();
     }

@@ -26,28 +26,30 @@ public class LoanService {
 
     public List<Loan> getLoansByUser(String email, Boolean onlyActive) {
         userService.userExists(email);
-        if (onlyActive == null) {
-            onlyActive = false;
+
+        if (onlyActive == null || !onlyActive) {
+            return loanRepository.findByUserEmail(email);
+        } else {
+            return loanRepository.findByUserEmailAndEndDateIsNull(email);
         }
-        return loanRepository.findLoansByEmail(email, onlyActive);
     }
 
     public String deleteLoansByUser(String email) {
         userService.checkUserExists(email);
 
-        List<Loan> activeLoans = loanRepository.findLoansByEmail(email, true);
+        List<Loan> activeLoans = loanRepository.findByUserEmailAndEndDateIsNull(email);
         Boolean userHasActiveLoans = activeLoans.size() > 0;
         if (userHasActiveLoans) {
             throw new ServiceException(USER_HAS_ACTIVE_LOANS_EXCEPTION);
         }
 
-        List<Loan> allLoans = loanRepository.findLoansByEmail(email, false);
+        List<Loan> allLoans = loanRepository.findByUserEmail(email);
         Boolean userHasLoans = allLoans.size() > 0;
         if (!userHasLoans) {
             throw new ServiceException(USER_HAS_NO_LOANS_EXCEPTION);
         }
 
-        loanRepository.deleteLoansByEmail(email);
+        loanRepository.deleteByUserEmail(email);
         return DELETION_SUCCESS_RESPONSE;
     }
 }

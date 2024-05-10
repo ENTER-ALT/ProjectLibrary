@@ -51,6 +51,8 @@ public class Loan {
     public static final String FUTURE_ENDDATE_EXCEPTION = "End date cannot be in future";
     public static final String ENDDATE_BEFORE_STARTDATE_EXCEPTION = "Start date cannot be after end date";
 
+    protected Loan() {};
+
     public Loan(User user, List<Publication> publications, LocalDate startDate) {
         setUser(user);
         setPublications(publications);

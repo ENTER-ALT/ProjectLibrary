@@ -18,6 +18,7 @@ import be.ucll.model.User;
 import be.ucll.repository.LoanRepository;
 import be.ucll.repository.PublicationRepository;
 import be.ucll.repository.UserRepository;
+import be.ucll.unit.repository.LoanRepositoryTestImpl;
 
 public class LoanServiceTest {
 
@@ -240,11 +241,11 @@ public class LoanServiceTest {
     }
 
     public static LoanRepository createDefaultRepository(List<Loan> loans) {
-        return new LoanRepository(loans);
+        return new LoanRepositoryTestImpl(loans);
     }
 
     public static LoanRepository createDefaultRepository() {
-        return new LoanRepository(createDefaultLoanList());
+        return new LoanRepositoryTestImpl(createDefaultLoanList());
     }
 
     public static LoanService createDefaultService(LoanRepository repository, UserService userService) {
@@ -262,7 +263,7 @@ public class LoanServiceTest {
     public static List<Loan> createDefaultLoanList(UserRepository userRepository, PublicationRepository publicationRepository) {
         List<Loan> loans = new ArrayList<>();
         List<User> users = userRepository.findAll();
-        List<Publication> publications = LoanRepository.createPublications();
+        List<Publication> publications = LoanRepositoryTestImpl.createPublications();
         loans.add(new Loan(users.get(0), publications.subList(0, 2), LocalDate.of(1111, 1, 1)));
         loans.add(new Loan(users.get(1), publications.subList(2, 4), LocalDate.of(1111, 1, 2)));
         loans.add(new Loan(users.get(2), publications.subList(4, 6), LocalDate.of(1111, 1, 3)));

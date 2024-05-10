@@ -408,11 +408,11 @@ public class UserServiceTest {
         UserService service = createDefaultService(repository, loanRepository);
 
         String emailWithInativeLoans = LoanServiceTest.getUserEmailWithInactiveLoans(defaultLoans);
-        Integer initialUsersLoansQuantity = loanRepository.findLoansByEmail(emailWithInativeLoans, false).size();
+        Integer initialUsersLoansQuantity = loanRepository.findByUserEmail(emailWithInativeLoans).size();
 
         String actualResult = service.deleteUser(emailWithInativeLoans);
         String expectedResult = UserService.DELETION_SUCCESS_RESPONSE;
-        Integer finalUsersLoansQuantity = loanRepository.findLoansByEmail(emailWithInativeLoans, false).size();
+        Integer finalUsersLoansQuantity = loanRepository.findByUserEmail(emailWithInativeLoans).size();
 
         assertTrue(initialUsersLoansQuantity > 0);
         assertEquals(expectedResult, actualResult);
