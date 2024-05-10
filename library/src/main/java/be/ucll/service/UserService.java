@@ -1,13 +1,16 @@
 package be.ucll.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import be.ucll.model.Loan;
+import be.ucll.model.Membership;
 import be.ucll.model.Profile;
 import be.ucll.model.User;
 import be.ucll.repository.LoanRepository;
+import be.ucll.repository.MembershipRepository;
 import be.ucll.repository.ProfileRepository;
 import be.ucll.repository.UserRepository;
 
@@ -32,14 +35,17 @@ public class UserService {
     private UserRepository userRepository;
     private LoanRepository loanRepository;
     private ProfileRepository profileRepository;
+    private MembershipRepository membershipRepository;
 
     public UserService(
         UserRepository userRepository,
         LoanRepository loanRepository,
-        ProfileRepository profileRepository) {
+        ProfileRepository profileRepository,
+        MembershipRepository membershipRepository) {
         this.userRepository = userRepository;
         this.loanRepository = loanRepository;
         this.profileRepository = profileRepository;
+        this.membershipRepository = membershipRepository;
     }
 
     public List<User> getAllUsers() {
@@ -129,8 +135,30 @@ public class UserService {
         handleUserLoans(email);
         
         User user = userRepository.findByEmail(email);
+        handleUserMemberships(user);
+
         userRepository.delete(user);
         return DELETION_SUCCESS_RESPONSE;
+    }
+
+    public User addMembership(String email, Membership membership) {
+        checkUserExists(email);
+
+        User currentUser = userRepository.findByEmail(email);
+        membership.setUser(currentUser);
+        currentUser.setMembership(membership);
+
+        membershipRepository.save(membership);
+        userRepository.save(currentUser);
+
+        return currentUser;
+    }
+
+    public void handleUserMemberships(User user) {
+        List<Membership> memberships = user.getMemberships();
+        memberships.forEach(membership -> {
+            membershipRepository.delete(membership);
+        });
     }
 
     public void handleUserLoans(String email) {

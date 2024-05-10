@@ -7,20 +7,27 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
 import be.ucll.model.Loan;
+import be.ucll.model.Membership;
 import be.ucll.model.Profile;
 import be.ucll.model.User;
 import be.ucll.repository.LoanRepository;
+import be.ucll.repository.MembershipRepository;
 import be.ucll.repository.ProfileRepository;
 import be.ucll.repository.UserRepository;
+import be.ucll.unit.repository.MembershipRepositoryTestImpl;
 import be.ucll.unit.repository.ProfileRepositoryTestImpl;
 import be.ucll.unit.repository.UserRepositoryTestImpl;
+import be.ucll.utilits.TimeTracker;
+import jakarta.validation.ConstraintViolation;
 
 public class UserServiceTest {
 
@@ -697,30 +704,71 @@ public class UserServiceTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
+    @Test 
+    public void givenWrongEmail_whenAddingMembership_thanServiceExceptionThrown() {
+        UserService userService = createDefaultService();
+        String email = "asdasda@sda.ss";
+        LocalDate now = TimeTracker.getToday();
+        LocalDate oneYearLater = now.plusYears(1);
+        Membership membership = new Membership(now, oneYearLater, "SILVER");
 
+        ServiceException exception = assertThrows(ServiceException.class, () -> {
+            userService.addMembership(email, membership);
+        });
+    
+        String expectedMessage = UserService.USER_DOESNT_EXIST_EXCEPTION;
+        String actualMessage = exception.getMessage();
+    
+        assertEquals(expectedMessage, actualMessage);
+    }
+    
+    @Test 
+    public void givenValidMembership_whenAddingMembership_thanMembershipIsAddedtoUser() {
+        UserService userService = createDefaultService();
+        User user = userService.getAllUsers().get(2);
+        String email = user.getEmail();
+        LocalDate now = TimeTracker.getToday();
+        LocalDate oneYearLater = now.plusYears(1);
+        Membership membership = new Membership(now, oneYearLater, "SILVER");
+
+        User actualUser = userService.addMembership(email, membership);
+
+        assertTrue(actualUser.getMemberships().size() > 0);
+        Membership userMembership = actualUser.getMemberships().get(0);
+        assertEquals(membership.getStartDate(), userMembership.getStartDate());
+        assertEquals(membership.getEndDate(), userMembership.getEndDate());
+        assertEquals(membership.getType(), userMembership.getType());
+        assertEquals(userMembership.getUser(), user);
+        assertEquals(actualUser.getEmail(), user.getEmail());
+    }
+    
 
     public static UserRepository createDefaultRepository(List<User> users) {
         return new UserRepositoryTestImpl(users);
     }
 
     public static UserService createDefaultService(UserRepository repository) {
-        return new UserService(repository, LoanServiceTest.createDefaultRepository(), createDeafultProfileRepository());
+        return new UserService(repository, LoanServiceTest.createDefaultRepository(), createDeafultProfileRepository(), createDeafultMembershipRepository());
     }
 
     public static UserService createDefaultService(UserRepository repository, LoanRepository loanRepository) {
-        return new UserService(repository, loanRepository, createDeafultProfileRepository());
+        return new UserService(repository, loanRepository, createDeafultProfileRepository(), createDeafultMembershipRepository());
     }
 
     public static UserService createDefaultService(UserRepository repository, LoanRepository loanRepository, ProfileRepository profileRepository) {
-        return new UserService(repository, loanRepository, profileRepository);
+        return new UserService(repository, loanRepository, profileRepository, createDeafultMembershipRepository());
     }
 
     public static UserService createDefaultService() {
-        return new UserService(createDefaultRepository(createDefaultUserList()), LoanServiceTest.createDefaultRepository(), createDeafultProfileRepository());
+        return new UserService(createDefaultRepository(createDefaultUserList()), LoanServiceTest.createDefaultRepository(), createDeafultProfileRepository(), createDeafultMembershipRepository());
     }
 
     public static ProfileRepository createDeafultProfileRepository() {
         return new ProfileRepositoryTestImpl();
+    }
+
+    public static MembershipRepository createDeafultMembershipRepository() {
+        return new MembershipRepositoryTestImpl();
     }
 
     public static List<User> createDefaultUserList() {

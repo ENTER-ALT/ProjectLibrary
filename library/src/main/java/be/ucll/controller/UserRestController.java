@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import be.ucll.model.Membership;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -93,6 +94,13 @@ public class UserRestController {
     public User addUser(
         @Valid @RequestBody User newUser) {
         return userService.addUser(newUser);
+    }
+
+    @PostMapping("/{email}/membership")
+    public User addMembership(
+            @PathVariable(value = "email") String email,
+            @Valid @RequestBody Membership membership) {
+        return userService.addMembership(email, membership);
     }
 
     // Put

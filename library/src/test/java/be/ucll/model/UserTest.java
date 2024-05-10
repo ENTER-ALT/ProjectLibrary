@@ -5,11 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.Set;
 
+import be.ucll.utilits.TimeTracker;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import jakarta.validation.ConstraintViolation;
@@ -31,6 +34,12 @@ public class UserTest {
     @AfterAll
     public static void CleanUpValidator() {
         validatorFactory.close();
+    }
+
+    @BeforeEach
+    public void resetTime() {
+        TimeTracker.resetToday();
+        TimeTracker.resetYear();
     }
 
     @Test
@@ -222,6 +231,52 @@ public class UserTest {
         });
 
         String expectedMessage = User.USER_NOT_ADULT_FOR_PROFILE_EXCEPTION;
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.equals(expectedMessage));
+    }
+
+    @Test
+    public void givenMembership_whenAddingAMembershipToUser_thenMembershipAdded() {
+        LocalDate now = TimeTracker.getToday();
+        Membership membership = new Membership();
+        membership.setStartDate(now);
+        membership.setEndDate(now.plusYears(1));
+        membership.setType("GOLD");
+
+        User user = createDefaultUser();
+        user.setMembership(membership);
+
+        Membership userMembership = user.getMemberships().get(0);
+        assertEquals(membership.getStartDate(), userMembership.getStartDate());
+        assertEquals(membership.getEndDate(), userMembership.getEndDate());
+        assertEquals(membership.getType(), userMembership.getType());
+
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        assertEquals(0, violations.size());
+    }
+
+    @Test
+    public void givenOverlappingMembership_whenAddingAMembershipToUser_thenMembershipAdded() {
+        LocalDate now = TimeTracker.getToday();
+        Membership membership = new Membership();
+        membership.setStartDate(now);
+        membership.setEndDate(now.plusYears(1));
+        membership.setType("GOLD");
+
+        Membership membership1 = new Membership();
+        membership1.setStartDate(now.plusDays(100));
+        membership1.setEndDate(now.plusYears(1).plusDays(100));
+        membership1.setType("BRONZE");
+
+        User user = createDefaultUser();
+        user.setMembership(membership);
+
+        Exception exception = assertThrows(DomainException.class, () -> {
+            user.setMembership(membership1);
+        });
+
+        String expectedMessage = User.USER_HAS_ALREADY_A_MEMBERSHIP_EXCEPTION;
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.equals(expectedMessage));

@@ -9,9 +9,11 @@ import org.springframework.stereotype.Component;
 import be.ucll.model.Book;
 import be.ucll.model.Loan;
 import be.ucll.model.Magazine;
+import be.ucll.model.Membership;
 import be.ucll.model.Profile;
 import be.ucll.model.Publication;
 import be.ucll.model.User;
+import be.ucll.utilits.TimeTracker;
 import jakarta.annotation.PostConstruct;
 
 @Component
@@ -20,15 +22,18 @@ public class DbInitializer {
     private UserRepository userRepository;
     private ProfileRepository profileRepository;
     private PublicationRepository publicationRepository;
+    private MembershipRepository membershipRepository;
 
     public DbInitializer(
         UserRepository userRepository, 
         ProfileRepository profileRepository, 
-        PublicationRepository publicationRepository
+        PublicationRepository publicationRepository,
+        MembershipRepository membershipRepository
         ) {
         this.userRepository = userRepository;
         this.profileRepository = profileRepository;
         this.publicationRepository = publicationRepository;
+        this.membershipRepository = membershipRepository;
     }
 
     @PostConstruct
@@ -40,9 +45,7 @@ public class DbInitializer {
         profiles.add(new Profile("Bio 3", "Location 3", "Interests 3"));
         profiles.add(new Profile("Bio 4", "Location 4", "Interests 4"));
         profiles.add(new Profile("Bio 5", "Location 5", "Interests 2"));
-        profiles.forEach(profile -> {
-            profileRepository.save(profile);
-        });
+
 
         List<User> users = new ArrayList<>(List.of(
             new User("John Doe", 25, "john.doe@ucll.be", "john1234", profiles.get(0)),
@@ -51,9 +54,15 @@ public class DbInitializer {
             new User("Sarah Doe", 4, "sarah.doe@ucll.be", "sarah1234"),
             new User("Birgit Doe", 18, "birgit.doe@ucll.be", "birgit1234", profiles.get(4))
             ));
-        users.forEach(user -> {
-            userRepository.save(user);
-        });
+
+        List<Membership> memberships = getDefaultMemberships();
+        User user1 = users.get(0);
+        Membership membership1 = memberships.get(0);
+        Membership membership3 = memberships.get(2);
+        user1.setMembership(membership1);
+        user1.setMembership(membership3);
+        membership1.setUser(user1);
+        membership3.setUser(user1);
 
         // Create an ArrayList to store Book instances
         List<Book> books = new ArrayList<>();
@@ -76,13 +85,44 @@ public class DbInitializer {
         magazines.add(new Magazine("Sports Illustrated", "Sports Editor", "13579", 2022, 20));
 
         initTempLoans(users, books, magazines);
-
+        profiles.forEach(profile -> {
+            profileRepository.save(profile);
+        });
+        users.forEach(user -> {
+            userRepository.save(user);
+        });
+        memberships.forEach(membership -> {
+            membershipRepository.save(membership);
+        });
         books.forEach(user -> {
             publicationRepository.save(user);
         });
         magazines.forEach(user -> {
             publicationRepository.save(user);
         });
+    }
+
+    
+    public static List<Membership> getDefaultMemberships() {
+        List<Membership> memberships = new ArrayList<>();
+
+        // Create default memberships
+        LocalDate now = TimeTracker.getToday();
+        LocalDate oneYearLater = now.plusYears(1);
+
+        Membership membership1 = new Membership(now, oneYearLater, "BRONZE");
+        Membership membership2 = new Membership(now, oneYearLater, "SILVER");
+        Membership membership3 = new Membership(now.plusYears(1).plusDays(2), oneYearLater.plusYears(1).plusDays(2), "GOLD");
+        Membership membership4 = new Membership(now, oneYearLater, "BRONZE");
+        Membership membership5 = new Membership(now, oneYearLater, "SILVER");
+
+        memberships.add(membership1);
+        memberships.add(membership2);
+        memberships.add(membership3);
+        memberships.add(membership4);
+        memberships.add(membership5);
+
+        return memberships;
     }
 
     public void initTempLoans(List<User> users, List<Book> books, List<Magazine> magazines) {

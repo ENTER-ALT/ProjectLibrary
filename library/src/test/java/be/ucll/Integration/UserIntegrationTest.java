@@ -14,9 +14,11 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import be.ucll.model.DomainException;
+import be.ucll.model.Membership;
 import be.ucll.model.User;
 import be.ucll.repository.DbInitializer;
 import be.ucll.repository.LoanRepository;
+import be.ucll.repository.MembershipRepository;
 import be.ucll.repository.PublicationRepository;
 import be.ucll.repository.UserRepository;
 import be.ucll.service.LoanService;
@@ -24,7 +26,7 @@ import be.ucll.service.ServiceException;
 import be.ucll.service.UserService;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureWebTestClient
+@AutoConfigureWebTestClient(timeout = "36000")
 @Sql("classpath:schema.sql")
 public class UserIntegrationTest {
     
@@ -38,6 +40,8 @@ public class UserIntegrationTest {
     private PublicationRepository publicationRepository;
     @Autowired
     private LoanRepository loanRepository;
+    @Autowired
+    private MembershipRepository membershipRepository;
 
     @AfterEach
     public void resetRepository() {
@@ -586,7 +590,7 @@ public class UserIntegrationTest {
 
     @Test
     public void givenNoUsers_whenGettingTheOldestUser_thenClientErrorIsThrown() {
-        userRepository.deleteAll();
+        clearUserRepository();
         webTestClient
         .get()
         .uri("/users/oldest")
@@ -602,7 +606,7 @@ public class UserIntegrationTest {
 
     @Test
     public void givenNoUsers_whenGettingUsersWithInterests_thenClientErrorIsThrown() {
-        userRepository.deleteAll();
+        clearUserRepository();
         webTestClient
         .get()
         .uri("/users/interest/Interest 2")
@@ -720,7 +724,7 @@ public class UserIntegrationTest {
 
     @Test
     public void givenNoUsers_whenGettingUsersWithInterestsAndGreaterAge_thenClientErrorIsThrown() {
-        userRepository.deleteAll();
+        clearUserRepository();
         String interest = "Interests 2";
         Integer age = 1;
         webTestClient
@@ -808,5 +812,43 @@ public class UserIntegrationTest {
                         "    }\r\n" + //
                         "  }\r\n" + //
                         "]");
+    }
+
+    @Test
+    public void givenValidMembership_whenAddAMembership_thenMembershipAddedToUser() {
+        String email = "sarah.doe@ucll.be";
+
+        webTestClient
+        .post()
+        .uri("/users/" + email + "/membership")
+        .header("Content-Type", "application/json")
+        .bodyValue("{\n" + //
+                        "  \"startDate\": \"2024-05-10\",\n" + //
+                        "  \"endDate\": \"2025-05-10\",\n" + //
+                        "  \"type\": \"BRONZE\"\n" + //
+                        "}")
+        .exchange()
+        .expectStatus()
+        .is2xxSuccessful()
+        .expectBody()
+        .json("  {\n" + //
+                        "    \"name\": \"Sarah Doe\",\n" + //
+                        "    \"age\": 4,\n" + //
+                        "    \"email\": \"sarah.doe@ucll.be\",\n" + //
+                        "    \"password\": \"sarah1234\",\n" + //
+                        "    \"profile\": null,\n" + //
+                        "    \"memberships\": [\n" + //
+                        "      {\n" + //
+                        "        \"startDate\": \"2024-05-10\",\n" + //
+                        "        \"endDate\": \"2025-05-10\",\n" + //
+                        "        \"type\": \"BRONZE\"\n" + //
+                        "      }\n" + //
+                        "    ]\n" + //
+                        "  }");
+    }    
+
+    public void clearUserRepository() {
+        membershipRepository.deleteAll();
+        userRepository.deleteAll();
     }
 }

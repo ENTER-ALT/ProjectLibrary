@@ -12,6 +12,7 @@ CREATE TABLE publications (
     type VARCHAR(255) NOT NULL
 );
 
+DROP TABLE IF EXISTS memberships;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS profiles;
 
@@ -23,7 +24,7 @@ CREATE TABLE profiles (
 );
 
 CREATE TABLE users (
-    id LONG AUTO_INCREMENT PRIMARY KEY,
+    user_id LONG AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     age INT NOT NULL,
     email VARCHAR(255) NOT NULL,
@@ -31,5 +32,18 @@ CREATE TABLE users (
     profile_id INT,
     FOREIGN KEY (profile_id) REFERENCES profiles(profile_id)
 );
+
+CREATE TABLE memberships (
+    membership_id LONG AUTO_INCREMENT PRIMARY KEY,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    type VARCHAR(255) NOT NULL,
+    user_id BIGINT,
+    CONSTRAINT fk_user_membership FOREIGN KEY (user_id) REFERENCES users(user_id),
+    CONSTRAINT chk_membership_type CHECK (type IN ('BRONZE', 'SILVER', 'GOLD')),
+    CONSTRAINT chk_membership_dates CHECK (end_date >= start_date),
+    CONSTRAINT chk_membership_unique_dates UNIQUE (user_id, start_date, end_date)
+);
+
 
 
