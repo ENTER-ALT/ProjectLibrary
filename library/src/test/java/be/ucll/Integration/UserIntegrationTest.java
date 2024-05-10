@@ -14,7 +14,6 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import be.ucll.model.DomainException;
-import be.ucll.model.Membership;
 import be.ucll.model.User;
 import be.ucll.repository.DbInitializer;
 import be.ucll.repository.LoanRepository;

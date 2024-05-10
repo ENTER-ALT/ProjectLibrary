@@ -11,7 +11,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -27,7 +26,6 @@ import be.ucll.unit.repository.MembershipRepositoryTestImpl;
 import be.ucll.unit.repository.ProfileRepositoryTestImpl;
 import be.ucll.unit.repository.UserRepositoryTestImpl;
 import be.ucll.utilits.TimeTracker;
-import jakarta.validation.ConstraintViolation;
 
 public class UserServiceTest {
 
