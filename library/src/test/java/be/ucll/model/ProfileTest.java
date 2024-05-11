@@ -8,8 +8,10 @@ import java.util.Set;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import be.ucll.utilits.TimeTracker;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -33,6 +35,12 @@ public class ProfileTest {
     @AfterAll
     public static void CleanUpValidator() {
         validatorFactory.close();
+    }
+
+    @BeforeEach
+    public void resetTime() {
+        TimeTracker.resetToday();
+        TimeTracker.resetYear();
     }
 
     @Test

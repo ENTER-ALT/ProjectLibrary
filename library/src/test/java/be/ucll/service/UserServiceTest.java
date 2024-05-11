@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import be.ucll.model.Loan;
@@ -28,6 +29,12 @@ import be.ucll.unit.repository.UserRepositoryTestImpl;
 import be.ucll.utilits.TimeTracker;
 
 public class UserServiceTest {
+    
+    @BeforeEach
+    public void resetTime() {
+        TimeTracker.resetToday();
+        TimeTracker.resetYear();
+    }
 
     @Test
     public void givenValidRequest_whenGettingAllUsers_thanTheCertainUsersReturned() {

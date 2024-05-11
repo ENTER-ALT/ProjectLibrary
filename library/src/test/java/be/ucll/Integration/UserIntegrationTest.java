@@ -3,6 +3,8 @@ package be.ucll.Integration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDate;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,7 @@ import be.ucll.repository.UserRepository;
 import be.ucll.service.LoanService;
 import be.ucll.service.ServiceException;
 import be.ucll.service.UserService;
+import be.ucll.utilits.TimeTracker;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient()
@@ -39,7 +42,9 @@ public class UserIntegrationTest {
     private MembershipRepository membershipRepository;
 
     @BeforeEach
-    public void setupDatabases() {
+    public void setupDatabasesAndTime() {
+        TimeTracker.resetToday();
+        TimeTracker.resetYear();
         dbInitializer.initialize();
     }
 
@@ -274,7 +279,7 @@ public class UserIntegrationTest {
                         "        \"issn\": \"54321\"\n" + //
                         "      }\n" + //
                         "    ],\n" + //
-                        "    \"startDate\": \"1111-01-02\",\n" + //
+                        "    \"startDate\": \"1111-01-01\",\n" + //
                         "    \"endDate\": null\n" + //
                         "  }\n" + //
                         "]");
@@ -806,6 +811,8 @@ public class UserIntegrationTest {
 
     @Test
     public void givenValidMembership_whenAddAMembership_thenMembershipAddedToUser() {
+        
+        TimeTracker.setCustomToday(LocalDate.of(1111, 1, 1));
         String email = "sarah.doe@ucll.be";
 
         webTestClient

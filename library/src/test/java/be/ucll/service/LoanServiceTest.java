@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import be.ucll.model.Book;
@@ -19,9 +20,16 @@ import be.ucll.repository.LoanRepository;
 import be.ucll.repository.PublicationRepository;
 import be.ucll.repository.UserRepository;
 import be.ucll.unit.repository.LoanRepositoryTestImpl;
+import be.ucll.utilits.TimeTracker;
 
 public class LoanServiceTest {
 
+    @BeforeEach
+    public void resetTime() {
+        TimeTracker.resetToday();
+        TimeTracker.resetYear();
+    }
+    
     @Test 
     public void givenValidEmailOnlyActiveTrue_whenGettingUsersByName_thanActiveUserLoansReturned() {
         List<User> users = UserServiceTest.createDefaultUserList();

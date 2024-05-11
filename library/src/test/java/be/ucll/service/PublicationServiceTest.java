@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import be.ucll.model.Book;
@@ -15,8 +16,15 @@ import be.ucll.model.Magazine;
 import be.ucll.model.Publication;
 import be.ucll.repository.PublicationRepository;
 import be.ucll.unit.repository.PublicationRepositoryTestImpl;
+import be.ucll.utilits.TimeTracker;
 
 public class PublicationServiceTest {
+    
+    @BeforeEach
+    public void resetTime() {
+        TimeTracker.resetToday();
+        TimeTracker.resetYear();
+    }
 
     @Test
     public void givenNullParams_whenRequestingPublications_thanAllPublicationsReturned() {

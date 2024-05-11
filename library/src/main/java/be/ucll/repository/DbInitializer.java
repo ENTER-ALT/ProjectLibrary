@@ -140,7 +140,7 @@ public class DbInitializer {
         if (magazines != null) {
             publications.addAll(magazines);
         }
-
+        LocalDate now = TimeTracker.getToday();
         List<Loan> loans = new ArrayList<>();
         loans.add(new Loan(users.get(0), publications.subList(0, 2), LocalDate.of(1111, 1, 1)));
         loans.add(new Loan(users.get(1), publications.subList(2, 4), LocalDate.of(1111, 1, 2)));
