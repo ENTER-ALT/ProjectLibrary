@@ -21,11 +21,14 @@ import jakarta.validation.ValidatorFactory;
 
 public class MembershipTest {
 
-    public static final LocalDate DEFAULT_TODAY = LocalDate.of(1111, 1, 2);
-    public static final LocalDate DEFAULT_1YEAR_AFTER_TODAY = LocalDate.of(1112, 1, 2);
+    public static final LocalDate DEFAULT_TODAY = LocalDate.of(1111, 1, 12);
+    public static final LocalDate DEFAULT_1YEAR_AFTER_TODAY = LocalDate.of(1112, 1, 12);
     public static final String BRONZE_TYPE = "BRONZE";
     public static final String SILVER_TYPE = "SILVER";
     public static final String GOLD_TYPE = "GOLD";
+    public static final Integer DEFAULT_BRONZE_FREE_LOANS = 4;
+    public static final Integer DEFAULT_SILVER_FREE_LOANS = 8;
+    public static final Integer DEFAULT_GOLD_FREE_LOANS = 12;
     public static final User DEFAULT_USER = UserTest.createDefaultUser();
 
     private static ValidatorFactory validatorFactory;
@@ -49,7 +52,7 @@ public class MembershipTest {
 
     @Test
     public void givenValidValues_whenCreatingMembership_thenMembershipIsCreatedWithThoseValues() {
-        Membership membership = new Membership(DEFAULT_TODAY, DEFAULT_1YEAR_AFTER_TODAY, BRONZE_TYPE);
+        Membership membership = new Membership(DEFAULT_TODAY, DEFAULT_1YEAR_AFTER_TODAY, BRONZE_TYPE, DEFAULT_BRONZE_FREE_LOANS);
 
         assertEquals(DEFAULT_TODAY, membership.getStartDate());
         assertEquals(DEFAULT_1YEAR_AFTER_TODAY, membership.getEndDate());
@@ -61,7 +64,7 @@ public class MembershipTest {
 
     @Test
     public void givenNullStartDate_whenCreatingMembership_thenMembershipStartDateDomainExceptionIsThrown() {
-        Membership membership = new Membership(null, DEFAULT_1YEAR_AFTER_TODAY, BRONZE_TYPE);
+        Membership membership = new Membership(null, DEFAULT_1YEAR_AFTER_TODAY, BRONZE_TYPE, DEFAULT_BRONZE_FREE_LOANS);
 
         Set<ConstraintViolation<Membership>> violations = validator.validate(membership);
         assertEquals(1, violations.size());
@@ -75,7 +78,7 @@ public class MembershipTest {
 
     @Test
     public void givenNullEndDate_whenCreatingMembership_thenMembershipEndDateDomainExceptionIsThrown() {
-        Membership membership = new Membership(DEFAULT_TODAY, null, BRONZE_TYPE);
+        Membership membership = new Membership(DEFAULT_TODAY, null,  BRONZE_TYPE, DEFAULT_BRONZE_FREE_LOANS);
 
         Set<ConstraintViolation<Membership>> violations = validator.validate(membership);
         assertEquals(1, violations.size());
@@ -89,7 +92,7 @@ public class MembershipTest {
 
     @Test
     public void givenNullType_whenCreatingMembership_thenMembershipTypeDomainExceptionIsThrown() {
-        Membership membership = new Membership(DEFAULT_TODAY, DEFAULT_1YEAR_AFTER_TODAY, null);
+        Membership membership = new Membership(DEFAULT_TODAY, DEFAULT_1YEAR_AFTER_TODAY, null, DEFAULT_BRONZE_FREE_LOANS);
 
         Set<ConstraintViolation<Membership>> violations = validator.validate(membership);
         assertEquals(1, violations.size());
@@ -103,7 +106,7 @@ public class MembershipTest {
 
     @Test
     public void givenWrongType_whenCreatingMembership_thenMembershipTypeDomainExceptionIsThrown() {
-        Membership membership = new Membership(DEFAULT_TODAY, DEFAULT_1YEAR_AFTER_TODAY, "wrong");
+        Membership membership = new Membership(DEFAULT_TODAY, DEFAULT_1YEAR_AFTER_TODAY, "wrong", DEFAULT_BRONZE_FREE_LOANS);
 
         Set<ConstraintViolation<Membership>> violations = validator.validate(membership);
         assertEquals(1, violations.size());
@@ -118,7 +121,7 @@ public class MembershipTest {
     @Test
     public void givenWrongStartDate_whenCreatingMembership_thenMembershipTypeDomainExceptionIsThrown() {
         Exception exception = assertThrows(DomainException.class, () -> {
-            new Membership(DEFAULT_TODAY.minusDays(1), DEFAULT_1YEAR_AFTER_TODAY, BRONZE_TYPE);
+            new Membership(DEFAULT_TODAY.minusDays(1), DEFAULT_1YEAR_AFTER_TODAY, BRONZE_TYPE, DEFAULT_BRONZE_FREE_LOANS);
         });
 
         String expectedMessage = Membership.START_DATE_FUTURE_EXCEPTION;
@@ -130,7 +133,7 @@ public class MembershipTest {
     @Test
     public void givenWrongEndDate_whenCreatingMembership_thenMembershipTypeDomainExceptionIsThrown() {
         Exception exception = assertThrows(DomainException.class, () -> {
-            new Membership(DEFAULT_TODAY, DEFAULT_1YEAR_AFTER_TODAY.minusDays(1), BRONZE_TYPE);
+            new Membership(DEFAULT_TODAY, DEFAULT_1YEAR_AFTER_TODAY.minusDays(1),  BRONZE_TYPE, DEFAULT_BRONZE_FREE_LOANS);
         });
 
         String expectedMessage = Membership.END_DATE_YEAR_AFTER_START_EXCEPTION;
@@ -139,7 +142,15 @@ public class MembershipTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
-    public static Membership createDefaultMembership() {
-        return new Membership(DEFAULT_TODAY, DEFAULT_1YEAR_AFTER_TODAY, BRONZE_TYPE);
+    public static Membership createDefaultBronzeMembership() {
+        return new Membership(DEFAULT_TODAY, DEFAULT_1YEAR_AFTER_TODAY, BRONZE_TYPE, DEFAULT_BRONZE_FREE_LOANS);
+    } 
+
+    public static Membership createDefaultSilverMembership() {
+        return new Membership(DEFAULT_TODAY, DEFAULT_1YEAR_AFTER_TODAY, SILVER_TYPE, DEFAULT_SILVER_FREE_LOANS);
+    } 
+
+    public static Membership createDefaultGoldMembership() {
+        return new Membership(DEFAULT_TODAY, DEFAULT_1YEAR_AFTER_TODAY, GOLD_TYPE, DEFAULT_GOLD_FREE_LOANS);
     } 
 }

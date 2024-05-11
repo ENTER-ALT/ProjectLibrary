@@ -31,6 +31,8 @@ public class Membership {
     public static final String END_DATE_YEAR_AFTER_START_EXCEPTION = "End date must be 1 year after the start date.";
     public static final String MEMBERSHIP_TYPE_REQUIRED_EXCEPTION = "Membership type is required.";
     public static final String INVALID_MEMBERSHIP_TYPE_EXCEPTION = "Invalid membership type.";
+    public static final String INVALID_FREE_LOANS_EXCEPTION = "Invalid number of free loans for membership type.";
+    public static final String NO_FREE_LOANS_EXCEPTION = "No more free loans available within membership.";
 
     @NotNull(message = START_DATE_REQUIRED_EXCEPTION)
     private LocalDate startDate;
@@ -42,6 +44,8 @@ public class Membership {
     @Pattern(regexp = "BRONZE|SILVER|GOLD", message = INVALID_MEMBERSHIP_TYPE_EXCEPTION)
     private String type;
 
+    private Integer freeLoansQuantity;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonBackReference
@@ -49,10 +53,11 @@ public class Membership {
 
     protected Membership() {}
 
-    public Membership(LocalDate startDate, LocalDate endDate, String type) {
+    public Membership(LocalDate startDate, LocalDate endDate, String type, Integer freeLoansQuantity) {
         setStartDate(startDate);
         setEndDate(endDate);
         setType(type);
+        setFreeLoansQuantity(freeLoansQuantity);
     }
 
     public LocalDate getStartDate() {
@@ -85,12 +90,30 @@ public class Membership {
         this.type = type;
     }
 
+    public Integer getFreeLoansQuantity() {
+        return freeLoansQuantity;
+    }
+
+    public void setFreeLoansQuantity(Integer freeLoansQuantity) {
+        if (!areValidFreeLoans(freeLoansQuantity)) {
+            throw new DomainException(INVALID_FREE_LOANS_EXCEPTION);
+        }
+        this.freeLoansQuantity = freeLoansQuantity;
+    }
+
     public User getUser() {
         return user;
     }
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public void redeemFreeLoan() {
+        if (freeLoansQuantity == null || freeLoansQuantity <= 0) {
+            throw new DomainException(NO_FREE_LOANS_EXCEPTION);
+        }
+        freeLoansQuantity--;
     }
 
     public boolean isEndDateValid(LocalDate endDate) {
@@ -111,5 +134,13 @@ public class Membership {
     public boolean overlaps(Membership other) {
         return (this.startDate.isBefore(other.endDate) || this.startDate.isEqual(other.endDate))
                 && (this.endDate.isAfter(other.startDate) || this.endDate.isEqual(other.startDate));
+    }
+
+    public boolean areValidFreeLoans(Integer freeLoansQuantity) {
+        Boolean result = (freeLoansQuantity == null)
+        || ("BRONZE".equals(type) && (freeLoansQuantity < 0 || freeLoansQuantity > 5)) 
+        || ("SILVER".equals(type) && (freeLoansQuantity < 6 || freeLoansQuantity > 10))
+        || ("GOLD".equals(type) && (freeLoansQuantity < 11 || freeLoansQuantity > 15));
+        return !result;
     }
 }

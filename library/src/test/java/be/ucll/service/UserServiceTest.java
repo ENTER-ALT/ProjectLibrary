@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 
 import be.ucll.model.Loan;
 import be.ucll.model.Membership;
+import be.ucll.model.MembershipTest;
 import be.ucll.model.Profile;
 import be.ucll.model.User;
 import be.ucll.repository.LoanRepository;
@@ -711,11 +712,11 @@ public class UserServiceTest {
 
     @Test 
     public void givenWrongEmail_whenAddingMembership_thanServiceExceptionThrown() {
+        TimeTracker.setCustomToday(LocalDate.of(1111, 1, 10));
+
         UserService userService = createDefaultService();
         String email = "asdasda@sda.ss";
-        LocalDate now = TimeTracker.getToday();
-        LocalDate oneYearLater = now.plusYears(1);
-        Membership membership = new Membership(now, oneYearLater, "SILVER");
+        Membership membership = MembershipTest.createDefaultSilverMembership();
 
         ServiceException exception = assertThrows(ServiceException.class, () -> {
             userService.addMembership(email, membership);
@@ -729,12 +730,12 @@ public class UserServiceTest {
     
     @Test 
     public void givenValidMembership_whenAddingMembership_thanMembershipIsAddedtoUser() {
+        TimeTracker.setCustomToday(LocalDate.of(1111, 1, 10));
+
         UserService userService = createDefaultService();
         User user = userService.getAllUsers().get(2);
         String email = user.getEmail();
-        LocalDate now = TimeTracker.getToday();
-        LocalDate oneYearLater = now.plusYears(1);
-        Membership membership = new Membership(now, oneYearLater, "SILVER");
+        Membership membership = MembershipTest.createDefaultSilverMembership();
 
         User actualUser = userService.addMembership(email, membership);
 

@@ -117,11 +117,11 @@ public class DbInitializer {
         LocalDate now = TimeTracker.getToday();
         LocalDate oneYearLater = now.plusYears(1);
 
-        Membership membership1 = new Membership(now, oneYearLater, "BRONZE");
-        Membership membership2 = new Membership(now, oneYearLater, "SILVER");
-        Membership membership3 = new Membership(now.plusYears(1).plusDays(2), oneYearLater.plusYears(1).plusDays(2), "GOLD");
-        Membership membership4 = new Membership(now, oneYearLater, "BRONZE");
-        Membership membership5 = new Membership(now, oneYearLater, "SILVER");
+        Membership membership1 = new Membership(now, oneYearLater, "BRONZE", 3);
+        Membership membership2 = new Membership(now, oneYearLater, "SILVER", 8);
+        Membership membership3 = new Membership(now.plusYears(1).plusDays(2), oneYearLater.plusYears(1).plusDays(2), "GOLD", 13);
+        Membership membership4 = new Membership(now, oneYearLater, "BRONZE", 2);
+        Membership membership5 = new Membership(now, oneYearLater, "SILVER", 9);
 
         memberships.add(membership1);
         memberships.add(membership2);

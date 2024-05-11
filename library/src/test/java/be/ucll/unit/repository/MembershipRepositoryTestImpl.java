@@ -1,6 +1,5 @@
 package be.ucll.unit.repository;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -13,8 +12,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.FluentQuery.FetchableFluentQuery;
 
 import be.ucll.model.Membership;
+import be.ucll.repository.DbInitializer;
 import be.ucll.repository.MembershipRepository;
-import be.ucll.utilits.TimeTracker;
 
 public class MembershipRepositoryTestImpl implements MembershipRepository {
     public List<Membership> memberships;
@@ -47,29 +46,7 @@ public class MembershipRepositoryTestImpl implements MembershipRepository {
     }
 
     public void resetRepository() {
-        memberships = getDefaultMemberships();
-    }
-
-    public static List<Membership> getDefaultMemberships() {
-        List<Membership> memberships = new ArrayList<>();
-
-        // Create default memberships
-        LocalDate now = TimeTracker.getToday();
-        LocalDate oneYearLater = now.plusYears(1);
-
-        Membership membership1 = new Membership(now, oneYearLater, "BRONZE");
-        Membership membership2 = new Membership(now, oneYearLater, "SILVER");
-        Membership membership3 = new Membership(now.plusYears(1).plusDays(2), oneYearLater.plusYears(1).plusDays(2), "GOLD");
-        Membership membership4 = new Membership(now, oneYearLater, "BRONZE");
-        Membership membership5 = new Membership(now, oneYearLater, "SILVER");
-
-        memberships.add(membership1);
-        memberships.add(membership2);
-        memberships.add(membership3);
-        memberships.add(membership4);
-        memberships.add(membership5);
-
-        return memberships;
+        memberships = DbInitializer.getDefaultMemberships();
     }
 
     @Override

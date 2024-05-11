@@ -822,7 +822,8 @@ public class UserIntegrationTest {
         .bodyValue("{\n" + //
                         "  \"startDate\": \"2024-05-10\",\n" + //
                         "  \"endDate\": \"2025-05-10\",\n" + //
-                        "  \"type\": \"BRONZE\"\n" + //
+                        "  \"type\": \"BRONZE\",\n" + //
+                        "  \"freeLoansQuantity\": \"4\"\n" + //
                         "}")
         .exchange()
         .expectStatus()

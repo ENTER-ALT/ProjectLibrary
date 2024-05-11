@@ -40,6 +40,7 @@ CREATE TABLE memberships (
     start_date DATETIME NOT NULL,
     end_date DATETIME NOT NULL,
     type VARCHAR(255) NOT NULL,
+    free_loans_quantity INT NOT NULL,
     user_id BIGINT,
     CONSTRAINT fk_user_membership FOREIGN KEY (user_id) REFERENCES users(user_id),
     CONSTRAINT chk_membership_type CHECK (type IN ('BRONZE', 'SILVER', 'GOLD')),
