@@ -57,7 +57,7 @@ public class Membership {
         setStartDate(startDate);
         setEndDate(endDate);
         setType(type);
-        setFreeLoansQuantity(freeLoansQuantity);
+        initFreeLoansQuantity(freeLoansQuantity);
     }
 
     public LocalDate getStartDate() {
@@ -95,9 +95,6 @@ public class Membership {
     }
 
     public void setFreeLoansQuantity(Integer freeLoansQuantity) {
-        if (!areValidFreeLoans(freeLoansQuantity)) {
-            throw new DomainException(INVALID_FREE_LOANS_EXCEPTION);
-        }
         this.freeLoansQuantity = freeLoansQuantity;
     }
 
@@ -109,11 +106,18 @@ public class Membership {
         this.user = user;
     }
 
+    private void initFreeLoansQuantity(Integer freeLoansQuantity) {
+        if (!areValidFreeLoans(freeLoansQuantity)) {
+            throw new DomainException(INVALID_FREE_LOANS_EXCEPTION);
+        }
+        setFreeLoansQuantity(freeLoansQuantity);
+    }
+
     public void redeemFreeLoan() {
         if (freeLoansQuantity == null || freeLoansQuantity <= 0) {
             throw new DomainException(NO_FREE_LOANS_EXCEPTION);
         }
-        freeLoansQuantity--;
+        setFreeLoansQuantity(freeLoansQuantity-1);
     }
 
     public boolean isEndDateValid(LocalDate endDate) {

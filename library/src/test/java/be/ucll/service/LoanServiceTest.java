@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -14,7 +15,10 @@ import org.junit.jupiter.api.Test;
 
 import be.ucll.model.Book;
 import be.ucll.model.Loan;
+import be.ucll.model.LoanTest;
 import be.ucll.model.Magazine;
+import be.ucll.model.Membership;
+import be.ucll.model.MembershipTest;
 import be.ucll.model.Publication;
 import be.ucll.model.User;
 import be.ucll.repository.DbInitializer;
@@ -279,6 +283,86 @@ public class LoanServiceTest {
         String actualMessage = exception.getMessage();
 
         assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    public void givenActiveMembershipWithFreeLoans_whenCalculatePrice_thenPriceIsZero() {
+        TimeTracker.setCustomToday(LoanTest.DEFAULT_TODAY);
+        Membership membership = MembershipTest.createDefaultBronzeMembership();
+        Loan loan = LoanTest.createDefaultLoan();
+        LoanService loanService = createDefaultService();
+        Integer initialFreeLoans = membership.getFreeLoansQuantity();
+        List<Publication> publications = DbInitializer.createPublications().subList(0, 1);
+        loan.setPublications(publications);
+        loan.setReturnDate(LoanTest.DEFAULT_TODAY);
+
+        Integer price = loanService.calculatePrice(loan, membership);
+
+        assertEquals(0, price);
+        assertEquals(initialFreeLoans-1, membership.getFreeLoansQuantity());
+    }
+
+    @Test
+    public void givenActiveBronzeMembershipWithNoFreeLoans_whenCalculatePrice_thenPriceIsReducedByHalf() {
+        TimeTracker.setCustomToday(LoanTest.DEFAULT_TODAY.plusDays(4));
+        Membership membership = MembershipTest.createDefaultBronzeMembership();
+        membership.setFreeLoansQuantity(0);
+        Loan loan = LoanTest.createDefaultLoan();
+        List<Publication> publications = DbInitializer.createPublications().subList(0, 1);
+        loan.setPublications(publications);
+        loan.setReturnDate(LoanTest.DEFAULT_TODAY);
+        LoanService loanService = createDefaultService();
+
+        Integer actualPrice = loanService.calculatePrice(loan, membership);
+        Integer expectedPrice = (int)(ChronoUnit.DAYS.between(loan.getStartDate(), loan.getReturnDate()) * 0.75 * 2);
+        assertEquals(actualPrice, expectedPrice);
+    }
+
+    @Test
+    public void givenActiveSilverMembershipWithNoFreeLoans_whenCalculatePrice_thenPriceIsReducedByHalf() {
+        TimeTracker.setCustomToday(LoanTest.DEFAULT_TODAY.plusDays(4));
+        Membership membership = MembershipTest.createDefaultSilverMembership();
+        membership.setFreeLoansQuantity(0);
+        Loan loan = LoanTest.createDefaultLoan();
+        List<Publication> publications = DbInitializer.createPublications().subList(0, 1);
+        loan.setPublications(publications);
+        loan.setReturnDate(LoanTest.DEFAULT_TODAY);
+        LoanService loanService = createDefaultService();
+
+        Integer actualPrice = loanService.calculatePrice(loan, membership);
+        Integer expectedPrice = (int)(ChronoUnit.DAYS.between(loan.getStartDate(), loan.getReturnDate()) * 0.5 * 2);
+        assertEquals(actualPrice, expectedPrice);
+    }
+
+    @Test
+    public void givenActiveGoldMembershipWithNoFreeLoans_whenCalculatePrice_thenPriceIsReducedByQuarter() {
+        TimeTracker.setCustomToday(LoanTest.DEFAULT_TODAY.plusDays(4));
+        Membership membership = MembershipTest.createDefaultGoldMembership();
+        membership.setFreeLoansQuantity(0);
+        Loan loan = LoanTest.createDefaultLoan();
+        List<Publication> publications = DbInitializer.createPublications().subList(0, 1);
+        loan.setPublications(publications);
+        loan.setReturnDate(LoanTest.DEFAULT_TODAY);
+        LoanService loanService = createDefaultService();
+
+        Integer actualPrice = loanService.calculatePrice(loan, membership);
+        Integer expectedPrice = (int)(ChronoUnit.DAYS.between(loan.getStartDate(), loan.getReturnDate()) * 0.25 * 2);
+        assertEquals(actualPrice, expectedPrice);
+    }
+
+    @Test
+    public void givenNoMemberships_whenCalculatePrice_thenPriceNotReduced() {
+        TimeTracker.setCustomToday(LoanTest.DEFAULT_TODAY.plusDays(4));
+        Membership membership = null;
+        Loan loan = LoanTest.createDefaultLoan();
+        List<Publication> publications = DbInitializer.createPublications().subList(0, 1);
+        loan.setPublications(publications);
+        loan.setReturnDate(LoanTest.DEFAULT_TODAY);
+        LoanService loanService = createDefaultService();
+
+        Integer actualPrice = loanService.calculatePrice(loan, membership);
+        Integer expectedPrice = (int)(ChronoUnit.DAYS.between(loan.getStartDate(), loan.getReturnDate()) * 1 * 2);
+        assertEquals(actualPrice, expectedPrice);
     }
 
     public static LoanRepository createDefaultRepository(List<Loan> loans) {

@@ -63,6 +63,7 @@ public class Loan {
         setPublications(publications);
         setStartDate(startDate);
         setEndDate(startDate.plusDays(30));
+        setPrice(0);
     }
 
     public User getUser() {

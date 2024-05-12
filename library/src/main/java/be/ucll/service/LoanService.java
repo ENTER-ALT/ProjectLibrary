@@ -53,7 +53,8 @@ public class LoanService {
         List<Publication> publications = publicationService.getPublicationsById(publicationsIds);
         Loan newLoan = new Loan(user, publications, startDate);
 
-        return newLoan;
+        loanRepository.save(newLoan);
+        return loanRepository.findByUserEmailAndEndDateAfter(email, startDate).get(0);
     }
 
     public Loan returnLoan(String email, LocalDate returnDate) {
@@ -65,6 +66,7 @@ public class LoanService {
         Membership membership = findProfitableMembership(memberships);
         Integer price = calculatePrice(loan, membership);
         loan.setPrice(price);
+        loan.returnPublications();
         
         return loan;
     }

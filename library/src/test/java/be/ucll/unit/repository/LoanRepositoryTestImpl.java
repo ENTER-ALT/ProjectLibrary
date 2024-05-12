@@ -39,6 +39,13 @@ public class LoanRepositoryTestImpl implements LoanRepository {
         this.loans = new ArrayList<Loan>(loans);
     }
 
+    
+    @Override
+    public <S extends Loan> S save(S entity) {
+        loans.add(entity);
+        return entity;
+    }
+
     @Override
     public void deleteByUserEmail(String email) {
         List<Loan> loansByEmail = findByUserEmail(email);
@@ -172,12 +179,6 @@ public class LoanRepositoryTestImpl implements LoanRepository {
     public List<Loan> findAllById(Iterable<Long> ids) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findAllById'");
-    }
-
-    @Override
-    public <S extends Loan> S save(S entity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'save'");
     }
 
     @Override

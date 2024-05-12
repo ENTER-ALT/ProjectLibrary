@@ -197,6 +197,79 @@ public class LoanTest {
         assertEquals(DefaultMagazine.getAvailableCopies(), 1);
     }
 
+    @Test
+    public void givenAlreadyReturnedLoan_whenSetReturnDate_thenThrowException() {
+        TimeTracker.setCustomToday(DEFAULT_TODAY);
+        Loan loan = createDefaultLoan();
+        loan.setReturnDate(DEFAULT_TODAY);
+
+        Exception exception = assertThrows(DomainException.class, () -> {
+            loan.setReturnDate(DEFAULT_TODAY.plusDays(1));
+        });
+
+        String expectedMessage = Loan.LOAN_ALREADY_RETURNED_EXCEPTION;
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    public void givenNullReturnDate_whenSetReturnDate_thenThrowException() {
+        TimeTracker.setCustomToday(DEFAULT_TODAY);
+        Loan loan = createDefaultLoan();
+
+        Exception exception = assertThrows(DomainException.class, () -> {
+            loan.setReturnDate(null);
+        });
+
+        String expectedMessage = Loan.INVALID_RETURN_DATE_EXCEPTION;
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    public void givenReturnDateBeforeStartDate_whenSetReturnDate_thenThrowException() {
+        TimeTracker.setCustomToday(DEFAULT_TODAY);
+        Loan loan = createDefaultLoan();
+
+        Exception exception = assertThrows(DomainException.class, () -> {
+            loan.setReturnDate(DEFAULT_TODAY.minusDays(1));
+        });
+
+        String expectedMessage = Loan.RETURN_DATE_BEFORE_START_DATE_EXCEPTION;
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    public void givenReturnDateInFuture_whenSetReturnDate_thenThrowException() {
+        TimeTracker.setCustomToday(DEFAULT_TODAY);
+        Loan loan = createDefaultLoan();
+
+        Exception exception = assertThrows(DomainException.class, () -> {
+            loan.setReturnDate(DEFAULT_TODAY.plusDays(1));
+        });
+
+        String expectedMessage = Loan.RETURN_DATE_FUTURE_EXCEPTION;
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    public void givenValidReturnDate_whenSetReturnDate_thenReturnDateIsSet() {
+        TimeTracker.setCustomToday(DEFAULT_TODAY);
+        Loan loan = createDefaultLoan();
+
+        TimeTracker.setCustomToday(DEFAULT_TOMORROW);
+        LocalDate returnDate = DEFAULT_TOMORROW;
+        loan.setReturnDate(returnDate);
+
+        assertEquals(returnDate, loan.getReturnDate());
+    }
+
     public static Loan createDefaultLoan() {
         User DefaultUser = UserTest.createDefaultUser();  
         ArrayList<Publication> Publications = new ArrayList<>();

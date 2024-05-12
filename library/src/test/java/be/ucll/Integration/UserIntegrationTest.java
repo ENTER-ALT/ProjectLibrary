@@ -17,6 +17,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import be.ucll.model.DomainException;
+import be.ucll.model.Loan;
 import be.ucll.model.Publication;
 import be.ucll.model.User;
 import be.ucll.repository.DbInitializer;
@@ -194,8 +195,8 @@ public class UserIntegrationTest {
                         "        \"isbn\": \"978-0141439518\"\n" + //
                         "      }\n" + //
                         "    ],\n" + //
-                        "    \"startDate\": \"1111-01-01\",\n" + //
-                        "    \"endDate\": \"1111-01-31\"\n" + //
+                        "    \"startDate\": \"2023-05-12\",\n" + //
+                        "    \"endDate\": \"2023-06-11\"\n" + //
                         "  },\n" + //
                         "  {\n" + //
                         "    \"user\": {\n" + //
@@ -881,6 +882,8 @@ public class UserIntegrationTest {
         .exchange()
         .expectStatus()
         .is2xxSuccessful();
+
+        assertTrue(loanRepository.findByUserEmailAndEndDateAfter(email, today).size() > 0);
     }   
 
     @Test 
@@ -906,6 +909,34 @@ public class UserIntegrationTest {
         "  \""+ServiceException.class.getSimpleName()+"\": \""+String.format(PublicationService.PUBLICATION_NOT_FOUND_EXCEPTION, unexistingId.get(0)) +"\"\r\n" + //
         "}");
     }
+
+    @Test
+    public void givenValidInfo_whenReturnLoan_thenLoanReturned() {
+        
+        LocalDate today = TimeTracker.getToday();
+        String email = "sarah.doe@ucll.be";
+        List<Publication> publications = publicationRepository.findAll();
+        List<Long> ids = publications.stream().map(publication -> publication.getId()).toList().subList(0, 3);
+        String bodyValue = ids.toString();
+
+        webTestClient
+        .post()
+        .uri("/users/" + email + "/loans/" + today)
+        .header("Content-Type", "application/json")
+        .bodyValue(bodyValue)
+        .exchange()
+        .expectStatus()
+        .is2xxSuccessful();
+
+        TimeTracker.setCustomToday(today.plusDays(1));
+        webTestClient
+        .put()
+        .uri("/users/" + email + "/loans/return/" + today.plusDays(1))
+        .header("Content-Type", "application/json")
+        .exchange()
+        .expectStatus()
+        .is2xxSuccessful();
+    }  
 
     public void clearUserRepository() {
         loanRepository.deleteAll();

@@ -144,11 +144,12 @@ public class DbInitializer {
 
     public static List<Loan> createLoans(List<User> users, List<Publication> publications) {
         LocalDate now = TimeTracker.getToday();
+        LocalDate yearBefore = now.minusYears(1);
         List<Loan> loans = new ArrayList<>();
-        loans.add(new Loan(users.get(0), publications.subList(0, 2), LocalDate.of(1111, 1, 1)));
-        loans.add(new Loan(users.get(1), publications.subList(2, 4), LocalDate.of(1111, 1, 2)));
-        loans.add(new Loan(users.get(2), publications.subList(4, 6), LocalDate.of(1111, 1, 3)));
-        loans.add(new Loan(users.get(3), publications.subList(2, 8), LocalDate.of(1111, 1, 4)));
+        loans.add(new Loan(users.get(0), publications.subList(0, 2), yearBefore));
+        loans.add(new Loan(users.get(1), publications.subList(2, 4), yearBefore));
+        loans.add(new Loan(users.get(2), publications.subList(4, 6), yearBefore));
+        loans.add(new Loan(users.get(3), publications.subList(2, 8), yearBefore));
         loans.add(new Loan(users.get(1), publications.subList(4, 8), now.minusDays(2)));
 
         return loans;

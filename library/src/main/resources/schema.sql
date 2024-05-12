@@ -54,7 +54,7 @@ CREATE TABLE loans (
     user_id BIGINT NOT NULL,
     start_date DATETIME NOT NULL,
     end_date DATETIME,
-    returnDate DATE,
+    return_date DATETIME,
     price INT,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
