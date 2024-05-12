@@ -42,12 +42,19 @@ public class Loan {
 
     private LocalDate startDate;
     private LocalDate endDate;
+    private LocalDate returnDate;
+
+    private Integer price;
 
     public static final String INVALID_USER_EXCEPTION = "User is required";
     public static final String INVALID_PUBLICATIONS_EXCEPTION = "Publication(s) cannot be null";
     public static final String INVALID_STARTDATE_EXCEPTION = "Start date is required";
     public static final String FUTURE_STARTDATE_EXCEPTION = "Start date cannot be in future";
-    public static final String INVALID_ENDDATE_EXCEPTION = "End date cannot be null";
+    public static final String INVALID_ENDDATE_EXCEPTION = "End date is required";
+    public static final String INVALID_RETURN_DATE_EXCEPTION = "Return date is required";
+    public static final String RETURN_DATE_BEFORE_START_DATE_EXCEPTION = "Invalid return date. Return date must be after start date.";
+    public static final String RETURN_DATE_FUTURE_EXCEPTION = "Return date cannot be in the future.";
+    public static final String LOAN_ALREADY_RETURNED_EXCEPTION = "Loan has already been returned.";
 
     protected Loan() {};
 
@@ -106,6 +113,38 @@ public class Loan {
             throw new DomainException(INVALID_ENDDATE_EXCEPTION);
         }
         this.endDate = endDate;
+    }
+
+    public LocalDate getReturnDate() {
+        return returnDate;
+    }
+
+    public void setReturnDate(LocalDate returnDate) {
+        if (this.returnDate != null) {
+            throw new DomainException(LOAN_ALREADY_RETURNED_EXCEPTION);
+        }
+
+        if (returnDate == null) {
+            throw new DomainException(INVALID_RETURN_DATE_EXCEPTION);
+        }
+    
+        if (returnDate.isBefore(startDate)) {
+            throw new DomainException(RETURN_DATE_BEFORE_START_DATE_EXCEPTION);
+        }
+    
+        if (returnDate.isAfter(TimeTracker.getToday())) {
+            throw new DomainException(RETURN_DATE_FUTURE_EXCEPTION);
+        }
+
+        this.returnDate = returnDate;
+    }
+
+    public Integer getPrice() {
+        return price;
+    }
+
+    public void setPrice(Integer price) {
+        this.price = price;
     }
 
     public void returnPublications() {

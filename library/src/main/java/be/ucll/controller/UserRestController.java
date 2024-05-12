@@ -7,6 +7,7 @@ import java.util.Map;
 
 import be.ucll.model.Membership;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -118,6 +119,13 @@ public class UserRestController {
         @PathVariable(value = "email") String email,
         @Valid @RequestBody User newUser) {
         return userService.updateUser(email, newUser);
+    }
+
+    @PutMapping("/{email}/loans/return/{returnDate}")
+    public Loan returnLoan(
+            @PathVariable(value = "email") String email,
+            @PathVariable LocalDate returnDate) {
+        return loanService.returnLoan(email, returnDate);
     }
 
     // Delete

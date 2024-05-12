@@ -131,6 +131,10 @@ public class Membership {
         return startDate.isAfter(today) || startDate.isEqual(today);
     }
 
+    public Boolean isActive() {
+        return TimeTracker.getToday().isBefore(endDate);
+    }
+
     public boolean overlaps(Membership other) {
         return (this.startDate.isBefore(other.endDate) || this.startDate.isEqual(other.endDate))
                 && (this.endDate.isAfter(other.startDate) || this.endDate.isEqual(other.startDate));
