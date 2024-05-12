@@ -1,5 +1,6 @@
 package be.ucll.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jdbc.repository.query.Modifying;
@@ -18,5 +19,5 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
 
     List<Loan> findByUserEmail(String email);
 
-    List<Loan> findByUserEmailAndEndDateIsNull(String email);
+    List<Loan> findByUserEmailAndEndDateAfter(String email, LocalDate currentDate);
 }

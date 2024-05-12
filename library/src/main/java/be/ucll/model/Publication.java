@@ -57,6 +57,10 @@ public abstract class Publication {
         setType(type);
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public Integer getAvailableCopies() {
         return availableCopies;
     }

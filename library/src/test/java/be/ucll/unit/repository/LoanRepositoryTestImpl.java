@@ -15,11 +15,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.FluentQuery.FetchableFluentQuery;
 import org.springframework.stereotype.Repository;
 
-import be.ucll.model.Book;
 import be.ucll.model.Loan;
-import be.ucll.model.Magazine;
 import be.ucll.model.Publication;
 import be.ucll.model.User;
+import be.ucll.repository.DbInitializer;
 import be.ucll.repository.LoanRepository;
 import be.ucll.repository.PublicationRepository;
 import be.ucll.repository.UserRepository;
@@ -42,7 +41,7 @@ public class LoanRepositoryTestImpl implements LoanRepository {
 
     @Override
     public void deleteByUserEmail(String email) {
-        List<Loan> loansByEmail = findLoansByEmail(email, false);
+        List<Loan> loansByEmail = findByUserEmail(email);
         loansByEmail
         .forEach(loan -> {
             loans.remove(loan);
@@ -51,23 +50,21 @@ public class LoanRepositoryTestImpl implements LoanRepository {
 
     @Override
     public List<Loan> findByUserEmail(String email) {
-        return findLoansByEmail(email, false);
+        List<Loan> result = filterLoans(loan -> 
+        (loan.getUser()
+            .getEmail()
+            .equals(email)));
+        return result;
     }
 
     @Override
-    public List<Loan> findByUserEmailAndEndDateIsNull(String email) {
-        return findLoansByEmail(email, true);
-    }
-
-    public List<Loan> findLoansByEmail(String email, Boolean onlyActive) {
+    public List<Loan> findByUserEmailAndEndDateAfter(String email, LocalDate today) {
         List<Loan> result = filterLoans(loan -> 
         (loan.getUser()
             .getEmail()
             .equals(email)) 
         &&
-        (onlyActive 
-            ? loan.getEndDate() == null 
-            : true));
+        loan.getEndDate().isAfter(today));
         return result;
     }
     
@@ -81,7 +78,6 @@ public class LoanRepositoryTestImpl implements LoanRepository {
     }
 
     public void resetRepository(PublicationRepository publicationRepository, UserRepository userRepository) {
-        loans = new ArrayList<>();
         List<User> users = new ArrayList<>(List.of(
             new User("John Doe", 25, "john.doe@ucll.be", "john1234"),
             new User("Jane Toe", 30, "jane.toe@ucll.be", "jane1234"),
@@ -90,46 +86,8 @@ public class LoanRepositoryTestImpl implements LoanRepository {
             new User("Birgit Doe", 18, "birgit.doe@ucll.be", "birgit1234")
             ));
 
-        List<Publication> publications = createPublications();
-        loans.add(new Loan(users.get(0), publications.subList(0, 2), LocalDate.of(1111, 1, 1)));
-        loans.add(new Loan(users.get(1), publications.subList(2, 4), LocalDate.of(1111, 1, 2)));
-        loans.add(new Loan(users.get(2), publications.subList(4, 6), LocalDate.of(1111, 1, 3)));
-        loans.add(new Loan(users.get(3), publications.subList(2, 8), LocalDate.of(1111, 1, 4)));
-        loans.add(new Loan(users.get(4), publications.subList(8, 10), LocalDate.of(1111, 1, 5)));
-        loans.add(new Loan(users.get(1), publications.subList(4, 8), LocalDate.of(1111, 1, 2)));
-        
-        loans.get(1).setEndDate(LocalDate.of(1111, 1, 4));
-        loans.get(0).setEndDate(LocalDate.of(1111, 1, 4));
-    }
-
-    public static List<Publication> createPublications() {
-        List<Book> books = new ArrayList<>();
-
-        // Create 5 Book instances and add them to the ArrayList
-        books.add(new Book("The Great Gatsby", "F. Scott Fitzgerald", "978-0743273565", 1925, 10));
-        books.add(new Book("To Kill a Mockingbird", "Harper Lee", "978-0061120084", 1960, 15));
-        books.add(new Book("1984", "George Orwell", "978-0451524935", 1949, 20));
-        books.add(new Book("Pride and Prejudice", "Jane Austen", "978-0141439518", 1813, 12));
-        books.add(new Book("The Catcher in the Rye", "J.D. Salinger", "978-0316769488", 1951, 8));
-
-        // Create an ArrayList to store Magazine instances
-        List<Magazine> magazines = new ArrayList<>();
-
-        // Create 5 Magazine instances and add them to the ArrayList
-        magazines.add(new Magazine("National Geographic", "Editor-in-Chief", "12345", 2022, 100));
-        magazines.add(new Magazine("Time", "Managing Editor", "67890", 2022, 80));
-        magazines.add(new Magazine("Vogue", "Fashion Editor", "54321", 2022, 60));
-        magazines.add(new Magazine("Scientific American", "Science Editor", "98765", 2022, 40));
-        magazines.add(new Magazine("Sports Illustrated", "Sports Editor", "13579", 2022, 20));
-
-        List<Publication> result = new ArrayList<>();
-        if (books != null) {
-            result.addAll(books);
-        }
-        if (magazines != null) {
-            result.addAll(magazines);
-        }
-        return result;
+        List<Publication> publications = DbInitializer.createPublications();
+        loans = DbInitializer.createLoans(users, publications);
     }
 
     @Override

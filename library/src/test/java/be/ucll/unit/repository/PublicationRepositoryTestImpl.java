@@ -24,6 +24,7 @@ public class PublicationRepositoryTestImpl implements  PublicationRepository {
 
     public List<Book> books;
     public List<Magazine> magazines;
+    public List<Publication> publications;
 
     public PublicationRepositoryTestImpl() {
         resetRepository();
@@ -36,6 +37,7 @@ public class PublicationRepositoryTestImpl implements  PublicationRepository {
         if (magazines != null) {
             this.magazines = new ArrayList<Magazine>(magazines);
         }
+        publications = combineBooksAndMagazines();
     }
 
     @Override
@@ -48,23 +50,16 @@ public class PublicationRepositoryTestImpl implements  PublicationRepository {
 
     @Override
     public List<Publication> findByTitleAndType(String title, String type) {
-        List<Publication> result = new ArrayList<>();
-        if (type == null) {
-            result = combineBooksAndMagazines();
-        }
-        else if (type.equals(BOOK_TYPE_STRING) && books != null) {
-            result.addAll(books);
-
-        }
-        else if (type.equals(MAGAZINE_TYPE_STRING) && magazines != null) {
-            result.addAll(magazines);
-        }
-
-        return filterPublications(result, 
+        return filterPublications(publications, 
         publication ->
         (title != null 
             ? publication.getTitle().contains(title)
             : true));
+    }
+
+    @Override
+    public Optional<Publication> findById(Long id) {
+        return Optional.of(publications.get(id.intValue()));
     }
 
     public List<Publication> combineBooksAndMagazines() {
@@ -107,6 +102,8 @@ public class PublicationRepositoryTestImpl implements  PublicationRepository {
         magazines.add(new Magazine("Vogue", "Fashion Editor", "54321", 2022, 60));
         magazines.add(new Magazine("Scientific American", "Science Editor", "98765", 2022, 40));
         magazines.add(new Magazine("Sports Illustrated", "Sports Editor", "13579", 2022, 20));
+
+        publications = combineBooksAndMagazines();
     }
 
     @Override
@@ -197,12 +194,6 @@ public class PublicationRepositoryTestImpl implements  PublicationRepository {
     public <S extends Publication> S save(S entity) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'save'");
-    }
-
-    @Override
-    public Optional<Publication> findById(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findById'");
     }
 
     @Override

@@ -1,5 +1,6 @@
 package be.ucll.controller;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,6 +102,14 @@ public class UserRestController {
             @PathVariable(value = "email") String email,
             @Valid @RequestBody Membership membership) {
         return userService.addMembership(email, membership);
+    }
+
+    @PostMapping("/{email}/loans/{startDate}")
+    public Loan addLoan(
+            @PathVariable(value = "email") String email,
+            @PathVariable(value = "startDate") LocalDate startDate,
+            @Valid @RequestBody List<Long> publicationsIds) {
+        return loanService.registerLoan(email, startDate, publicationsIds);
     }
 
     // Put

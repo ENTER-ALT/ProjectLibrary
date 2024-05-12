@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import be.ucll.model.Loan;
 import be.ucll.model.Magazine;
 import be.ucll.model.Publication;
 import be.ucll.model.User;
+import be.ucll.repository.DbInitializer;
 import be.ucll.repository.LoanRepository;
 import be.ucll.repository.PublicationRepository;
 import be.ucll.repository.UserRepository;
@@ -51,7 +53,7 @@ public class LoanServiceTest {
                 actualLoans.forEach(loan -> {
                     assertEquals(loan.getUser(), user);
                     assertTrue(loans.contains(loan));
-                    assertEquals(loan.getEndDate(), null);
+                    assertEquals(loan.getEndDate(), loan.getStartDate().plusDays(30));
                 });
             });
         });
@@ -212,7 +214,7 @@ public class LoanServiceTest {
     public static User getUserWithActiveLoans(List<Loan> defaultLoans) {
         return defaultLoans
         .stream()
-        .filter(loan -> loan.getEndDate() == null)
+        .filter(loan -> loan.getEndDate().isAfter(TimeTracker.getToday()))
         .findFirst()
         .orElse(null)
         .getUser();
@@ -248,6 +250,37 @@ public class LoanServiceTest {
         return emailsWithInactiveLoans.size() > 0 ? emailsWithInactiveLoans.get(0) : null;
     }
 
+    @Test
+    public void givenValidLoan_whenRegisterLoan_thenLoanRegistered() {
+        LoanService loanService = createDefaultService();
+        String email = "sarah.doe@ucll.be";
+        LocalDate today = TimeTracker.getToday();
+        List<Long> ids = new ArrayList<>(List.of(Long.valueOf(0),Long.valueOf(1),Long.valueOf(2)));
+
+        Loan actualLoan = loanService.registerLoan(email, today, ids);
+        assertEquals(email, actualLoan.getUser().getEmail());
+        assertEquals(today, actualLoan.getStartDate());
+        assertEquals(today.plusDays(30), actualLoan.getEndDate());
+    }  
+
+    @Test 
+    public void givenWrongEmail_whenRegisterLoan_thanServiceExceptionThrown() {
+        LoanService loanService = createDefaultService();
+        String email = "asdaass@ams.la";
+        LocalDate today = TimeTracker.getToday();
+        List<Publication> publications = DbInitializer.createPublications();
+        List<Long> ids = publications.stream().map(publication -> publication.getId()).toList().subList(0, 3);
+
+        ServiceException exception = assertThrows(ServiceException.class, () -> {
+            loanService.registerLoan(email, today, ids);
+        });
+
+        String expectedMessage = UserService.USER_DOESNT_EXIST_EXCEPTION;
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+    }
+
     public static LoanRepository createDefaultRepository(List<Loan> loans) {
         return new LoanRepositoryTestImpl(loans);
     }
@@ -257,31 +290,21 @@ public class LoanServiceTest {
     }
 
     public static LoanService createDefaultService(LoanRepository repository, UserService userService) {
-        return new LoanService(repository, userService);
+        return new LoanService(repository, userService, PublicationServiceTest.createDefaultService());
     }
 
     public static LoanService createDefaultService() {
-        return new LoanService(createDefaultRepository(), UserServiceTest.createDefaultService());
+        return new LoanService(createDefaultRepository(), UserServiceTest.createDefaultService(), PublicationServiceTest.createDefaultService());
     }
 
     public static LoanService createDefaultService(List<Loan> loans) {
-        return new LoanService(createDefaultRepository(loans), UserServiceTest.createDefaultService());
+        return new LoanService(createDefaultRepository(loans), UserServiceTest.createDefaultService(), PublicationServiceTest.createDefaultService());
     }
 
     public static List<Loan> createDefaultLoanList(UserRepository userRepository, PublicationRepository publicationRepository) {
-        List<Loan> loans = new ArrayList<>();
         List<User> users = userRepository.findAll();
-        List<Publication> publications = LoanRepositoryTestImpl.createPublications();
-        loans.add(new Loan(users.get(0), publications.subList(0, 2), LocalDate.of(1111, 1, 1)));
-        loans.add(new Loan(users.get(1), publications.subList(2, 4), LocalDate.of(1111, 1, 2)));
-        loans.add(new Loan(users.get(2), publications.subList(4, 6), LocalDate.of(1111, 1, 3)));
-        loans.add(new Loan(users.get(2), publications.subList(1, 3), LocalDate.of(1111, 1, 3)));
-        loans.add(new Loan(users.get(4), publications.subList(8, 10), LocalDate.of(1111, 1, 5)));
-        loans.add(new Loan(users.get(1), publications.subList(4, 8), LocalDate.of(1111, 1, 2)));
-        
-        loans.get(1).setEndDate(LocalDate.of(1111, 1, 4));
-        loans.get(2).setEndDate(LocalDate.of(1111, 1, 4));
-        loans.get(3).setEndDate(LocalDate.of(1111, 1, 4));
+        List<Publication> publications = DbInitializer.createPublications();
+        List<Loan> loans = DbInitializer.createLoans(users, publications);
         return loans;
     }
 
@@ -291,5 +314,14 @@ public class LoanServiceTest {
             PublicationServiceTest.createDefaultBookList(),
             PublicationServiceTest.createDefaultMagazineList());
         return createDefaultLoanList(userRepository, publicationRepository);
+    }
+
+    public static Long generateUniqueNumber(List<Long> list) {
+        Random random = new Random();
+        long generatedNumber;
+        do {
+            generatedNumber = random.nextLong(); // Generate a random Long number
+        } while (list.contains(generatedNumber)); // Check if it's in the list, regenerate if it is
+        return generatedNumber;
     }
 }

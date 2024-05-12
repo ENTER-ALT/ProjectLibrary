@@ -55,6 +55,7 @@ public class LoanTest {
         assertEquals(DefaultUser, loan.getUser());
         assertEquals(Publications, loan.getPublications());
         assertEquals(DEFAULT_TODAY, loan.getStartDate());
+        assertEquals(DEFAULT_TODAY.plusDays(30), loan.getEndDate());
 
         Set<ConstraintViolation<Loan>> violations = validator.validate(loan);
         assertEquals(0, violations.size());
@@ -138,38 +139,6 @@ public class LoanTest {
     }
 
     @Test
-    public void givenFutureEndDate_whenCreatingLoan_thenLoanEndDateDomainExceptionIsThrown() {
-        TimeTracker.setCustomToday(DEFAULT_TODAY);
-
-        Loan loan = createDefaultLoan();
-        
-        Exception exception = assertThrows(DomainException.class, () -> {
-            loan.setEndDate(DEFAULT_TOMORROW);
-        });
-
-        String expectedMessage = Loan.FUTURE_ENDDATE_EXCEPTION;
-        String actualMessage = exception.getMessage();
-
-        assertTrue(actualMessage.contains(expectedMessage));
-    }
-
-    @Test
-    public void givenEndDateBeforeStartDate_whenCreatingLoan_thenLoanEndDateDomainExceptionIsThrown() {
-        TimeTracker.setCustomToday(DEFAULT_TODAY);
-
-        Loan loan = createDefaultLoan();
-        
-        Exception exception = assertThrows(DomainException.class, () -> {
-            loan.setEndDate(DEFAULT_YESTERDAY);
-        });
-
-        String expectedMessage = Loan.ENDDATE_BEFORE_STARTDATE_EXCEPTION;
-        String actualMessage = exception.getMessage();
-
-        assertTrue(actualMessage.contains(expectedMessage));
-    }
-
-    @Test
     public void givenZeroCopiesPublication_whenCreatingLoan_thenLoanCopiesDomainExceptionIsThrown() {
         User DefaultUser = UserTest.createDefaultUser(); 
         Magazine DefaultMagazine = MagazineTest.createDefaultMagazine(); 
@@ -200,6 +169,21 @@ public class LoanTest {
 
     @Test
     public void givenPublication_whenReturningLoan_thenPublicationAvailableCopiesIncreased() {
+        User DefaultUser = UserTest.createDefaultUser(); 
+        Magazine DefaultMagazine = MagazineTest.createDefaultMagazine(); 
+        ArrayList<Publication> Publications = new ArrayList<>();
+        Publications.add(DefaultMagazine);
+        Loan loan = new Loan(DefaultUser, Publications, DEFAULT_TODAY);
+
+        assertEquals(DefaultMagazine.getAvailableCopies(), 0);
+
+        loan.returnPublications();
+
+        assertEquals(DefaultMagazine.getAvailableCopies(), 1);
+    }
+
+    @Test
+    public void givenValidInfo_whenReturningLoan_thenPublicationAvailableCopiesIncreased() {
         User DefaultUser = UserTest.createDefaultUser(); 
         Magazine DefaultMagazine = MagazineTest.createDefaultMagazine(); 
         ArrayList<Publication> Publications = new ArrayList<>();

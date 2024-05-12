@@ -48,8 +48,6 @@ public class Loan {
     public static final String INVALID_STARTDATE_EXCEPTION = "Start date is required";
     public static final String FUTURE_STARTDATE_EXCEPTION = "Start date cannot be in future";
     public static final String INVALID_ENDDATE_EXCEPTION = "End date cannot be null";
-    public static final String FUTURE_ENDDATE_EXCEPTION = "End date cannot be in future";
-    public static final String ENDDATE_BEFORE_STARTDATE_EXCEPTION = "Start date cannot be after end date";
 
     protected Loan() {};
 
@@ -57,6 +55,7 @@ public class Loan {
         setUser(user);
         setPublications(publications);
         setStartDate(startDate);
+        setEndDate(startDate.plusDays(30));
     }
 
     public User getUser() {
@@ -102,15 +101,9 @@ public class Loan {
         this.startDate = startDate;
     }
 
-    public void setEndDate(LocalDate endDate) {
+    private void setEndDate(LocalDate endDate) {
         if (endDate == null) {
             throw new DomainException(INVALID_ENDDATE_EXCEPTION);
-        }
-        if (endDate.isAfter(TimeTracker.getToday())) {
-            throw new DomainException(FUTURE_ENDDATE_EXCEPTION);
-        }
-        if (startDate.isAfter(endDate)) {
-            throw new DomainException(ENDDATE_BEFORE_STARTDATE_EXCEPTION);
         }
         this.endDate = endDate;
     }

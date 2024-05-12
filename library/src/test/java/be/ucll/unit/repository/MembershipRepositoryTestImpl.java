@@ -46,7 +46,7 @@ public class MembershipRepositoryTestImpl implements MembershipRepository {
     }
 
     public void resetRepository() {
-        memberships = DbInitializer.getDefaultMemberships();
+        memberships = DbInitializer.createMemberships();
     }
 
     @Override

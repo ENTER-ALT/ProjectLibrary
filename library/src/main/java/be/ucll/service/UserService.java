@@ -12,6 +12,7 @@ import be.ucll.repository.LoanRepository;
 import be.ucll.repository.MembershipRepository;
 import be.ucll.repository.ProfileRepository;
 import be.ucll.repository.UserRepository;
+import be.ucll.utilits.TimeTracker;
 
 @Service
 public class UserService {
@@ -121,19 +122,17 @@ public class UserService {
 
     public User updateUser(String email, User newUser) {
         isValidUser(newUser);
-        checkUserExists(email);
 
-        User user = userRepository.findByEmail(email);
+        User user = getUserByEmail(email);
         user.copyUser(newUser);
         userRepository.save(user);
         return userRepository.findByEmail(email);
     }
 
     public String deleteUser(String email) {
-        checkUserExists(email);
+        User user = getUserByEmail(email);
         handleUserLoans(email);
         
-        User user = userRepository.findByEmail(email);
         handleUserMemberships(user);
 
         userRepository.delete(user);
@@ -141,9 +140,7 @@ public class UserService {
     }
 
     public User addMembership(String email, Membership membership) {
-        checkUserExists(email);
-
-        User currentUser = userRepository.findByEmail(email);
+        User currentUser = getUserByEmail(email);
         membership.setUser(currentUser);
         currentUser.setMembership(membership);
 
@@ -166,7 +163,7 @@ public class UserService {
     }
 
     public void checkUsersActiveLoans(String email) {
-        List<Loan> activeLoans = loanRepository.findByUserEmailAndEndDateIsNull(email);
+        List<Loan> activeLoans = loanRepository.findByUserEmailAndEndDateAfter(email, TimeTracker.getToday());
         Boolean userHasActiveLoans = activeLoans.size() > 0;
         if (userHasActiveLoans) {
             throw new ServiceException(LoanService.USER_HAS_ACTIVE_LOANS_EXCEPTION);
@@ -197,12 +194,13 @@ public class UserService {
         }
     }
 
-    public void checkUserExists(String email) {
+    public User getUserByEmail(String email) {
         User user = userRepository.findByEmail(email);
         Boolean userExists = user != null;
         if (!userExists) {
             throw new ServiceException(USER_DOESNT_EXIST_EXCEPTION);
         }
+        return user;
     }
 
     public void userDoesNotExists(String email) {

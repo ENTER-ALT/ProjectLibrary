@@ -1,9 +1,12 @@
 package be.ucll.Integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,12 +18,16 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import be.ucll.model.DomainException;
+import be.ucll.model.Publication;
 import be.ucll.model.User;
 import be.ucll.repository.DbInitializer;
 import be.ucll.repository.LoanRepository;
 import be.ucll.repository.MembershipRepository;
+import be.ucll.repository.PublicationRepository;
 import be.ucll.repository.UserRepository;
 import be.ucll.service.LoanService;
+import be.ucll.service.LoanServiceTest;
+import be.ucll.service.PublicationService;
 import be.ucll.service.ServiceException;
 import be.ucll.service.UserService;
 import be.ucll.utilits.TimeTracker;
@@ -40,6 +47,8 @@ public class UserIntegrationTest {
     private LoanRepository loanRepository;
     @Autowired
     private MembershipRepository membershipRepository;
+    @Autowired
+    private PublicationRepository publicationRepository;
 
     @BeforeEach
     public void setupDatabasesAndTime() {
@@ -187,7 +196,7 @@ public class UserIntegrationTest {
                         "      }\n" + //
                         "    ],\n" + //
                         "    \"startDate\": \"1111-01-01\",\n" + //
-                        "    \"endDate\": \"1111-01-03\"\n" + //
+                        "    \"endDate\": \"1111-01-31\"\n" + //
                         "  },\n" + //
                         "  {\n" + //
                         "    \"user\": {\n" + //
@@ -226,8 +235,8 @@ public class UserIntegrationTest {
                         "        \"issn\": \"54321\"\n" + //
                         "      }\n" + //
                         "    ],\n" + //
-                        "    \"startDate\": \"1111-01-01\",\n" + //
-                        "    \"endDate\": null\n" + //
+                        "    \"startDate\": \"2024-05-10\",\r\n" + //
+                        "    \"endDate\": \"2024-06-09\"\r\n" + //
                         "  }\n" + //
                         "]");
     }
@@ -241,47 +250,58 @@ public class UserIntegrationTest {
         .expectStatus()
         .is2xxSuccessful()
         .expectBody()
-        .json("[\n" + //
-                        "  {\n" + //
-                        "    \"user\": {\n" + //
-                        "      \"name\": \"Jane Toe\",\n" + //
-                        "      \"age\": 30,\n" + //
-                        "      \"email\": \"jane.toe@ucll.be\",\n" + //
-                        "      \"password\": \"jane1234\"\n" + //
-                        "    },\n" + //
-                        "    \"publications\": [\n" + //
-                        "      {\n" + //
-                        "        \"availableCopies\": 5,\n" + //
-                        "        \"title\": \"The Catcher in the Rye\",\n" + //
-                        "        \"year\": 1951,\n" + //
-                        "        \"author\": \"J.D. Salinger\",\n" + //
-                        "        \"isbn\": \"978-0316769488\"\n" + //
-                        "      },\n" + //
-                        "      {\n" + //
-                        "        \"availableCopies\": 97,\n" + //
-                        "        \"title\": \"National Geographic\",\n" + //
-                        "        \"year\": 2022,\n" + //
-                        "        \"editor\": \"Editor-in-Chief\",\n" + //
-                        "        \"issn\": \"12345\"\n" + //
-                        "      },\n" + //
-                        "      {\n" + //
-                        "        \"availableCopies\": 78,\n" + //
-                        "        \"title\": \"Time\",\n" + //
-                        "        \"year\": 2022,\n" + //
-                        "        \"editor\": \"Managing Editor\",\n" + //
-                        "        \"issn\": \"67890\"\n" + //
-                        "      },\n" + //
-                        "      {\n" + //
-                        "        \"availableCopies\": 58,\n" + //
-                        "        \"title\": \"Vogue\",\n" + //
-                        "        \"year\": 2022,\n" + //
-                        "        \"editor\": \"Fashion Editor\",\n" + //
-                        "        \"issn\": \"54321\"\n" + //
-                        "      }\n" + //
-                        "    ],\n" + //
-                        "    \"startDate\": \"1111-01-01\",\n" + //
-                        "    \"endDate\": null\n" + //
-                        "  }\n" + //
+        .json("[\r\n" + //
+                        "  {\r\n" + //
+                        "    \"user\": {\r\n" + //
+                        "      \"name\": \"Jane Toe\",\r\n" + //
+                        "      \"age\": 30,\r\n" + //
+                        "      \"email\": \"jane.toe@ucll.be\",\r\n" + //
+                        "      \"password\": \"jane1234\",\r\n" + //
+                        "      \"profile\": {\r\n" + //
+                        "        \"profileId\": 2,\r\n" + //
+                        "        \"bio\": \"Bio 2\",\r\n" + //
+                        "        \"location\": \"Location 2\",\r\n" + //
+                        "        \"interests\": \"Interests 2\"\r\n" + //
+                        "      },\r\n" + //
+                        "      \"memberships\": []\r\n" + //
+                        "    },\r\n" + //
+                        "    \"publications\": [\r\n" + //
+                        "      {\r\n" + //
+                        "        \"availableCopies\": 5,\r\n" + //
+                        "        \"title\": \"The Catcher in the Rye\",\r\n" + //
+                        "        \"year\": 1951,\r\n" + //
+                        "        \"type\": \"book\",\r\n" + //
+                        "        \"author\": \"J.D. Salinger\",\r\n" + //
+                        "        \"isbn\": \"978-0316769488\"\r\n" + //
+                        "      },\r\n" + //
+                        "      {\r\n" + //
+                        "        \"availableCopies\": 97,\r\n" + //
+                        "        \"title\": \"National Geographic\",\r\n" + //
+                        "        \"year\": 2022,\r\n" + //
+                        "        \"type\": \"magazine\",\r\n" + //
+                        "        \"editor\": \"Editor-in-Chief\",\r\n" + //
+                        "        \"issn\": \"12345\"\r\n" + //
+                        "      },\r\n" + //
+                        "      {\r\n" + //
+                        "        \"availableCopies\": 78,\r\n" + //
+                        "        \"title\": \"Time\",\r\n" + //
+                        "        \"year\": 2022,\r\n" + //
+                        "        \"type\": \"magazine\",\r\n" + //
+                        "        \"editor\": \"Managing Editor\",\r\n" + //
+                        "        \"issn\": \"67890\"\r\n" + //
+                        "      },\r\n" + //
+                        "      {\r\n" + //
+                        "        \"availableCopies\": 58,\r\n" + //
+                        "        \"title\": \"Vogue\",\r\n" + //
+                        "        \"year\": 2022,\r\n" + //
+                        "        \"type\": \"magazine\",\r\n" + //
+                        "        \"editor\": \"Fashion Editor\",\r\n" + //
+                        "        \"issn\": \"54321\"\r\n" + //
+                        "      }\r\n" + //
+                        "    ],\r\n" + //
+                        "    \"startDate\": \"2024-05-10\",\r\n" + //
+                        "    \"endDate\": \"2024-06-09\"\r\n" + //
+                        "  }\r\n" + //
                         "]");
     }
 
@@ -844,6 +864,49 @@ public class UserIntegrationTest {
                         "    ]\n" + //
                         "  }");
     }    
+
+    @Test
+    public void givenValidLoan_whenRegisterLoan_thenLoanRegistered() {
+        
+        LocalDate today = TimeTracker.getToday();
+        String email = "sarah.doe@ucll.be";
+        List<Publication> publications = publicationRepository.findAll();
+        List<Long> ids = publications.stream().map(publication -> publication.getId()).toList().subList(0, 3);
+        String bodyValue = ids.toString();
+
+        webTestClient
+        .post()
+        .uri("/users/" + email + "/loans/" + today)
+        .header("Content-Type", "application/json")
+        .bodyValue(bodyValue)
+        .exchange()
+        .expectStatus()
+        .is2xxSuccessful();
+    }   
+
+    @Test 
+    public void givenWrongIDs_whenRegisterLoan_thanServiceExceptionThrown() {
+        String email = "sarah.doe@ucll.be";
+        LocalDate today = TimeTracker.getToday();
+        List<Publication> publications = publicationRepository.findAll();
+        List<Long> ids = publications.stream().map(publication -> publication.getId()).toList().subList(0, 3);
+
+        List<Long> unexistingId = new ArrayList<>(List.of(LoanServiceTest.generateUniqueNumber(ids)));
+        String bodyValue = unexistingId.toString();
+
+        webTestClient
+        .post()
+        .uri("/users/" + email + "/loans/" + today)
+        .header("Content-Type", "application/json")
+        .bodyValue(bodyValue)
+        .exchange()
+        .expectStatus()
+        .is4xxClientError()
+        .expectBody()
+        .json("{\r\n" + //
+        "  \""+ServiceException.class.getSimpleName()+"\": \""+String.format(PublicationService.PUBLICATION_NOT_FOUND_EXCEPTION, unexistingId.get(0)) +"\"\r\n" + //
+        "}");
+    }
 
     public void clearUserRepository() {
         loanRepository.deleteAll();
