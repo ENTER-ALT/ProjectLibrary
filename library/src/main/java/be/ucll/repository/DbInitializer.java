@@ -134,8 +134,8 @@ public class DbInitializer {
         magazines.add(new Magazine("National Geographic", "Editor-in-Chief", "12345", 2022, 100));
         magazines.add(new Magazine("Time", "Managing Editor", "67890", 2022, 80));
         magazines.add(new Magazine("Vogue", "Fashion Editor", "54321", 2022, 60));
-        magazines.add(new Magazine("Scientific American", "Science Editor", "98765", 2022, 40));
-        magazines.add(new Magazine("Sports Illustrated", "Sports Editor", "13579", 2022, 20));
+        magazines.add(new Magazine("Scientific American", "Science Editor", "98765", 2022, 39));
+        magazines.add(new Magazine("Sports Illustrated", "Sports Editor", "13579", 2022, 19));
 
         publications.addAll(books);
         publications.addAll(magazines);

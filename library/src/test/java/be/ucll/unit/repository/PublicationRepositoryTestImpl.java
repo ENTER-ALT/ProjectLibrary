@@ -38,6 +38,7 @@ public class PublicationRepositoryTestImpl implements  PublicationRepository {
             this.magazines = new ArrayList<Magazine>(magazines);
         }
         publications = combineBooksAndMagazines();
+
     }
 
     @Override
@@ -50,12 +51,25 @@ public class PublicationRepositoryTestImpl implements  PublicationRepository {
 
     @Override
     public List<Publication> findByTitleAndType(String title, String type) {
-        return filterPublications(publications, 
+        List<Publication> result = new ArrayList<>();
+        if (type == null) {
+            result = combineBooksAndMagazines();
+        }
+        else if (type.equals(BOOK_TYPE_STRING) && books != null) {
+            result.addAll(books);
+
+        }
+        else if (type.equals(MAGAZINE_TYPE_STRING) && magazines != null) {
+            result.addAll(magazines);
+        }
+
+        return filterPublications(result, 
         publication ->
         (title != null 
             ? publication.getTitle().contains(title)
             : true));
     }
+
 
     @Override
     public Optional<Publication> findById(Long id) {

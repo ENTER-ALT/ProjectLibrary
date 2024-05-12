@@ -37,40 +37,74 @@ public class PublicationIntegrationTest {
         .expectBody()
         .json("[\r\n" + //
                         "  {\r\n" + //
-                        "    \"id\": 6,\r\n" + //
+                        "    \"availableCopies\": 9,\r\n" + //
+                        "    \"title\": \"The Great Gatsby\",\r\n" + //
+                        "    \"year\": 1925,\r\n" + //
+                        "    \"author\": \"F. Scott Fitzgerald\",\r\n" + //
+                        "    \"isbn\": \"978-0743273565\"\r\n" + //
+                        "  },\r\n" + //
+                        "  {\r\n" + //
+                        "    \"availableCopies\": 14,\r\n" + //
+                        "    \"title\": \"To Kill a Mockingbird\",\r\n" + //
+                        "    \"year\": 1960,\r\n" + //
+                        "    \"author\": \"Harper Lee\",\r\n" + //
+                        "    \"isbn\": \"978-0061120084\"\r\n" + //
+                        "  },\r\n" + //
+                        "  {\r\n" + //
+                        "    \"availableCopies\": 18,\r\n" + //
+                        "    \"title\": \"1984\",\r\n" + //
+                        "    \"year\": 1949,\r\n" + //
+                        "    \"author\": \"George Orwell\",\r\n" + //
+                        "    \"isbn\": \"978-0451524935\"\r\n" + //
+                        "  },\r\n" + //
+                        "  {\r\n" + //
+                        "    \"availableCopies\": 10,\r\n" + //
+                        "    \"title\": \"Pride and Prejudice\",\r\n" + //
+                        "    \"year\": 1813,\r\n" + //
+                        "    \"author\": \"Jane Austen\",\r\n" + //
+                        "    \"isbn\": \"978-0141439518\"\r\n" + //
+                        "  },\r\n" + //
+                        "  {\r\n" + //
+                        "    \"availableCopies\": 5,\r\n" + //
+                        "    \"title\": \"The Catcher in the Rye\",\r\n" + //
+                        "    \"year\": 1951,\r\n" + //
+                        "    \"author\": \"J.D. Salinger\",\r\n" + //
+                        "    \"isbn\": \"978-0316769488\"\r\n" + //
+                        "  },\r\n" + //
+                        "  {\r\n" + //
                         "    \"availableCopies\": 97,\r\n" + //
                         "    \"title\": \"National Geographic\",\r\n" + //
                         "    \"year\": 2022,\r\n" + //
-                        "    \"type\": \"magazine\",\r\n" + //
                         "    \"editor\": \"Editor-in-Chief\",\r\n" + //
                         "    \"issn\": \"12345\"\r\n" + //
                         "  },\r\n" + //
                         "  {\r\n" + //
-                        "    \"id\": 7,\r\n" + //
                         "    \"availableCopies\": 78,\r\n" + //
                         "    \"title\": \"Time\",\r\n" + //
                         "    \"year\": 2022,\r\n" + //
-                        "    \"type\": \"magazine\",\r\n" + //
                         "    \"editor\": \"Managing Editor\",\r\n" + //
                         "    \"issn\": \"67890\"\r\n" + //
                         "  },\r\n" + //
                         "  {\r\n" + //
-                        "    \"id\": 8,\r\n" + //
                         "    \"availableCopies\": 58,\r\n" + //
                         "    \"title\": \"Vogue\",\r\n" + //
                         "    \"year\": 2022,\r\n" + //
-                        "    \"type\": \"magazine\",\r\n" + //
                         "    \"editor\": \"Fashion Editor\",\r\n" + //
                         "    \"issn\": \"54321\"\r\n" + //
                         "  },\r\n" + //
                         "  {\r\n" + //
-                        "    \"id\": 9,\r\n" + //
-                        "    \"availableCopies\": 40,\r\n" + //
+                        "    \"availableCopies\": 39,\r\n" + //
                         "    \"title\": \"Scientific American\",\r\n" + //
                         "    \"year\": 2022,\r\n" + //
-                        "    \"type\": \"magazine\",\r\n" + //
                         "    \"editor\": \"Science Editor\",\r\n" + //
                         "    \"issn\": \"98765\"\r\n" + //
+                        "  },\r\n" + //
+                        "  {\r\n" + //
+                        "    \"availableCopies\": 19,\r\n" + //
+                        "    \"title\": \"Sports Illustrated\",\r\n" + //
+                        "    \"year\": 2022,\r\n" + //
+                        "    \"editor\": \"Sports Editor\",\r\n" + //
+                        "    \"issn\": \"13579\"\r\n" + //
                         "  }\r\n" + //
                         "]");
     }
@@ -121,14 +155,14 @@ public class PublicationIntegrationTest {
                         "    \"issn\": \"12345\"\r\n" + //
                         "  },\r\n" + //
                         "  {\r\n" + //
-                        "    \"availableCopies\": 40,\r\n" + //
+                        "    \"availableCopies\": 39,\r\n" + //
                         "    \"title\": \"Scientific American\",\r\n" + //
                         "    \"year\": 2022,\r\n" + //
                         "    \"editor\": \"Science Editor\",\r\n" + //
                         "    \"issn\": \"98765\"\r\n" + //
                         "  },\r\n" + //
                         "  {\r\n" + //
-                        "    \"availableCopies\": 20,\r\n" + //
+                        "    \"availableCopies\": 19,\r\n" + //
                         "    \"title\": \"Sports Illustrated\",\r\n" + //
                         "    \"year\": 2022,\r\n" + //
                         "    \"editor\": \"Sports Editor\",\r\n" + //
@@ -229,14 +263,14 @@ public class PublicationIntegrationTest {
                         "    \"issn\": \"54321\"\r\n" + //
                         "  },\r\n" + //
                         "  {\r\n" + //
-                        "    \"availableCopies\": 40,\r\n" + //
+                        "    \"availableCopies\": 39,\r\n" + //
                         "    \"title\": \"Scientific American\",\r\n" + //
                         "    \"year\": 2022,\r\n" + //
                         "    \"editor\": \"Science Editor\",\r\n" + //
                         "    \"issn\": \"98765\"\r\n" + //
                         "  },\r\n" + //
                         "  {\r\n" + //
-                        "    \"availableCopies\": 20,\r\n" + //
+                        "    \"availableCopies\": 19,\r\n" + //
                         "    \"title\": \"Sports Illustrated\",\r\n" + //
                         "    \"year\": 2022,\r\n" + //
                         "    \"editor\": \"Sports Editor\",\r\n" + //
@@ -263,14 +297,14 @@ public class PublicationIntegrationTest {
                         "    \"issn\": \"12345\"\r\n" + //
                         "  },\r\n" + //
                         "  {\r\n" + //
-                        "    \"availableCopies\": 40,\r\n" + //
+                        "    \"availableCopies\": 39,\r\n" + //
                         "    \"title\": \"Scientific American\",\r\n" + //
                         "    \"year\": 2022,\r\n" + //
                         "    \"editor\": \"Science Editor\",\r\n" + //
                         "    \"issn\": \"98765\"\r\n" + //
                         "  },\r\n" + //
                         "  {\r\n" + //
-                        "    \"availableCopies\": 20,\r\n" + //
+                        "    \"availableCopies\": 19,\r\n" + //
                         "    \"title\": \"Sports Illustrated\",\r\n" + //
                         "    \"year\": 2022,\r\n" + //
                         "    \"editor\": \"Sports Editor\",\r\n" + //
@@ -346,14 +380,14 @@ public class PublicationIntegrationTest {
                         "    \"issn\": \"54321\"\r\n" + //
                         "  },\r\n" + //
                         "  {\r\n" + //
-                        "    \"availableCopies\": 40,\r\n" + //
+                        "    \"availableCopies\": 39,\r\n" + //
                         "    \"title\": \"Scientific American\",\r\n" + //
                         "    \"year\": 2022,\r\n" + //
                         "    \"editor\": \"Science Editor\",\r\n" + //
                         "    \"issn\": \"98765\"\r\n" + //
                         "  },\r\n" + //
                         "  {\r\n" + //
-                        "    \"availableCopies\": 20,\r\n" + //
+                        "    \"availableCopies\": 19,\r\n" + //
                         "    \"title\": \"Sports Illustrated\",\r\n" + //
                         "    \"year\": 2022,\r\n" + //
                         "    \"editor\": \"Sports Editor\",\r\n" + //
