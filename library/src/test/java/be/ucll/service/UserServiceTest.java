@@ -20,6 +20,7 @@ import be.ucll.model.Membership;
 import be.ucll.model.MembershipTest;
 import be.ucll.model.Profile;
 import be.ucll.model.User;
+import be.ucll.model.UserTest;
 import be.ucll.repository.LoanRepository;
 import be.ucll.repository.MembershipRepository;
 import be.ucll.repository.ProfileRepository;
@@ -746,6 +747,78 @@ public class UserServiceTest {
         assertEquals(membership.getType(), userMembership.getType());
         assertEquals(userMembership.getUser(), user);
         assertEquals(actualUser.getEmail(), user.getEmail());
+    }
+
+    @Test 
+    public void givenUnknownEmail_whenGettingMembershipByDate_thanServiceExceptionThrow() {
+        UserService service = createDefaultService();
+        String email = "unknown@mail.ru";
+        LocalDate date = TimeTracker.getToday().plusDays(10);
+
+        ServiceException exception = assertThrows(ServiceException.class, () -> {
+            service.getMembershipForDate(email, date);
+        });
+    
+        String expectedMessage = UserService.USER_DOESNT_EXIST_EXCEPTION;
+        String actualMessage = exception.getMessage();
+    
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test 
+    public void givenNoMemberships_whenGettingMembershipByDate_thanServiceExceptionThrow() {
+        TimeTracker.setCustomToday(MembershipTest.DEFAULT_TODAY);
+        UserService service = createDefaultService();
+        LocalDate date = TimeTracker.getToday().plusDays(10);
+        User user = UserTest.createDefaultUser();
+        service.addUser(user);
+        String email = user.getEmail();
+
+        ServiceException exception = assertThrows(ServiceException.class, () -> {
+            service.getMembershipForDate(email, date);
+        });
+    
+        String expectedMessage = String.format(UserService.NO_MEMBERSHIP_FOUND_ON_DATE_EXCEPTION, date);
+        String actualMessage = exception.getMessage();
+    
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test 
+    public void givenDateOutOfMembershipsDates_whenGettingMembershipByDate_thanServiceExceptionThrow() {
+        TimeTracker.setCustomToday(MembershipTest.DEFAULT_TODAY);
+        UserService service = createDefaultService();
+        LocalDate date = TimeTracker.getToday().minusDays(10);
+        User user = UserTest.createDefaultUser();
+        service.addUser(user);
+        String email = user.getEmail();
+        Membership membership = MembershipTest.createDefaultBronzeMembership();
+        service.addMembership(email, membership);
+
+        ServiceException exception = assertThrows(ServiceException.class, () -> {
+            service.getMembershipForDate(email, date);
+        });
+    
+        String expectedMessage = String.format(UserService.NO_MEMBERSHIP_FOUND_ON_DATE_EXCEPTION, date);
+        String actualMessage = exception.getMessage();
+    
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test 
+    public void givenValidDateAndMembership_whenGettingMembershipByDate_thanMembershipReturned() {
+        TimeTracker.setCustomToday(MembershipTest.DEFAULT_TODAY);
+        UserService service = createDefaultService();
+        LocalDate date = TimeTracker.getToday().plusDays(10);
+        User user = UserTest.createDefaultUser();
+        service.addUser(user);
+        String email = user.getEmail();
+        Membership membership = MembershipTest.createDefaultBronzeMembership();
+        service.addMembership(email, membership);
+
+        Membership actualMembership = service.getMembershipForDate(email, date);
+
+        assertEquals(membership, actualMembership);
     }
     
 

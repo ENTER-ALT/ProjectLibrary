@@ -1,5 +1,6 @@
 package be.ucll.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ public class UserService {
     public static final String INTEREST_CANNOT_BE_EMPTY_EXCEPTION = "Interest cannot be empty";
     public static final String NO_USERS_FOUND_WITH_INTEREST_IN_EXCEPTION = "No users found with interest in %s";
     public static final String NO_USERS_FOUND_WITH_INTEREST_OLDER_THAN_EXCEPTION = "No users found with interest in %s and older than %d";
+    public static final String NO_MEMBERSHIP_FOUND_ON_DATE_EXCEPTION = "No membership found for user on date %s.";
     public static final Integer MIN_AGE_RESTRICTION = 0; //Min age cannot be lower than this number
     public static final Integer MAX_AGE_RESTRICTION = 150; //Max age cannot be higher than this number
     public static final String DELETION_SUCCESS_RESPONSE = "User successfully deleted";
@@ -201,6 +203,18 @@ public class UserService {
             throw new ServiceException(USER_DOESNT_EXIST_EXCEPTION);
         }
         return user;
+    }
+
+    public Membership getMembershipForDate(String email, LocalDate date) {
+        getUserByEmail(email); //to check that user exists
+        Membership membership = membershipRepository.findMembershipByUserEmailAndDate(email, date).orElse(null);
+
+        if (membership == null) {
+            String message = String.format(NO_MEMBERSHIP_FOUND_ON_DATE_EXCEPTION, date);
+            throw new ServiceException(message);
+        }
+
+        return membership;
     }
 
     public void userDoesNotExists(String email) {

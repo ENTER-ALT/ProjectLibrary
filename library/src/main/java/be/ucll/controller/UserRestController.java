@@ -90,6 +90,14 @@ public class UserRestController {
         return userService.getUsersWithInterestAndGreaterAgeOrderByLocation(interest, age);
     }
 
+    @GetMapping("/{email}/membership")
+    public Membership getMembershipForDate(
+        @PathVariable(value = "email") String email,
+        @RequestParam(value = "date", required = true) LocalDate date) 
+    {
+        return userService.getMembershipForDate(email, date);
+    }
+
     /// Post
     @PostMapping()
     public User addUser(

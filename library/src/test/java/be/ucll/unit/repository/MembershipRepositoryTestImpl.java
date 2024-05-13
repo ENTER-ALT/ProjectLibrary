@@ -1,5 +1,6 @@
 package be.ucll.unit.repository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +28,16 @@ public class MembershipRepositoryTestImpl implements MembershipRepository {
             return;
         }
         this.memberships = new ArrayList<Membership>(memberships);
+    }
+
+    @Override
+    public Optional<Membership> findMembershipByUserEmailAndDate(String email, LocalDate givenDate) {
+        return memberships
+        .stream()
+        .filter(membership -> membership.getUser() != null &&  membership.getUser().getEmail().equals(email))
+        .filter(membership -> membership.getStartDate().isBefore(givenDate) || membership.getStartDate().isEqual(givenDate))
+        .filter(membership -> membership.getEndDate().isAfter(givenDate) || membership.getEndDate().isEqual(givenDate))
+        .findFirst();
     }
     
     @Override
@@ -209,7 +220,5 @@ public class MembershipRepositoryTestImpl implements MembershipRepository {
     public <S extends Membership, R> R findBy(Example<S> example, Function<FetchableFluentQuery<S>, R> queryFunction) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findBy'");
-    }
-
-    
+    }    
 }

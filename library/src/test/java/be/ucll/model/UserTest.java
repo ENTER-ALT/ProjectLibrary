@@ -22,6 +22,11 @@ import jakarta.validation.ValidatorFactory;
 
 public class UserTest {
  
+    public static final String DEFAULT_USER_NAME = "Default name";
+    public static final int DEFAULT_USER_AGE = 56;
+    public static final String DEFAULT_USER_EMAIL = "default.address@ucll.be";
+    public static final String DEFAULT_USER_PASSWORD = "defaultPassword";
+
     private static ValidatorFactory validatorFactory;
     private static Validator validator;
 
@@ -46,12 +51,12 @@ public class UserTest {
     public void givenValidValues_whenCreatingUser_thenUserIsCreatedWithThoseValues() {
         User user = createDefaultUser();
 
-        assertEquals("John Doe", user.getName());
-        assertEquals(56, user.getAge());
-        assertEquals("john.doe@ucll.be", user.getEmail());
-        assertEquals("john1234", user.getPassword());
+        assertEquals(DEFAULT_USER_NAME, user.getName());
+        assertEquals(DEFAULT_USER_AGE, user.getAge());
+        assertEquals(DEFAULT_USER_EMAIL, user.getEmail());
+        assertEquals(DEFAULT_USER_PASSWORD, user.getPassword());
         assertEquals(null, user.getProfile());
-    
+        
         Set<ConstraintViolation<User>> violations = validator.validate(user);
         assertEquals(0, violations.size());
     }  
@@ -283,6 +288,7 @@ public class UserTest {
     }
 
     public static User createDefaultUser() {
-        return new User("John Doe", 56, "john.doe@ucll.be", "john1234");
+        return new User(DEFAULT_USER_NAME, DEFAULT_USER_AGE, DEFAULT_USER_EMAIL, DEFAULT_USER_PASSWORD);
     }
+    
 }

@@ -17,8 +17,11 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import be.ucll.model.DomainException;
+import be.ucll.model.Membership;
+import be.ucll.model.MembershipTest;
 import be.ucll.model.Publication;
 import be.ucll.model.User;
+import be.ucll.model.UserTest;
 import be.ucll.repository.DbInitializer;
 import be.ucll.repository.LoanRepository;
 import be.ucll.repository.MembershipRepository;
@@ -930,6 +933,36 @@ public class UserIntegrationTest {
         .expectStatus()
         .is2xxSuccessful();
     }  
+
+    @Test 
+    public void givenValidDateAndMembership_whenGettingMembershipByDate_thanMembershipReturned() {
+        TimeTracker.setCustomToday(MembershipTest.DEFAULT_TODAY);
+        LocalDate date = TimeTracker.getToday().plusDays(10);
+        User user = UserTest.createDefaultUser();
+        String email = user.getEmail();
+        Membership membership = MembershipTest.createDefaultBronzeMembership();
+        user.setMembership(membership);
+        membership.setUser(user);
+        userRepository.save(user);
+        membershipRepository.save(membership);
+
+        String expectedJson =String.format("{\n" + //
+                        "  \"startDate\": \"%s\",\n" + //
+                        "  \"endDate\": \"%s\",\n" + //
+                        "  \"type\": \"%s\",\n" + //
+                        "  \"freeLoansQuantity\": %d\n" + //
+                        "}", membership.getStartDate().minusDays(1), membership.getEndDate().minusDays(1), membership.getType(), membership.getFreeLoansQuantity());
+
+        webTestClient
+        .get()
+        .uri("/users/"+email+"/membership?date="+date)
+        .header("Content-Type", "application/json")
+        .exchange()
+        .expectStatus()
+        .is2xxSuccessful()
+        .expectBody()
+        .json(expectedJson);
+    }
 
     public void clearUserRepository() {
         loanRepository.deleteAll();
