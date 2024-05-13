@@ -296,7 +296,7 @@ public class LoanServiceTest {
         loan.setPublications(publications);
         loan.setReturnDate(LoanTest.DEFAULT_TODAY);
 
-        Integer price = loanService.calculatePrice(loan, membership);
+        Integer price = loanService.calculateReturnPrice(loan, membership);
 
         assertEquals(0, price);
         assertEquals(initialFreeLoans-1, membership.getFreeLoansQuantity());
@@ -313,8 +313,9 @@ public class LoanServiceTest {
         loan.setReturnDate(LoanTest.DEFAULT_TODAY);
         LoanService loanService = createDefaultService();
 
-        Integer actualPrice = loanService.calculatePrice(loan, membership);
-        Integer expectedPrice = (int)(ChronoUnit.DAYS.between(loan.getStartDate(), loan.getReturnDate()) * 0.75 * 2);
+        Double expectedMultiplier = 0.75;
+        Integer actualPrice = loanService.calculateReturnPrice(loan, membership);
+        Integer expectedPrice = (int)(ChronoUnit.DAYS.between(loan.getStartDate(), loan.getReturnDate()) * expectedMultiplier * publications.size());
         assertEquals(actualPrice, expectedPrice);
     }
 
@@ -329,8 +330,9 @@ public class LoanServiceTest {
         loan.setReturnDate(LoanTest.DEFAULT_TODAY);
         LoanService loanService = createDefaultService();
 
-        Integer actualPrice = loanService.calculatePrice(loan, membership);
-        Integer expectedPrice = (int)(ChronoUnit.DAYS.between(loan.getStartDate(), loan.getReturnDate()) * 0.5 * 2);
+        Double expectedMultiplier = 0.5;
+        Integer actualPrice = loanService.calculateReturnPrice(loan, membership);
+        Integer expectedPrice = (int)(ChronoUnit.DAYS.between(loan.getStartDate(), loan.getReturnDate()) * expectedMultiplier * publications.size());
         assertEquals(actualPrice, expectedPrice);
     }
 
@@ -345,8 +347,9 @@ public class LoanServiceTest {
         loan.setReturnDate(LoanTest.DEFAULT_TODAY);
         LoanService loanService = createDefaultService();
 
-        Integer actualPrice = loanService.calculatePrice(loan, membership);
-        Integer expectedPrice = (int)(ChronoUnit.DAYS.between(loan.getStartDate(), loan.getReturnDate()) * 0.25 * 2);
+        Double expectedMultiplier = 0.25;
+        Integer actualPrice = loanService.calculateReturnPrice(loan, membership);
+        Integer expectedPrice = (int)(ChronoUnit.DAYS.between(loan.getStartDate(), loan.getReturnDate()) * expectedMultiplier * publications.size());
         assertEquals(actualPrice, expectedPrice);
     }
 
@@ -360,9 +363,39 @@ public class LoanServiceTest {
         loan.setReturnDate(LoanTest.DEFAULT_TODAY);
         LoanService loanService = createDefaultService();
 
-        Integer actualPrice = loanService.calculatePrice(loan, membership);
-        Integer expectedPrice = (int)(ChronoUnit.DAYS.between(loan.getStartDate(), loan.getReturnDate()) * 1 * 2);
+        Double expectedMultiplier = 1.0;
+        Integer actualPrice = loanService.calculateReturnPrice(loan, membership);
+        Integer expectedPrice = (int)(ChronoUnit.DAYS.between(loan.getStartDate(), loan.getReturnDate()) * expectedMultiplier * publications.size());
         assertEquals(actualPrice, expectedPrice);
+    }
+
+    @Test
+    public void givenLoanWithReturnDateBeforeEndDate_whenCalculateTotalPriceWithLateFine_thenNoFine() {
+        TimeTracker.setCustomToday(LoanTest.DEFAULT_TODAY.plusDays(4)); // loan exists only 4 days - not expired
+        Loan loan = LoanTest.createDefaultLoan();
+        List<Publication> publications = DbInitializer.createPublications().subList(0, 1);
+        loan.setPublications(publications);
+        loan.setReturnDate(TimeTracker.getToday());
+        LoanService loanService = createDefaultService();
+
+        Integer actualFine = loanService.calculateFine(loan);
+        Integer expectedFine = 0;
+        assertEquals(actualFine, expectedFine);
+    }
+
+    @Test
+    public void givenLoanWithReturnDateAfterEndDate_whenCalculateTotalPriceWithLateFine_thenIncludeFine() {
+        Loan loan = LoanTest.createDefaultLoan();
+        TimeTracker.setCustomToday(LoanTest.DEFAULT_TODAY.plusDays(32)); // loan exists 32 days - it is already ended, because end date is 30 days after start date
+        List<Publication> publications = DbInitializer.createPublications().subList(0, 1);
+        loan.setPublications(publications);
+        loan.setReturnDate(TimeTracker.getToday());
+        LoanService loanService = createDefaultService();
+
+        Double expectedMultiplier = 0.5;
+        Integer actualFine = loanService.calculateFine(loan);
+        Integer expectedFine = (int)(ChronoUnit.DAYS.between(loan.getEndDate(), loan.getReturnDate()) * expectedMultiplier * publications.size());
+        assertEquals(actualFine, expectedFine);
     }
 
     public static LoanRepository createDefaultRepository(List<Loan> loans) {

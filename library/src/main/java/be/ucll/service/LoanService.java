@@ -64,7 +64,7 @@ public class LoanService {
         User user = userService.getUserByEmail(email);
         List<Membership> memberships = user.getMemberships();
         Membership membership = findProfitableMembership(memberships);
-        Integer price = calculatePrice(loan, membership);
+        Integer price = calculateTotalLoanPrice(loan, membership);
         loan.setPrice(price);
         loan.returnPublications();
         
@@ -129,7 +129,13 @@ public class LoanService {
         return result;
     }
 
-    public Integer calculatePrice(Loan loan, Membership membership) {
+    public Integer calculateTotalLoanPrice(Loan loan, Membership membership) {
+        Integer price = calculateReturnPrice(loan, membership);
+        Integer fine = calculateFine(loan);
+        return price + fine;
+    }
+
+    public Integer calculateReturnPrice(Loan loan, Membership membership) {
         LocalDate returnDate = loan.getReturnDate();
         if (returnDate == null) {
             throw new ServiceException(LOAN_RETURN_DATE_HAS_TO_BE_SET_EXCEPTION);
@@ -161,6 +167,22 @@ public class LoanService {
                 return 0.5;
             default:
                 return 0.25;
+        }
+    }
+
+    public Integer calculateFine(Loan loan) {
+        LocalDate returnDate = loan.getReturnDate();
+        if (returnDate == null) {
+            throw new ServiceException(LOAN_RETURN_DATE_HAS_TO_BE_SET_EXCEPTION);
+        }
+    
+        long daysLate = ChronoUnit.DAYS.between(loan.getEndDate(), returnDate);
+        if (daysLate > 0) {
+            double lateFinePerPublicationPerDay = 0.50;
+            Integer lateFine = (int) (daysLate * lateFinePerPublicationPerDay * loan.getPublications().size());
+            return lateFine;
+        } else {
+            return 0;
         }
     }
 }

@@ -193,9 +193,7 @@ public class UserIntegrationTest {
                         "        \"author\": \"Jane Austen\",\n" + //
                         "        \"isbn\": \"978-0141439518\"\n" + //
                         "      }\n" + //
-                        "    ],\n" + //
-                        "    \"startDate\": \"2023-05-12\",\n" + //
-                        "    \"endDate\": \"2023-06-11\"\n" + //
+                        "    ]\n" + //
                         "  },\n" + //
                         "  {\n" + //
                         "    \"user\": {\n" + //
@@ -233,9 +231,7 @@ public class UserIntegrationTest {
                         "        \"editor\": \"Fashion Editor\",\n" + //
                         "        \"issn\": \"54321\"\n" + //
                         "      }\n" + //
-                        "    ],\n" + //
-                        "    \"startDate\": \"2024-05-10\",\r\n" + //
-                        "    \"endDate\": \"2024-06-09\"\r\n" + //
+                        "    ]\n" + //
                         "  }\n" + //
                         "]");
     }
@@ -297,9 +293,7 @@ public class UserIntegrationTest {
                         "        \"editor\": \"Fashion Editor\",\r\n" + //
                         "        \"issn\": \"54321\"\r\n" + //
                         "      }\r\n" + //
-                        "    ],\r\n" + //
-                        "    \"startDate\": \"2024-05-10\",\r\n" + //
-                        "    \"endDate\": \"2024-06-09\"\r\n" + //
+                        "    ]\r\n" + //
                         "  }\r\n" + //
                         "]");
     }
