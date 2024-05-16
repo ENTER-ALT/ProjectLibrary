@@ -198,7 +198,7 @@ public class LoanServiceTest {
     public void givenUserWithInactiveLoans_whenDeletingUserLoansByEmail_thanLoansAreDeleted() {
         List<Loan> defaultLoans = createDefaultLoanList(); 
         LoanService loanService = createDefaultService(defaultLoans);
-        String userEmailWithLoans = getUserEmailWithInactiveLoans(defaultLoans);
+        String userEmailWithLoans = getUserWithInactiveLoans(defaultLoans).getEmail();
         Integer previousUserLoansSize = loanService.getLoansByUser(userEmailWithLoans, false).size();
 
         String result = loanService.deleteLoansByUser(userEmailWithLoans);
@@ -236,22 +236,22 @@ public class LoanServiceTest {
         .orElse(null);
     }
 
-    public static String getUserEmailWithInactiveLoans(List<Loan> defaultLoans) {
-        List<String> emailsWithLoans = defaultLoans
+    public static User getUserWithInactiveLoans(List<Loan> defaultLoans) {
+        List<User> usersWithLoans = defaultLoans
         .stream()
-        .map(loan -> loan.getUser().getEmail())
+        .map(loan -> loan.getUser())
         .toList();
 
-        List<String> emailsWithInactiveLoans = new ArrayList<>();
-        emailsWithLoans.forEach(email -> {
+        List<User> usersWithInactiveLoans = new ArrayList<>();
+        usersWithLoans.forEach(user -> {
             Boolean hasActiveLoans = defaultLoans
             .stream()
-            .anyMatch(loan -> loan.getUser().getEmail().equals(email) && loan.getEndDate() == null);
+            .anyMatch(loan -> loan.getUser().getEmail().equals(user.getEmail()) && loan.getEndDate() == null);
             if (!hasActiveLoans) {
-                emailsWithInactiveLoans.add(email);
+                usersWithInactiveLoans.add(user);
             }
         });
-        return emailsWithInactiveLoans.size() > 0 ? emailsWithInactiveLoans.get(0) : null;
+        return usersWithInactiveLoans.size() > 0 ? usersWithInactiveLoans.get(0) : null;
     }
 
     @Test

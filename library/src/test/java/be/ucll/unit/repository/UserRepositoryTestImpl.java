@@ -50,7 +50,7 @@ public class UserRepositoryTestImpl implements UserRepository {
         users.remove(entity);
     }
 
-    public List<User> findByName(String name) {
+    public List<User> findByNameContaining(String name) {
         return filterUsers(user -> 
             user.getName().contains(name));
     }

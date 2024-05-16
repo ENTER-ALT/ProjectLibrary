@@ -31,13 +31,14 @@ public class MembershipRepositoryTestImpl implements MembershipRepository {
     }
 
     @Override
-    public Optional<Membership> findMembershipByUserEmailAndDate(String email, LocalDate givenDate) {
+    public Membership findMembershipByUserEmailAndDate(String email, LocalDate givenDate) {
         return memberships
         .stream()
         .filter(membership -> membership.getUser() != null &&  membership.getUser().getEmail().equals(email))
         .filter(membership -> membership.getStartDate().isBefore(givenDate) || membership.getStartDate().isEqual(givenDate))
         .filter(membership -> membership.getEndDate().isAfter(givenDate) || membership.getEndDate().isEqual(givenDate))
-        .findFirst();
+        .findFirst()
+        .orElse(null);
     }
     
     @Override

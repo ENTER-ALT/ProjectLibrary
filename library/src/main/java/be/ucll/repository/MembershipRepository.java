@@ -1,7 +1,6 @@
 package be.ucll.repository;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,6 +15,6 @@ public interface MembershipRepository extends JpaRepository<Membership, Long> {
     @Query("SELECT m FROM Membership m WHERE m.user.email = :email " +
            "AND m.startDate <= :givenDate " +
            "AND m.endDate >= :givenDate")
-    Optional<Membership> findMembershipByUserEmailAndDate(@Param("email") String email, 
+       Membership findMembershipByUserEmailAndDate(@Param("email") String email, 
                                                           @Param("givenDate") LocalDate givenDate);
 }
