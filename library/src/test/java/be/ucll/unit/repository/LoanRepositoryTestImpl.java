@@ -74,6 +74,33 @@ public class LoanRepositoryTestImpl implements LoanRepository {
         loan.getEndDate().isAfter(today));
         return result;
     }
+
+    public static List<Loan> findByUserEmail(List<Loan> loans, String email) {
+        List<Loan> result = filterLoans(loans, loan -> 
+        (loan.getUser()
+            .getEmail()
+            .equals(email)));
+        return result;
+    }
+
+    public static List<Loan> findByUserEmailAndEndDateAfter(List<Loan> loans, String email, LocalDate today) {
+        List<Loan> result = filterLoans(loans, loan -> 
+        (loan.getUser()
+            .getEmail()
+            .equals(email)) 
+        &&
+        loan.getEndDate().isAfter(today));
+        return result;
+    }
+
+    public static List<Loan> filterLoans(List<Loan> loans, Predicate<? super Loan> filterFunc) {
+        return loans != null 
+        ? loans
+        .stream()
+        .filter(filterFunc)
+        .toList() 
+        : null;
+    }
     
     public List<Loan> filterLoans(Predicate<? super Loan> filterFunc) {
         return loans != null 

@@ -34,16 +34,13 @@ import org.mockito.stubbing.Answer;
 import be.ucll.model.Loan;
 import be.ucll.model.Membership;
 import be.ucll.model.MembershipTest;
-import be.ucll.model.Profile;
 import be.ucll.model.User;
 import be.ucll.model.UserTest;
+import be.ucll.repository.DbInitializer;
 import be.ucll.repository.LoanRepository;
 import be.ucll.repository.MembershipRepository;
 import be.ucll.repository.ProfileRepository;
 import be.ucll.repository.UserRepository;
-import be.ucll.unit.repository.MembershipRepositoryTestImpl;
-import be.ucll.unit.repository.ProfileRepositoryTestImpl;
-import be.ucll.unit.repository.UserRepositoryTestImpl;
 import be.ucll.utilits.TimeTracker;
 
 @ExtendWith(MockitoExtension.class)
@@ -69,7 +66,7 @@ public class UserServiceTest {
 
     @Test
     public void givenValidRequest_whenGettingAllUsers_thanTheCertainUsersReturned() {
-        List<User> expectedUsers = createDefaultUserList();
+        List<User> expectedUsers = DbInitializer.createUsers();
 
         when(userRepository.findAll()).thenReturn(expectedUsers);
 
@@ -96,11 +93,9 @@ public class UserServiceTest {
 
     @Test 
     public void givenNullUsers_whenGettingAllAdultUsers_thanNullUsersReturned() {
-        List<User> expectedUsers = null;
-        UserRepository repository = createDefaultRepository(expectedUsers);
-        UserService service = createDefaultService(repository);
+        List<User> expectedUsers = new ArrayList<User>();
 
-        List<User> actualUsers = service.getAllAdultUsers();
+        List<User> actualUsers = userService.getAllAdultUsers();
 
         assertEquals(expectedUsers, actualUsers);
     }
@@ -118,7 +113,7 @@ public class UserServiceTest {
 
     @Test
     public void givenUsers_whenGettingAllAdultUsers_thenFilteredAdultUsersReturned() {
-        List<User> users = createDefaultUserList();
+        List<User> users = DbInitializer.createUsers();
         List<User> adultUsers = users.stream().filter(user -> user.getAge() >= 18).collect(Collectors.toList());
         when(userRepository.findByAgeGreaterThanEqual(18)).thenReturn(adultUsers);
         
@@ -130,7 +125,7 @@ public class UserServiceTest {
 
     @Test
     public void givenUsers_whenGettingUsersWithinAgeRange_thenFilteredUsersReturned() {
-        List<User> users = createDefaultUserList();
+        List<User> users = DbInitializer.createUsers();
         Integer minAge = 0;
         Integer maxAge = 15;
         List<User> usersWithinAgeRange = users.stream().filter(user -> user.getAge() >= minAge && user.getAge() <= maxAge).collect(Collectors.toList());
@@ -237,7 +232,7 @@ public class UserServiceTest {
 
     @Test
     public void givenEmptyName_whenGettingUsersByName_thenAllUsersReturned() {
-        List<User> expectedUsers = createDefaultUserList();
+        List<User> expectedUsers = DbInitializer.createUsers();
 
         when(userRepository.findByNameContaining("")).thenReturn(expectedUsers);
 
@@ -250,7 +245,7 @@ public class UserServiceTest {
 
     @Test
     public void givenNullName_whenGettingUsersByName_thenAllUsersReturned() {
-        List<User> expectedUsers = createDefaultUserList();
+        List<User> expectedUsers = DbInitializer.createUsers();
 
         when(userRepository.findAll()).thenReturn(expectedUsers);
 
@@ -281,7 +276,7 @@ public class UserServiceTest {
 
     @Test
     public void givenCorrectEmail_whenCheckingUserExists_thenNothingHappens() {
-        List<User> users = createDefaultUserList();
+        List<User> users = DbInitializer.createUsers();
 
         users.forEach(user -> {
             when(userRepository.findByEmail(user.getEmail())).thenReturn(user);
@@ -296,7 +291,7 @@ public class UserServiceTest {
 
     @Test
     public void givenValidUser_whenAddingUser_thenUserAddedAndReturned() {
-        User user = createDefaultUserList().get(0);
+        User user = DbInitializer.createUsers().get(0);
         List<User> users = spy(new ArrayList<>());
 
         doAnswer(new Answer<User>() {
@@ -337,7 +332,7 @@ public class UserServiceTest {
 
     @Test
     public void givenExistingUser_whenAddingUser_thanServiceExceptionThrown() {
-        List<User> users = createDefaultUserList();
+        List<User> users = DbInitializer.createUsers();
         when(userRepository.findByEmail(anyString())).thenReturn(users.get(0));
 
         ServiceException exception = assertThrows(ServiceException.class, () -> {
@@ -354,7 +349,7 @@ public class UserServiceTest {
 
     @Test
     public void givenNotExistingUserEmail_whenUpdatingUser_thanServiceExceptionThrown() {
-        List<User> users = createDefaultUserList();
+        List<User> users = DbInitializer.createUsers();
         when(userRepository.findByEmail(anyString())).thenReturn(null);
 
         String email = "asdas.sas@mail.com";
@@ -374,7 +369,7 @@ public class UserServiceTest {
 
     @Test
     public void givenValidUserToUpdate_whenUpdatingUser_thanUserUpdatedAndReturned() {
-        List<User> users = createDefaultUserList();
+        List<User> users = DbInitializer.createUsers();
         User currentUser = users.get(1);
         String email = currentUser.getEmail();
         User newUser = new User(email, 96, email, email);
@@ -410,7 +405,7 @@ public class UserServiceTest {
 
     @Test
     public void givenUserEmailWithActiveLoans_whenDeletingUser_thanServiceExceptionThrown() {
-        List<User> users = createDefaultUserList();
+        List<User> users = DbInitializer.createUsers();
         List<Loan> defaultLoans = LoanServiceTest.createDefaultLoanList();
         String emailWithActiveLoans = LoanServiceTest.getUserWithActiveLoans(defaultLoans).getEmail();
 
@@ -450,7 +445,7 @@ public class UserServiceTest {
 
     @Test
     public void givenUsers_whenGettingTheOldestUser_thanTheOldestUserReturned() {
-        List<User> users = createDefaultUserList();
+        List<User> users = DbInitializer.createUsers();
         User expectedOldestUser = users.stream().max(Comparator.comparing(User::getAge)).orElse(null);
         when(userRepository.findOldestUser()).thenReturn(expectedOldestUser);
 
@@ -537,7 +532,7 @@ public class UserServiceTest {
 
     @Test
     public void givenInterests_whenGettingUsersWithInterests_thenUsersWithTheInterestReturned() {
-        List<User> users = createDefaultUserListWithProfiles();
+        List<User> users = DbInitializer.createUsers(DbInitializer.createProfiles());
         String desiredInterest = "Interests 2";
         List<User> expectedUsers = users
         .stream()
@@ -639,7 +634,7 @@ public class UserServiceTest {
     public void givenValidInfo_whenGettingUsersWithInterestsAndGreaterAge_thenCorrectUsersReturned() {
         String interest = "Interests 2";
         Integer age = 0;
-        List<User> users = createDefaultUserListWithProfiles();
+        List<User> users = DbInitializer.createUsers(DbInitializer.createProfiles());
         List<User> expectedUsers = users
         .stream()
         .filter(user -> 
@@ -832,63 +827,5 @@ public class UserServiceTest {
 
         verify(userRepository).findByEmail(email);
         verify(membershipRepository).findMembershipByUserEmailAndDate(email, date);
-    }
-    
-
-    public static UserRepository createDefaultRepository(List<User> users) {
-        return new UserRepositoryTestImpl(users);
-    }
-
-    public static UserService createDefaultService(UserRepository repository) {
-        return new UserService(repository, LoanServiceTest.createDefaultRepository(), createDeafultProfileRepository(), createDeafultMembershipRepository());
-    }
-
-    public static UserService createDefaultService(UserRepository repository, LoanRepository loanRepository) {
-        return new UserService(repository, loanRepository, createDeafultProfileRepository(), createDeafultMembershipRepository());
-    }
-
-    public static UserService createDefaultService(UserRepository repository, LoanRepository loanRepository, ProfileRepository profileRepository) {
-        return new UserService(repository, loanRepository, profileRepository, createDeafultMembershipRepository());
-    }
-
-    public static UserService createDefaultService() {
-        return new UserService(createDefaultRepository(createDefaultUserList()), LoanServiceTest.createDefaultRepository(), createDeafultProfileRepository(), createDeafultMembershipRepository());
-    }
-
-    public static ProfileRepository createDeafultProfileRepository() {
-        return new ProfileRepositoryTestImpl();
-    }
-
-    public static MembershipRepository createDeafultMembershipRepository() {
-        return new MembershipRepositoryTestImpl();
-    }
-
-    public static List<User> createDefaultUserList() {
-        return List.of(
-            new User("John Doe", 25, "john.doe@ucll.be", "john1234"),
-            new User("Jane Toe", 30, "jane.toe@ucll.be", "jane1234"),
-            new User("Jack Doe", 5, "jack.doe@ucll.be", "jack1234"),
-            new User("Sarah Doe", 4, "sarah.doe@ucll.be", "sarah1234"),
-            new User("Birgit Doe", 18, "birgit.doe@ucll.be", "birgit1234")
-            );
-    }
-
-    public static List<User> createDefaultUserListWithProfiles() {
-        List<Profile> profiles = new ArrayList<Profile>();
-        profiles.add(new Profile("Bio 1", "Location 1", "Interests 1"));
-        profiles.add(new Profile("Bio 2", "Location 2", "Interests 2"));
-        profiles.add(new Profile("Bio 3", "Location 3", "Interests 3"));
-        profiles.add(new Profile("Bio 4", "Location 4", "Interests 4"));
-        profiles.add(new Profile("Bio 5", "Location 5", "Interests 2"));
-
-        List<User> users = new ArrayList<>(List.of(
-            new User("John Doe", 25, "john.doe@ucll.be", "john1234", profiles.get(0)),
-            new User("Jane Toe", 30, "jane.toe@ucll.be", "jane1234", profiles.get(1)),
-            new User("Jack Doe", 5, "jack.doe@ucll.be", "jack1234"),
-            new User("Sarah Doe", 4, "sarah.doe@ucll.be", "sarah1234"),
-            new User("Birgit Doe", 18, "birgit.doe@ucll.be", "birgit1234", profiles.get(4))
-            ));
-
-        return users;
     }
 }

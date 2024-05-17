@@ -4,279 +4,197 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import be.ucll.model.Book;
 import be.ucll.model.Magazine;
 import be.ucll.model.Publication;
+import be.ucll.repository.DbInitializer;
 import be.ucll.repository.PublicationRepository;
-import be.ucll.unit.repository.PublicationRepositoryTestImpl;
 import be.ucll.utilits.TimeTracker;
 
+@ExtendWith(MockitoExtension.class)
 public class PublicationServiceTest {
     
+    @Mock
+    private PublicationRepository publicationRepository;
+
+    @InjectMocks
+    private PublicationService publicationService;
+
     @BeforeEach
     public void resetTime() {
         TimeTracker.resetToday();
         TimeTracker.resetYear();
     }
 
-    @Test
+@Test
     public void givenNullParams_whenRequestingPublications_thanAllPublicationsReturned() {
-        List<Book> books = createDefaultBookList();
-        List<Magazine> magazines = createDefaultMagazineList();
         List<Publication> expectedPublications = new ArrayList<>();
-        expectedPublications.addAll(magazines);
-        expectedPublications.addAll(books);
-        PublicationRepository repository = createDefaultRepository(books, magazines);
-        PublicationService service = createDefaultService(repository);
+        expectedPublications.addAll(DbInitializer.createDefaultMagazineList());
+        expectedPublications.addAll(DbInitializer.createDefaultBookList());
 
-        String type = null;
-        String title = null;
+        when(publicationRepository.findByTitleAndType(null, null)).thenReturn(expectedPublications);
 
-        List<Publication> actualPublications = service.findPublicationsByTitleAndType(title, type);
+        List<Publication> actualPublications = publicationService.findPublicationsByTitleAndType(null, null);
 
         assertEquals(expectedPublications.size(), actualPublications.size());
-        expectedPublications.forEach(publication -> {
-            assertTrue(actualPublications.contains(publication));
-        });
+        expectedPublications.forEach(publication -> assertTrue(actualPublications.contains(publication)));
+
+        verify(publicationRepository).findByTitleAndType(null, null);
     }
 
     @Test
     public void givenEmptyParams_whenRequestingPublications_thanNoPublicationsReturned() {
-        List<Book> books = createDefaultBookList();
-        List<Magazine> magazines = createDefaultMagazineList();
+        when(publicationRepository.findByTitleAndType("", "")).thenReturn(new ArrayList<>());
 
-        PublicationRepository repository = createDefaultRepository(books, magazines);
-        PublicationService service = createDefaultService(repository);
+        List<Publication> actualPublications = publicationService.findPublicationsByTitleAndType("", "");
 
-        String type = "";
-        String title = "";
-
-        List<Publication> actualPublications = service.findPublicationsByTitleAndType(title, type);
-
-        assertEquals(actualPublications.size(), 0);
+        assertEquals(0, actualPublications.size());
+        
+        verify(publicationRepository).findByTitleAndType("", "");
     }
 
     @Test
     public void givenTitleAndEmptyTypeParams_whenRequestingPublications_thanNoPublicationsReturned() {
-        List<Book> books = createDefaultBookList();
-        List<Magazine> magazines = createDefaultMagazineList();
+        when(publicationRepository.findByTitleAndType("a", "")).thenReturn(new ArrayList<>());
 
-        PublicationRepository repository = createDefaultRepository(books, magazines);
-        PublicationService service = createDefaultService(repository);
+        List<Publication> actualPublications = publicationService.findPublicationsByTitleAndType("a", "");
 
-        String type = "";
-        String title = "a";
-
-        List<Publication> actualPublications = service.findPublicationsByTitleAndType(title, type);
-
-        assertEquals(actualPublications.size(), 0);
+        assertEquals(0, actualPublications.size());
+        
+        verify(publicationRepository).findByTitleAndType("a", "");
     }
 
     @Test
     public void givenEmptyTitleAndBookTypeParams_whenRequestingPublications_thanOnlyBooksReturned() {
-        List<Book> books = createDefaultBookList();
-        List<Magazine> magazines = createDefaultMagazineList();
+        List<Publication> books = new ArrayList<>(DbInitializer.createDefaultBookList());
+        when(publicationRepository.findByTitleAndType("", "Book")).thenReturn(books);
 
-        PublicationRepository repository = createDefaultRepository(books, magazines);
-        PublicationService service = createDefaultService(repository);
-
-        String type = "Book";
-        String title = "";
-
-        List<Publication> actualPublications = service.findPublicationsByTitleAndType(title, type);
+        List<Publication> actualPublications = publicationService.findPublicationsByTitleAndType("", "Book");
 
         assertEquals(books.size(), actualPublications.size());
-        actualPublications.forEach(publication -> {
-            assertTrue(books.contains(publication));
-        });
+        actualPublications.forEach(publication -> assertTrue(books.contains(publication)));
+        
+        verify(publicationRepository).findByTitleAndType("", "Book");
     }
 
     @Test
     public void givenNullTitleAndBookTypeParams_whenRequestingPublications_thanOnlyBooksReturned() {
-        List<Book> books = createDefaultBookList();
-        List<Magazine> magazines = createDefaultMagazineList();
+        List<Publication> books = new ArrayList<>(DbInitializer.createDefaultBookList());
+        when(publicationRepository.findByTitleAndType(null, "Book")).thenReturn(books);
 
-        PublicationRepository repository = createDefaultRepository(books, magazines);
-        PublicationService service = createDefaultService(repository);
-
-        String type = "Book";
-        String title = null;
-
-        List<Publication> actualPublications = service.findPublicationsByTitleAndType(title, type);
+        List<Publication> actualPublications = publicationService.findPublicationsByTitleAndType(null, "Book");
 
         assertEquals(books.size(), actualPublications.size());
-        actualPublications.forEach(publication -> {
-            assertTrue(books.contains(publication));
-        });
+        actualPublications.forEach(publication -> assertTrue(books.contains(publication)));
+        
+        verify(publicationRepository).findByTitleAndType(null, "Book");
     }
 
     @Test
     public void givenEmptyTitleAndMagazineTypeParams_whenRequestingPublications_thanOnlyMagazinesReturned() {
-        List<Book> books = createDefaultBookList();
-        List<Magazine> magazines = createDefaultMagazineList();
+        List<Publication> magazines = new ArrayList<>(DbInitializer.createDefaultMagazineList());
+        when(publicationRepository.findByTitleAndType("", "Magazine")).thenReturn(magazines);
 
-        PublicationRepository repository = createDefaultRepository(books, magazines);
-        PublicationService service = createDefaultService(repository);
-
-        String type = "Magazine";
-        String title = "";
-
-        List<Publication> actualPublications = service.findPublicationsByTitleAndType(title, type);
+        List<Publication> actualPublications = publicationService.findPublicationsByTitleAndType("", "Magazine");
 
         assertEquals(magazines.size(), actualPublications.size());
-        actualPublications.forEach(publication -> {
-            assertTrue(magazines.contains(publication));
-        });
+        actualPublications.forEach(publication -> assertTrue(magazines.contains(publication)));
+        
+        verify(publicationRepository).findByTitleAndType("", "Magazine");
     }
 
     @Test
     public void givenNullTitleAndMagazineTypeParams_whenRequestingPublications_thanOnlyMagazinesReturned() {
-        List<Book> books = createDefaultBookList();
-        List<Magazine> magazines = createDefaultMagazineList();
+        List<Publication> magazines = new ArrayList<>(DbInitializer.createDefaultMagazineList());
+        when(publicationRepository.findByTitleAndType(null, "Magazine")).thenReturn(magazines);
 
-        PublicationRepository repository = createDefaultRepository(books, magazines);
-        PublicationService service = createDefaultService(repository);
-
-        String type = "Magazine";
-        String title = null;
-
-        List<Publication> actualPublications = service.findPublicationsByTitleAndType(title, type);
+        List<Publication> actualPublications = publicationService.findPublicationsByTitleAndType(null, "Magazine");
 
         assertEquals(magazines.size(), actualPublications.size());
-        actualPublications.forEach(publication -> {
-            assertTrue(magazines.contains(publication));
-        });
+        actualPublications.forEach(publication -> assertTrue(magazines.contains(publication)));
+        
+        verify(publicationRepository).findByTitleAndType(null, "Magazine");
     }
 
     @Test
     public void givenTitleAndBookTypeParams_whenRequestingPublications_thanBooksWithTitleReturned() {
-        List<Book> books = createDefaultBookList();
-        List<Magazine> magazines = createDefaultMagazineList();
+        List<Publication> booksWithTitle = new ArrayList<>(DbInitializer.createDefaultBookList());
+        booksWithTitle = booksWithTitle.stream().filter(book -> book.getTitle().contains("a")).toList();
+        final List<Publication> excpectedPublications = booksWithTitle;
+        when(publicationRepository.findByTitleAndType("a", "Book")).thenReturn(booksWithTitle);
 
-        PublicationRepository repository = createDefaultRepository(books, magazines);
-        PublicationService service = createDefaultService(repository);
+        List<Publication> actualPublications = publicationService.findPublicationsByTitleAndType("a", "Book");
 
-        String type = "Book";
-        String title = "a";
-
-        List<Publication> actualPublications = service.findPublicationsByTitleAndType(title, type);
-
-        assertNotEquals(books.size(), actualPublications.size());
+        assertNotEquals(DbInitializer.createDefaultBookList().size(), actualPublications.size());
         actualPublications.forEach(publication -> {
-            assertTrue(books.contains(publication));
-            assertTrue(publication.getTitle().contains(title));
+            assertTrue(excpectedPublications.contains(publication));
+            assertTrue(publication.getTitle().contains("a"));
         });
+
+        verify(publicationRepository).findByTitleAndType("a", "Book");
     }
 
     @Test
     public void givenZeroCopiesParams_whenRequestingPublicationsByCopies_thanAllPublicationsReturned() {
-        List<Book> books = createDefaultBookList();
-        List<Magazine> magazines = createDefaultMagazineList();
         List<Publication> expectedPublications = new ArrayList<>();
-        expectedPublications.addAll(magazines);
-        expectedPublications.addAll(books);
-        PublicationRepository repository = createDefaultRepository(books, magazines);
-        PublicationService service = createDefaultService(repository);
+        expectedPublications.addAll(DbInitializer.createDefaultMagazineList());
+        expectedPublications.addAll(DbInitializer.createDefaultBookList());
 
-        Integer availableCopies = 0;
+        when(publicationRepository.findByAvailableCopiesGreaterThanEqual(0)).thenReturn(expectedPublications);
 
-        List<Publication> actualPublications = service.findPublicationsWithMoreAvailableCopiesThan(availableCopies);
+        List<Publication> actualPublications = publicationService.findPublicationsWithMoreAvailableCopiesThan(0);
 
         assertEquals(expectedPublications.size(), actualPublications.size());
-        expectedPublications.forEach(publication -> {
-            assertTrue(actualPublications.contains(publication));
-        });
+        expectedPublications.forEach(publication -> assertTrue(actualPublications.contains(publication)));
+
+        verify(publicationRepository).findByAvailableCopiesGreaterThanEqual(0);
     }
 
     @Test
     public void given40CopiesParams_whenRequestingPublicationsByCopies_thanFilteredPublicationsReturned() {
-        List<Book> books = createDefaultBookList();
-        List<Magazine> magazines = createDefaultMagazineList();
+        List<Book> books = DbInitializer.createDefaultBookList();
+        List<Magazine> magazines = DbInitializer.createDefaultMagazineList();
         List<Publication> publications = new ArrayList<>();
         publications.addAll(magazines);
         publications.addAll(books);
-        PublicationRepository repository = createDefaultRepository(books, magazines);
-        PublicationService service = createDefaultService(repository);
+        final List<Publication> filteredPublications = publications.stream().filter(publication -> publication.getAvailableCopies() >= 40).toList();
+        when(publicationRepository.findByAvailableCopiesGreaterThanEqual(40)).thenReturn(filteredPublications);
 
-        Integer availableCopies = 40;
+        List<Publication> actualPublications = publicationService.findPublicationsWithMoreAvailableCopiesThan(40);
 
-        List<Publication> actualPublications = service.findPublicationsWithMoreAvailableCopiesThan(availableCopies);
-
-        assertNotEquals(publications.size(), actualPublications.size());
+        assertEquals(filteredPublications.size(), actualPublications.size());
         actualPublications.forEach(publication -> {
-            assertTrue(publications.contains(publication));
-            assertTrue(publication.getAvailableCopies() >= availableCopies);
+            assertTrue(filteredPublications.contains(publication));
+            assertTrue(publication.getAvailableCopies() >= 40);
         });
+
+        verify(publicationRepository).findByAvailableCopiesGreaterThanEqual(40);
     }
 
     @Test
-    public void givenNegativeCopiesParams_whenRequestingPublicationsByCopies_thanFilteredPublicationsReturned() {
-        List<Book> books = createDefaultBookList();
-        List<Magazine> magazines = createDefaultMagazineList();
-        List<Publication> publications = new ArrayList<>();
-        publications.addAll(magazines);
-        publications.addAll(books);
-        PublicationRepository repository = createDefaultRepository(books, magazines);
-        PublicationService service = createDefaultService(repository);
-
+    public void givenNegativeCopiesParams_whenRequestingPublicationsByCopies_thanExceptionThrown() {
         Integer availableCopies = -1;
 
         ServiceException exception = assertThrows(ServiceException.class, () -> {
-            service.findPublicationsWithMoreAvailableCopiesThan(availableCopies);
+            publicationService.findPublicationsWithMoreAvailableCopiesThan(availableCopies);
         });
 
         String expectedMessage = PublicationService.NEGATIVE_AVAILABLE_COPIES_EXCEPTION;
-        String actialMessage = exception.getMessage();
+        String actualMessage = exception.getMessage();
 
-        assertEquals(expectedMessage, actialMessage);
-    }
-
-    public static PublicationRepository createDefaultRepository(List<Book> books, List<Magazine> magazines) {
-        return new PublicationRepositoryTestImpl(books, magazines);
-    }
-
-    public static PublicationService createDefaultService(PublicationRepository repository) {
-        return new PublicationService(repository);
-    }
-
-    public static PublicationService createDefaultService() {
-        List<Book> books = createDefaultBookList();
-        List<Magazine> magazines = createDefaultMagazineList();
-        return new PublicationService(createDefaultRepository(books, magazines));
-    }
-
-    public static List<Magazine> createDefaultMagazineList() {
-        // Create an ArrayList to store Magazine instances
-        ArrayList<Magazine> magazines = new ArrayList<>();
-
-        // Create 5 Magazine instances and add them to the ArrayList
-        magazines.add(new Magazine("National Geographic", "Editor-in-Chief", "12345", 2022, 100));
-        magazines.add(new Magazine("Time", "Managing Editor", "67890", 2022, 80));
-        magazines.add(new Magazine("Vogue", "Fashion Editor", "54321", 2022, 60));
-        magazines.add(new Magazine("Scientific American", "Science Editor", "98765", 2022, 40));
-        magazines.add(new Magazine("Sports Illustrated", "Sports Editor", "13579", 2022, 20));
-        
-        return magazines;
-    }
-
-    public static List<Book> createDefaultBookList() {
-        // Create an ArrayList to store Book instances
-        ArrayList<Book> books = new ArrayList<>();
-
-        // Create 5 Book instances and add them to the ArrayList
-        books.add(new Book("The Great Gatsby", "F. Scott Fitzgerald", "978-0743273565", 1925, 10));
-        books.add(new Book("To Kill a Mockingbird", "Harper Lee", "978-0061120084", 1960, 15));
-        books.add(new Book("1984", "George Orwell", "978-0451524935", 1949, 20));
-        books.add(new Book("Pride and Prejudice", "Jane Austen", "978-0141439518", 1813, 12));
-        books.add(new Book("The Catcher in the Rye", "J.D. Salinger", "978-0316769488", 1951, 8));
-        
-        return books;
+        assertEquals(expectedMessage, actualMessage);
     }
 }
