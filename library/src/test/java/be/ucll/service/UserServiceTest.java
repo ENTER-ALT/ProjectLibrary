@@ -41,6 +41,7 @@ import be.ucll.repository.LoanRepository;
 import be.ucll.repository.MembershipRepository;
 import be.ucll.repository.ProfileRepository;
 import be.ucll.repository.UserRepository;
+import be.ucll.unit.utils.LoanTestsUtils;
 import be.ucll.utilits.TimeTracker;
 
 @ExtendWith(MockitoExtension.class)
@@ -406,8 +407,8 @@ public class UserServiceTest {
     @Test
     public void givenUserEmailWithActiveLoans_whenDeletingUser_thanServiceExceptionThrown() {
         List<User> users = DbInitializer.createUsers();
-        List<Loan> defaultLoans = LoanServiceTest.createDefaultLoanList();
-        String emailWithActiveLoans = LoanServiceTest.getUserWithActiveLoans(defaultLoans).getEmail();
+        List<Loan> defaultLoans = LoanTestsUtils.createDefaultLoanList();
+        String emailWithActiveLoans = LoanTestsUtils.getUserWithActiveLoans(defaultLoans).getEmail();
 
         when(userRepository.findByEmail(emailWithActiveLoans)).thenReturn(users.get(0));
         when(loanRepository.findByUserEmailAndEndDateAfter(emailWithActiveLoans, TimeTracker.getToday()))
@@ -428,8 +429,8 @@ public class UserServiceTest {
     //4
 @Test
     public void givenUserEmailWithInactiveLoans_whenDeletingUser_thanLoansAndUserDeleted() {
-        List<Loan> defaultLoans = LoanServiceTest.createDefaultLoanList();
-        User userWithInactiveLoans = LoanServiceTest.getUserWithInactiveLoans(defaultLoans);
+        List<Loan> defaultLoans = LoanTestsUtils.createDefaultLoanList();
+        User userWithInactiveLoans = LoanTestsUtils.getUserWithInactiveLoans(defaultLoans);
         String emailWithInactiveLoans = userWithInactiveLoans.getEmail();
 
         when(userRepository.findByEmail(emailWithInactiveLoans)).thenReturn(userWithInactiveLoans);

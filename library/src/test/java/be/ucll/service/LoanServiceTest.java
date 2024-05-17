@@ -12,7 +12,6 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,7 +35,7 @@ import be.ucll.repository.MembershipRepository;
 import be.ucll.repository.ProfileRepository;
 import be.ucll.repository.PublicationRepository;
 import be.ucll.repository.UserRepository;
-import be.ucll.unit.repository.LoanRepositoryTestImpl;
+import be.ucll.unit.utils.LoanTestsUtils;
 import be.ucll.utilits.TimeTracker;
 
 @ExtendWith(MockitoExtension.class)
@@ -71,12 +70,12 @@ public class LoanServiceTest {
     @Test 
     public void givenValidEmailOnlyActiveTrue_whenGettingUsersByName_thanActiveUserLoansReturned() {
         List<User> users = DbInitializer.createUsers();
-        List<Loan> loans = createDefaultLoanList(users);
+        List<Loan> loans = LoanTestsUtils.createDefaultLoanList(users);
         Boolean onlyActive = true;
         
         users.forEach(user -> {
             String email = user.getEmail();
-            List<Loan> expectedLoans = LoanRepositoryTestImpl.findByUserEmailAndEndDateAfter(loans, email, TimeTracker.getToday());
+            List<Loan> expectedLoans = LoanTestsUtils.findByUserEmailAndEndDateAfter(loans, email, TimeTracker.getToday());
     
             when(loanRepository.findByUserEmailAndEndDateAfter(email, TimeTracker.getToday())).thenReturn(expectedLoans);
 
@@ -94,14 +93,14 @@ public class LoanServiceTest {
     @Test 
     public void givenValidEmailOnlyActiveFalse_whenGettingUsersByName_thanAllUserLoansReturned() {
         List<User> users = DbInitializer.createUsers();
-        List<Loan> loans = createDefaultLoanList(users);
+        List<Loan> loans = LoanTestsUtils.createDefaultLoanList(users);
         
         List<Boolean> onlyActiveValues = new ArrayList<>(List.of(false));
         onlyActiveValues.add(null);
 
         users.forEach(user -> {
             String email = user.getEmail();
-            List<Loan> expectedLoans = LoanRepositoryTestImpl.findByUserEmail(loans, email);
+            List<Loan> expectedLoans = LoanTestsUtils.findByUserEmail(loans, email);
     
             when(loanRepository.findByUserEmail(email)).thenReturn(expectedLoans);
     
@@ -119,7 +118,7 @@ public class LoanServiceTest {
     @Test 
     public void givenNullEmail_whenGettingUserLoansByEmail_thanServiceExceptionThrown() {
         String email = null;
-        List<Boolean> onlyActiveValues = allPossibleOnlyActiveValues();
+        List<Boolean> onlyActiveValues = LoanTestsUtils.allPossibleOnlyActiveValues();
         doAnswer(new Answer<Object>() {
         public Object answer(InvocationOnMock invocation) {
             throw new ServiceException(String.format(UserService.USER_WITH_EMAIL_DOESNT_EXIST_EXCEPTION, email));
@@ -141,7 +140,7 @@ public class LoanServiceTest {
     @Test 
     public void givenEmptyEmail_whenGettingUserLoansByEmail_thanServiceExceptionThrown() {
         String email = "";
-        List<Boolean> onlyActiveValues = allPossibleOnlyActiveValues();
+        List<Boolean> onlyActiveValues = LoanTestsUtils.allPossibleOnlyActiveValues();
 
         doAnswer(new Answer<Object>() {
             public Object answer(InvocationOnMock invocation) {
@@ -164,7 +163,7 @@ public class LoanServiceTest {
     @Test 
     public void givenWrongEmail_whenGettingUserLoansByEmail_thanServiceExceptionThrown() {
         String email = "asdaass@ams.la";
-        List<Boolean> onlyActiveValues = allPossibleOnlyActiveValues();
+        List<Boolean> onlyActiveValues = LoanTestsUtils.allPossibleOnlyActiveValues();
 
         doAnswer(new Answer<Object>() {
             public Object answer(InvocationOnMock invocation) {
@@ -206,8 +205,8 @@ public class LoanServiceTest {
 
     @Test 
     public void givenUserWithActiveLoans_whenDeletingUserLoansByEmail_thanServiceExceptionThrown() {
-        List<Loan> defaultLoans = createDefaultLoanList(); 
-        String userEmailWithActiveLoans = getUserWithActiveLoans(defaultLoans).getEmail();
+        List<Loan> defaultLoans = LoanTestsUtils.createDefaultLoanList(); 
+        String userEmailWithActiveLoans = LoanTestsUtils.getUserWithActiveLoans(defaultLoans).getEmail();
         
         when(loanRepository.findByUserEmailAndEndDateAfter(userEmailWithActiveLoans, TimeTracker.getToday())).thenReturn(defaultLoans);
 
@@ -225,9 +224,9 @@ public class LoanServiceTest {
     @Test 
     public void givenUserWithNoLoans_whenDeletingUserLoansByEmail_thanServiceExceptionThrown() {
         List<User> defaultUsers = DbInitializer.createUsers();
-        List<Loan> defaultLoans = createDefaultLoanList(defaultUsers); 
+        List<Loan> defaultLoans = LoanTestsUtils.createDefaultLoanList(defaultUsers); 
 
-        String emailWithoutLoans = getUserWithoutLoans(defaultLoans, defaultUsers).getEmail();
+        String emailWithoutLoans = LoanTestsUtils.getUserWithoutLoans(defaultLoans, defaultUsers).getEmail();
 
         when(loanRepository.findByUserEmail(emailWithoutLoans)).thenReturn(new ArrayList<Loan>());
 
@@ -240,15 +239,15 @@ public class LoanServiceTest {
 
         assertEquals(loanService.getLoansByUser(emailWithoutLoans, null).size(), 0);
         assertEquals(expectedMessage, actualMessage);
-        verify(loanRepository, times(1)).findByUserEmail(emailWithoutLoans);
+        verify(loanRepository, times(2)).findByUserEmail(emailWithoutLoans);
     }
 
     @Test 
     public void givenUserWithInactiveLoans_whenDeletingUserLoansByEmail_thanLoansAreDeleted() {
-        List<Loan> defaultLoans = createDefaultLoanList(); 
-        String userEmailWithLoans = getUserWithInactiveLoans(defaultLoans).getEmail();
+        List<Loan> defaultLoans = LoanTestsUtils.createDefaultLoanList(); 
+        String userEmailWithLoans = LoanTestsUtils.getUserWithInactiveLoans(defaultLoans).getEmail();
         
-        List<Loan> userLoans = LoanRepositoryTestImpl.findByUserEmail(defaultLoans, userEmailWithLoans);
+        List<Loan> userLoans = LoanTestsUtils.findByUserEmail(defaultLoans, userEmailWithLoans);
         Integer previousUserLoansSize = userLoans.size();
         when(loanRepository.findByUserEmail(userEmailWithLoans)).thenReturn(userLoans);
 
@@ -421,72 +420,5 @@ public class LoanServiceTest {
         Integer actualFine = loanService.calculateFine(loan);
         Integer expectedFine = (int)(ChronoUnit.DAYS.between(loan.getEndDate(), loan.getReturnDate()) * expectedMultiplier * publications.size());
         assertEquals(actualFine, expectedFine);
-    }
-
-    public static List<Loan> createDefaultLoanList() {
-        List<User> users = DbInitializer.createUsers();
-        List<Publication> publications = DbInitializer.createPublications();
-        List<Loan> loans = DbInitializer.createLoans(users, publications);
-        return loans;
-    }
-
-    public static List<Loan> createDefaultLoanList(List<User> users) {
-        List<Publication> publications = DbInitializer.createPublications();
-        List<Loan> loans = DbInitializer.createLoans(users, publications);
-        return loans;
-    }
-
-    public static Long generateUniqueNumber(List<Long> list) {
-        Random random = new Random();
-        long generatedNumber;
-        do {
-            generatedNumber = random.nextLong(); // Generate a random Long number
-        } while (list.contains(generatedNumber)); // Check if it's in the list, regenerate if it is
-        return generatedNumber;
-    }
-
-    public List<Boolean> allPossibleOnlyActiveValues(){
-        List<Boolean> result = new ArrayList<>(List.of(true, false));
-        result.add(null);
-        return result; 
-    }
-
-    public static User getUserWithActiveLoans(List<Loan> defaultLoans) {
-        return defaultLoans
-        .stream()
-        .filter(loan -> loan.getEndDate().isAfter(TimeTracker.getToday()))
-        .findFirst()
-        .orElse(null)
-        .getUser();
-    }
-
-    public static User getUserWithoutLoans(List<Loan> defaultLoans, List<User> users) {
-        List<String> emailsWithLoans = defaultLoans
-        .stream()
-        .map(loan -> loan.getUser().getEmail())
-        .toList();
-        return users
-        .stream()
-        .filter(user -> !emailsWithLoans.contains(user.getEmail()))
-        .findFirst()
-        .orElse(null);
-    }
-
-    public static User getUserWithInactiveLoans(List<Loan> defaultLoans) {
-        List<User> usersWithLoans = defaultLoans
-        .stream()
-        .map(loan -> loan.getUser())
-        .toList();
-
-        List<User> usersWithInactiveLoans = new ArrayList<>();
-        usersWithLoans.forEach(user -> {
-            Boolean hasActiveLoans = defaultLoans
-            .stream()
-            .anyMatch(loan -> loan.getUser().getEmail().equals(user.getEmail()) && loan.getEndDate() == null);
-            if (!hasActiveLoans) {
-                usersWithInactiveLoans.add(user);
-            }
-        });
-        return usersWithInactiveLoans.size() > 0 ? usersWithInactiveLoans.get(0) : null;
     }
 }

@@ -28,10 +28,10 @@ import be.ucll.repository.MembershipRepository;
 import be.ucll.repository.PublicationRepository;
 import be.ucll.repository.UserRepository;
 import be.ucll.service.LoanService;
-import be.ucll.service.LoanServiceTest;
 import be.ucll.service.PublicationService;
 import be.ucll.service.ServiceException;
 import be.ucll.service.UserService;
+import be.ucll.unit.utils.LoanTestsUtils;
 import be.ucll.utilits.TimeTracker;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -889,7 +889,7 @@ public class UserIntegrationTest {
         List<Publication> publications = publicationRepository.findAll();
         List<Long> ids = publications.stream().map(publication -> publication.getId()).toList().subList(0, 3);
 
-        List<Long> unexistingId = new ArrayList<>(List.of(LoanServiceTest.generateUniqueNumber(ids)));
+        List<Long> unexistingId = new ArrayList<>(List.of(LoanTestsUtils.generateUniqueNumber(ids)));
         String bodyValue = unexistingId.toString();
 
         webTestClient
