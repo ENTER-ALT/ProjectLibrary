@@ -93,14 +93,14 @@ public class PublicationIntegrationTest {
                         "    \"issn\": \"54321\"\r\n" + //
                         "  },\r\n" + //
                         "  {\r\n" + //
-                        "    \"availableCopies\": 39,\r\n" + //
+                        "    \"availableCopies\": 40,\r\n" + //
                         "    \"title\": \"Scientific American\",\r\n" + //
                         "    \"year\": 2022,\r\n" + //
                         "    \"editor\": \"Science Editor\",\r\n" + //
                         "    \"issn\": \"98765\"\r\n" + //
                         "  },\r\n" + //
                         "  {\r\n" + //
-                        "    \"availableCopies\": 19,\r\n" + //
+                        "    \"availableCopies\": 20,\r\n" + //
                         "    \"title\": \"Sports Illustrated\",\r\n" + //
                         "    \"year\": 2022,\r\n" + //
                         "    \"editor\": \"Sports Editor\",\r\n" + //
@@ -155,14 +155,14 @@ public class PublicationIntegrationTest {
                         "    \"issn\": \"12345\"\r\n" + //
                         "  },\r\n" + //
                         "  {\r\n" + //
-                        "    \"availableCopies\": 39,\r\n" + //
+                        "    \"availableCopies\": 40,\r\n" + //
                         "    \"title\": \"Scientific American\",\r\n" + //
                         "    \"year\": 2022,\r\n" + //
                         "    \"editor\": \"Science Editor\",\r\n" + //
                         "    \"issn\": \"98765\"\r\n" + //
                         "  },\r\n" + //
                         "  {\r\n" + //
-                        "    \"availableCopies\": 19,\r\n" + //
+                        "    \"availableCopies\": 20,\r\n" + //
                         "    \"title\": \"Sports Illustrated\",\r\n" + //
                         "    \"year\": 2022,\r\n" + //
                         "    \"editor\": \"Sports Editor\",\r\n" + //
@@ -263,14 +263,14 @@ public class PublicationIntegrationTest {
                         "    \"issn\": \"54321\"\r\n" + //
                         "  },\r\n" + //
                         "  {\r\n" + //
-                        "    \"availableCopies\": 39,\r\n" + //
+                        "    \"availableCopies\": 40,\r\n" + //
                         "    \"title\": \"Scientific American\",\r\n" + //
                         "    \"year\": 2022,\r\n" + //
                         "    \"editor\": \"Science Editor\",\r\n" + //
                         "    \"issn\": \"98765\"\r\n" + //
                         "  },\r\n" + //
                         "  {\r\n" + //
-                        "    \"availableCopies\": 19,\r\n" + //
+                        "    \"availableCopies\": 20,\r\n" + //
                         "    \"title\": \"Sports Illustrated\",\r\n" + //
                         "    \"year\": 2022,\r\n" + //
                         "    \"editor\": \"Sports Editor\",\r\n" + //
@@ -297,14 +297,14 @@ public class PublicationIntegrationTest {
                         "    \"issn\": \"12345\"\r\n" + //
                         "  },\r\n" + //
                         "  {\r\n" + //
-                        "    \"availableCopies\": 39,\r\n" + //
+                        "    \"availableCopies\": 40,\r\n" + //
                         "    \"title\": \"Scientific American\",\r\n" + //
                         "    \"year\": 2022,\r\n" + //
                         "    \"editor\": \"Science Editor\",\r\n" + //
                         "    \"issn\": \"98765\"\r\n" + //
                         "  },\r\n" + //
                         "  {\r\n" + //
-                        "    \"availableCopies\": 19,\r\n" + //
+                        "    \"availableCopies\": 20,\r\n" + //
                         "    \"title\": \"Sports Illustrated\",\r\n" + //
                         "    \"year\": 2022,\r\n" + //
                         "    \"editor\": \"Sports Editor\",\r\n" + //
@@ -380,14 +380,14 @@ public class PublicationIntegrationTest {
                         "    \"issn\": \"54321\"\r\n" + //
                         "  },\r\n" + //
                         "  {\r\n" + //
-                        "    \"availableCopies\": 39,\r\n" + //
+                        "    \"availableCopies\": 40,\r\n" + //
                         "    \"title\": \"Scientific American\",\r\n" + //
                         "    \"year\": 2022,\r\n" + //
                         "    \"editor\": \"Science Editor\",\r\n" + //
                         "    \"issn\": \"98765\"\r\n" + //
                         "  },\r\n" + //
                         "  {\r\n" + //
-                        "    \"availableCopies\": 19,\r\n" + //
+                        "    \"availableCopies\": 20,\r\n" + //
                         "    \"title\": \"Sports Illustrated\",\r\n" + //
                         "    \"year\": 2022,\r\n" + //
                         "    \"editor\": \"Sports Editor\",\r\n" + //
@@ -440,6 +440,13 @@ public class PublicationIntegrationTest {
                         "    \"year\": 2022,\r\n" + //
                         "    \"editor\": \"Fashion Editor\",\r\n" + //
                         "    \"issn\": \"54321\"\r\n" + //
+                        "  },\r\n" + //
+                        "  {\r\n" + //
+                        "    \"availableCopies\": 40,\r\n" + //
+                        "    \"title\": \"Scientific American\",\r\n" + //
+                        "    \"year\": 2022,\r\n" + //
+                        "    \"editor\": \"Science Editor\",\r\n" + //
+                        "    \"issn\": \"98765\"\r\n" + //
                         "  }\r\n" + //
                         "]");
     }

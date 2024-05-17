@@ -72,7 +72,7 @@ public class UserService {
         if (name == null) {
             return getAllUsers();
         }
-        List<User> result = userRepository.findByName(name);
+        List<User> result = userRepository.findByNameContaining(name);
         if (result == null || result.size() == 0) {
             throw new ServiceException(NO_USERS_FOUND_EXCEPTION);
         }
@@ -207,7 +207,7 @@ public class UserService {
 
     public Membership getMembershipForDate(String email, LocalDate date) {
         getUserByEmail(email); //to check that user exists
-        Membership membership = membershipRepository.findMembershipByUserEmailAndDate(email, date).orElse(null);
+        Membership membership = membershipRepository.findMembershipByUserEmailAndDate(email, date);
 
         if (membership == null) {
             String message = String.format(NO_MEMBERSHIP_FOUND_ON_DATE_EXCEPTION, date);

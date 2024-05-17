@@ -15,5 +15,5 @@ public interface PublicationRepository extends JpaRepository<Publication, Long> 
 
     @Query("SELECT p FROM Publication p WHERE (:title IS NULL OR p.title LIKE %:title%) " +
             "AND (:type IS NULL OR p.type = LOWER(:type))")
-    List<Publication> findByTitleAndType(String title, String type);
+    public List<Publication> findByTitleAndType(String title, String type);
 }

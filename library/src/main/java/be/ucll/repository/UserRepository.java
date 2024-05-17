@@ -11,7 +11,7 @@ import be.ucll.model.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    List<User> findByName(String name);
+    List<User> findByNameContaining(String name);
 
     User findByEmail(String email);
 
