@@ -146,8 +146,8 @@ public class UserService {
         membership.setUser(currentUser);
         currentUser.setMembership(membership);
 
-        userRepository.save(currentUser);
         membershipRepository.save(membership);
+        userRepository.save(currentUser);
 
         return currentUser;
     }
