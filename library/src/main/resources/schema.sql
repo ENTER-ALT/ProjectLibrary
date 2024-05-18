@@ -5,19 +5,6 @@ DROP TABLE IF EXISTS memberships;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS profiles;
 
-
-CREATE TABLE publications (
-    publication_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    available_copies INTEGER,
-    title VARCHAR(255) NOT NULL,
-    publication_year INTEGER,
-    author VARCHAR(255),
-    ISBN VARCHAR(255),
-    editor VARCHAR(255),
-    ISSN VARCHAR(255),
-    type VARCHAR(255) NOT NULL
-);
-
 CREATE TABLE profiles (
     profile_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     bio VARCHAR(255) NOT NULL,
@@ -48,7 +35,6 @@ CREATE TABLE memberships (
     CONSTRAINT chk_membership_unique_dates UNIQUE (user_id, start_date, end_date)
 );
 
-
 CREATE TABLE loans (
     loan_id BIGINT PRIMARY KEY AUTO_INCREMENT,
     user_id BIGINT NOT NULL,
@@ -59,6 +45,17 @@ CREATE TABLE loans (
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
+CREATE TABLE publications (
+    publication_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    available_copies INTEGER,
+    title VARCHAR(255) NOT NULL,
+    publication_year INTEGER,
+    author VARCHAR(255),
+    ISBN VARCHAR(255),
+    editor VARCHAR(255),
+    ISSN VARCHAR(255),
+    type VARCHAR(255) NOT NULL
+);
 
 CREATE TABLE loan_publications (
     loan_id BIGINT NOT NULL,
