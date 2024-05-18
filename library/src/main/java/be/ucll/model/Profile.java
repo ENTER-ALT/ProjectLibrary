@@ -29,7 +29,7 @@ public class Profile {
     public static final String INVALID_LOCATION_EXCEPTION = "Location is required";
     public static final String INVALID_INTERESTS_EXCEPTION = "Interests are required";
 
-    public Profile() {
+    protected Profile() {
     }
 
     public Profile(String bio, String location, String interests) {
