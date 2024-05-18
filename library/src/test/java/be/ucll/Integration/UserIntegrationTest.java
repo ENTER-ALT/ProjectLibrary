@@ -837,7 +837,7 @@ public class UserIntegrationTest {
         .header("Content-Type", "application/json")
         .bodyValue("{\n" + //
                         "  \"startDate\": \"2024-05-10\",\n" + //
-                        "  \"endDate\": \"2025-05-10\",\n" + //
+                        "  \"endDate\": \"2025-05-10\",\n" + //W
                         "  \"type\": \"BRONZE\",\n" + //
                         "  \"freeLoansQuantity\": \"4\"\n" + //
                         "}")
