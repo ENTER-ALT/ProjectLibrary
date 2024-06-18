@@ -5,7 +5,7 @@ REST application:
 Spring Boot framework,
 Java programming language,
 Maven tool, 
-Hibernate validator,
+Hibernate validator.
 
 Database:
 H2 dbms,
