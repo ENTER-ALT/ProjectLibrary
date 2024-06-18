@@ -10,10 +10,11 @@ Hibernate validator.
 Database:
 H2 dbms,
 JDBC API,
+SQL,
 JPA API.
 
 QA automation testing:
-Unit tests, Integration tests, Mockito framework
+Unit tests, Integration tests, Mockito framework.
 
 Other keys to mention:
 - English language
